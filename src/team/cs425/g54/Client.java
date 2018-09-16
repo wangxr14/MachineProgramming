@@ -64,9 +64,7 @@ public class Client {
 		}
 	}
 	
-    public static void main(String[] args) throws IOException {  
-        
-    	//
+	public static void getUserInput() {
     	System.out.println("Please Input:");  
 		try {
 			String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
@@ -76,8 +74,9 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-    	//Read in ip and port, vm set
+	}
+	
+	public static void setConfig() {
     	String configFile="mp.config";
     	try {
     		BufferedReader in=new BufferedReader(new FileReader(configFile));
@@ -103,7 +102,15 @@ public class Client {
     	}catch(IOException e){
     		e.printStackTrace();
     	}
+	}
+	
+    public static void main(String[] args) throws IOException {  
+        
+    	// Read user input
+    	getUserInput();
     	
+    	//Read in ip and port, set vm number
+    	setConfig();
     	
     	//Create sockets and threads
     	for (int i=0; i<ipAddrList.size();i++) {
