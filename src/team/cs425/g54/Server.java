@@ -77,7 +77,7 @@ public class Server {
                     int index = 1;
                     if(retInfo.length()>0)
                         retInfo = retInfo.substring(0,retInfo.length()-1);
-                    System.out.println("output lines: "+retInfo);
+//                    System.out.println("output lines: "+retInfo);
                     out.writeUTF(retInfo+" "+String.valueOf(myNum));  // return totallines and vm name first;
                     for(GrepResult result:grepResults){
 

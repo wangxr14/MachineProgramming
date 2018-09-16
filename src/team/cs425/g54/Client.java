@@ -71,8 +71,8 @@ public class Client {
 						writer.println(ret);
 
 					}
-					System.out.println("actual" +lineCnt+"\n");
-					System.out.println("total "+totalLines+"\n");
+					System.out.println(vmName+" received actual lines " +lineCnt+"\n");
+					System.out.println(vmName+" total lines "+totalLines+"\n");
 					if(Integer.parseInt(totalLines)==lineCnt){
 						writer.println(vmName+" , totalLines: "+totalLines);
 
@@ -168,9 +168,18 @@ public class Client {
 				writer.println(str);
 				index++;
 			}
-			if(!linesInfo.equals(""))
-				if(index == Integer.parseInt(linesInfo))
+			if(!linesInfo.equals("")){
+				if(index == Integer.parseInt(linesInfo)){
 					writer.println("Total lines: "+ index);
+				}
+				else
+					writer.println("Total lines: 0");
+				linesInfo = "0";
+			}
+			else
+				writer.println("Total lines: 0");
+			System.out.println("vm"+myNum+" received actual lines " +index+"\n");
+			System.out.println("vm"+myNum+ "total lines "+linesInfo+"\n");
 			writer.close();
 		}
     }
