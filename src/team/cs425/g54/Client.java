@@ -65,13 +65,14 @@ public class Client {
 					while((ret = br.readLine())!=null && !totalLines.equals("0")){
 						lineCnt++;
 						System.out.println(ret+"\n");
-						writer.println(vmName+" , totalLines: "+totalLines);
+						writer.println(ret);
 
 					}
-					System.out.println(lineCnt+"\n");
+					System.out.println("actual"+lineCnt+"\n");
+					System.out.println("total "+totalLines+"\n");
 					if(Integer.parseInt(totalLines)==lineCnt){
 						writer.println(vmName+" , totalLines: "+totalLines);
-						System.out.println(totalLines+"\n");
+
 					}
 
 //		            System.out.println("server sent: " + "VM "+grepObject.vmNum+"; line "+grepObject.index+" "+";totallines "+ grepObject.totalline);
