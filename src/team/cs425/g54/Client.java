@@ -66,11 +66,12 @@ public class Client {
 
 					while((ret = br.readLine())!=null && !totalLines.equals("0")){
 						lineCnt++;
-						System.out.println(ret+"\n");
+						if(lineCnt<30)
+							System.out.println(vmName+" "+ret+"\n");
 						writer.println(ret);
 
 					}
-					System.out.println("actual"+lineCnt+"\n");
+					System.out.println("actual" +lineCnt+"\n");
 					System.out.println("total "+totalLines+"\n");
 					if(Integer.parseInt(totalLines)==lineCnt){
 						writer.println(vmName+" , totalLines: "+totalLines);
@@ -162,8 +163,9 @@ public class Client {
 			writer.println("vm"+myNum);
 			int index = 0;
 			for(String str: s.split("\n")){
-				System.out.println(str);
-				writer.println(s);
+				if(index<30)
+					System.out.println("vm"+myNum+" "+str);
+				writer.println(str);
 				index++;
 			}
 			if(!linesInfo.equals(""))
