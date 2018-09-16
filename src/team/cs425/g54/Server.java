@@ -75,7 +75,9 @@ public class Server {
 
                     GrepResults grepResults = grepHandler.getGrepResultByLines(clientInputStr, getLogFilename(), getLogFilepath());
                     int index = 1;
-                    out.writeUTF(retInfo.substring(0,retInfo.length()-1)+" "+String.valueOf(myNum));  // return totallines and vm name first;
+                    if(retInfo.length()>0)
+                        retInfo.substring(0,retInfo.length()-1);
+                    out.writeUTF(retInfo+" "+String.valueOf(myNum));  // return totallines and vm name first;
                     for(GrepResult result:grepResults){
 
 //                        GrepObject grepObject = new GrepObject(retInfo,index,result.toString(),myNum);
