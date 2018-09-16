@@ -5,10 +5,13 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class GrepHandlerTest {
-
+	
 	@Test
-	public void test() {
-		//fail("Not yet implemented");
+	public void testGetGrepInfo() {
+		GrepHandler grepHandler=new GrepHandler();	
+		assertEquals("asdf",grepHandler.getGrepInfo("grep asdf"));
+		assertEquals("",grepHandler.getGrepInfo(""));
+		assertEquals("",grepHandler.getGrepInfo("just try"));
 	}
 
 	@Test
@@ -21,6 +24,12 @@ public class GrepHandlerTest {
 	
 	@Test
 	public void testGetGrepResult() {
-		
+		GrepHandler grepHandler=new GrepHandler();
+		String testFilename="test.log";
+		String testFilepath="E://workplace/MP1/test.log";
+		String res=grepHandler.getGrepResult("grep no", testFilename, testFilepath);
+		//assertEquals("Nothing to add",res);
+		res=grepHandler.getGrepResult("testme", testFilename, testFilepath);
+		//assertNull(res);
 	}
 }
