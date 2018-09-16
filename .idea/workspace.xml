@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0ca7b158-4302-46c3-b14f-1ff00ce4e170" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/team/cs425/g54/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/team/cs425/g54/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/team/cs425/g54/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/team/cs425/g54/Server.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/bin/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -23,22 +25,24 @@
         <counts>
           <entry key="class" value="2" />
           <entry key="java" value="7" />
+          <entry key="txt" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CLASS" value="2" />
           <entry key="JAVA" value="7" />
+          <entry key="PLAIN_TEXT" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="1979" />
+          <entry key="java" value="2057" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="1979" />
+          <entry key="JAVA" value="2057" />
         </counts>
       </usages-collector>
     </session>
@@ -57,11 +61,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/team/cs425/g54/Server.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="59">
-              <caret line="74" selection-start-line="74" selection-end-line="74" />
+            <state relative-caret-position="990">
+              <caret line="75" column="117" lean-forward="true" selection-start-line="75" selection-start-column="117" selection-end-line="75" selection-end-column="117" />
             </state>
           </provider>
         </entry>
@@ -84,11 +88,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/team/cs425/g54/Client.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="203">
-              <caret line="55" column="43" lean-forward="true" selection-start-line="55" selection-start-column="43" selection-end-line="55" selection-end-column="43" />
+            <state relative-caret-position="179">
+              <caret line="56" column="43" lean-forward="true" selection-start-line="56" selection-start-column="43" selection-end-line="56" selection-end-column="43" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#562#570#0" expanded="true" />
@@ -103,8 +107,9 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>str</find>
-      <find>system</find>
       <find>server</find>
+      <find>system</find>
+      <find>plea</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -115,8 +120,8 @@
       <list>
         <option value="$PROJECT_DIR$/src/team/cs425/g54/GrepObject.java" />
         <option value="$PROJECT_DIR$/src/team/cs425/g54/GrepHandler.java" />
-        <option value="$PROJECT_DIR$/src/team/cs425/g54/Server.java" />
         <option value="$PROJECT_DIR$/src/team/cs425/g54/Client.java" />
+        <option value="$PROJECT_DIR$/src/team/cs425/g54/Server.java" />
       </list>
     </option>
   </component>
@@ -143,13 +148,33 @@
             <path>
               <item name="mp1_git" type="b2602c69:ProjectViewProjectNode" />
               <item name="mp1_git" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mp1_git" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mp1_git" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+              <item name="team" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mp1_git" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mp1_git" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+              <item name="team" type="462c0819:PsiDirectoryNode" />
+              <item name="cs425" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mp1_git" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mp1_git" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+              <item name="team" type="462c0819:PsiDirectoryNode" />
+              <item name="cs425" type="462c0819:PsiDirectoryNode" />
+              <item name="g54" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="mp1_git" type="b2602c69:ProjectViewProjectNode" />
               <item name="mp1_git" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="g54" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="mp1_git" type="b2602c69:ProjectViewProjectNode" />
@@ -164,7 +189,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537113212313" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537117698493" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -187,7 +212,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Server">
+  <component name="RunManager" selected="Application.Client">
     <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="team.cs425.g54.Client" />
       <module name="MP1" />
@@ -230,8 +255,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Server" />
         <item itemvalue="Application.Client" />
+        <item itemvalue="Application.Server" />
         <item itemvalue="JAR Application.hamcrest-core-1.3.jar" />
       </list>
     </recent_temporary>
@@ -317,15 +342,27 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/team/cs425/g54/Client.java</url>
-          <line>44</line>
+          <line>45</line>
           <properties />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/team/cs425/g54/Client.java</url>
-          <line>60</line>
+          <line>61</line>
           <properties />
           <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/team/cs425/g54/Client.java</url>
+          <line>52</line>
+          <properties />
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/team/cs425/g54/Client.java</url>
+          <line>135</line>
+          <properties />
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -379,22 +416,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/team/cs425/g54/Server.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="59">
-          <caret line="74" selection-start-line="74" selection-end-line="74" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/VM3.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VM8.txt">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/team/cs425/g54/Client.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="203">
-          <caret line="55" column="43" lean-forward="true" selection-start-line="55" selection-start-column="43" selection-end-line="55" selection-end-column="43" />
+        <state relative-caret-position="179">
+          <caret line="56" column="43" lean-forward="true" selection-start-line="56" selection-start-column="43" selection-end-line="56" selection-end-column="43" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#562#570#0" expanded="true" />
             <element signature="e#627#636#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/team/cs425/g54/Server.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="990">
+          <caret line="75" column="117" lean-forward="true" selection-start-line="75" selection-start-column="117" selection-end-line="75" selection-end-column="117" />
         </state>
       </provider>
     </entry>

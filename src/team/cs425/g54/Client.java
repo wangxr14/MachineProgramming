@@ -29,6 +29,7 @@ public class Client {
 		public ClientThread(Socket s) throws IOException {
 			socket=s;
 			//Bufferreader or File
+
 			start();
 		}
 		
@@ -131,7 +132,9 @@ public class Client {
     	//Create sockets and threads
     	for (int i=0; i<ipAddrList.size();i++) {
     		try {
+				System.out.println("sent to vm "+i);
     			Socket socket = new Socket(ipAddrList.get(i),portList.get(i));
+//    			System.out.println("sent to vm "+i);
 				ClientThread thread = new ClientThread(socket);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
