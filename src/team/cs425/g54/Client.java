@@ -1,14 +1,6 @@
 package team.cs425.g54;
  
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -47,18 +39,37 @@ public class Client {
 			//while(true) {
 				try {
 					input = new DataInputStream(socket.getInputStream());
-		            DataOutputStream out = new DataOutputStream(socket.getOutputStream());    
-		            out.writeUTF(inputInfo);  
-		              
-		            String ret = input.readUTF();   
-		            System.out.println("server sent: " + ret);  
+		            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+		            out.writeUTF(inputInfo);
+		            System.out.println("begin Input Object");
+//					ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+
+//					GrepObject grepObject = (GrepObject) objectInputStream.readObject();
+
+//		            String ret = input.readUTF();
+					String total = input.readUTF();
+					System.out.println(total);
+					InputStreamReader inputStreamReader = new InputStreamReader(input);
+					BufferedReader br = new BufferedReader(inputStreamReader);
+					String ret = null;
+					int lineCnt = 1;
+					while((ret = br.readLine())!=null){
+						lineCnt++;
+						System.out.println(ret+"\n");
+					}
+					System.out.println(lineCnt+"\n");
+					if(Integer.parseInt(total)==lineCnt)
+						System.out.println(total+"\n");
+
+//		            System.out.println("server sent: " + "VM "+grepObject.vmNum+"; line "+grepObject.index+" "+";totallines "+ grepObject.totalline);
 		            
 		            out.close();
 		            input.close();
+//		            objectInputStream.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} 
+				}
 			//}
             
 		}

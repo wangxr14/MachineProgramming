@@ -33,6 +33,14 @@ public class GrepHandler {
 		// call regular expression pattern to find the strings that are in the log
 		GrepResults results = Grep4j.grep(Grep4j.regularExpression(grepInfo),locallog, Option.countMatches());
 		return results.toString();
+
+	}
+
+	public GrepResults getGrepResultByLines(String inputInfo, String filename, String filepath){
+		String grepInfo=getGrepInfo(inputInfo);
+		Profile locallog = ProfileBuilder.newBuilder().name(filename).filePath(filepath).onLocalhost().build();
+		GrepResults results = Grep4j.grep(Grep4j.regularExpression(grepInfo),locallog,Option.lineNumber());
+		return results;
 	}
 	
 	public Boolean isGrepInfo(String inputInfo) {

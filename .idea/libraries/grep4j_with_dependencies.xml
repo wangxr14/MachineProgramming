@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="grep4j-with-dependencies">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/grep4j-with-dependencies.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/grep4j-with-dependencies.jar!/" />
+    </SOURCES>
+  </library>
+</component>

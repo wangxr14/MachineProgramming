@@ -1,11 +1,9 @@
 package team.cs425.g54;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import org.grep4j.core.result.GrepResult;
+import org.grep4j.core.result.GrepResults;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
  
@@ -69,18 +67,39 @@ public class Server {
                 String clientInputStr = input.readUTF();
                 System.out.println("Receive from client " + clientInputStr);
                 String retInfo="";
+                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                 if (grepHandler.isGrepInfo(clientInputStr)) {
                 	System.out.println("is grep info");
-                	retInfo=grepHandler.getGrepResult(clientInputStr, getLogFilename(), getLogFilepath());
+                	retInfo=grepHandler.getGrepResult(clientInputStr, getLogFilename(), "/Users/admin/Downloads/vm1.log");
+
+                    GrepResults grepResults = grepHandler.getGrepResultByLines(clientInputStr, getLogFilename(), "/Users/admin/Downloads/vm1.log");
+                    int index = 1;
+                    out.writeUTF(retInfo);
+                    for(GrepResult result:grepResults){
+
+//                        GrepObject grepObject = new GrepObject(retInfo,index,result.toString(),myNum);
+//                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//                        objectOutputStream.writeObject(grepObject);
+
+                        String s = grepResults.toString();
+                        for(String str: s.split("\n")){
+                            System.out.println(str);
+                            out.writeUTF(str+"\n");
+                        }
+
+
+
+
+                    }
                 }
                 else {
                 	System.out.println("not grep info");
                 	retInfo=clientInputStr;
                 }
-               System.out.println(retInfo);
-                DataOutputStream out = new DataOutputStream(socket.getOutputStream());  
+                System.out.println(retInfo);
+
           
-                out.writeUTF(retInfo);  
+
                 
                 out.close();  
                 input.close();  
