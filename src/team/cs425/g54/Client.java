@@ -1,5 +1,7 @@
 package team.cs425.g54;
  
+import org.grep4j.core.result.GrepResults;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -51,7 +53,7 @@ public class Client {
 					String totals = input.readUTF(),totalLines="0",vmName="";
 					if(totals.length()>1 || totals.split(" ").length>1){
 						totalLines = totals.split(" ")[0];
-						vmName = "VM"+totals.split(" ")[1];
+						vmName = "vm"+totals.split(" ")[1];
 					}
 //					System.out.println(totalLines);
 					// write result to file
@@ -88,7 +90,13 @@ public class Client {
             
 		}
 	}
-	
+	public static String getLogFilename() {
+		return "vm"+myNum+".log";
+	}
+	public static String getLogFilepath() {
+		return "/home/mp1/"+getLogFilename();
+	}
+
     public static void main(String[] args) throws IOException {  
         
     	//
@@ -142,6 +150,27 @@ public class Client {
 				e.printStackTrace();
 			}
     	}
+
+    	// get own log file
+		if (grepHandler.isGrepInfo(inputInfo)){
+			String linesInfo = grepHandler.getGrepResult(inputInfo,getLogFilename(),getLogFilepath());
+			GrepResults grepResults = grepHandler.getGrepResultByLines(inputInfo,getLogFilename(),getLogFilepath());
+			if(linesInfo.length()>0)
+				linesInfo = linesInfo.substring(0,linesInfo.length()-1);
+			String s = grepResults.toString();
+			PrintWriter writer = new PrintWriter("vm"+myNum+".txt", "UTF-8");
+			writer.println("vm"+myNum);
+			int index = 0;
+			for(String str: s.split("\n")){
+				System.out.println(str);
+				writer.println(s);
+				index++;
+			}
+			if(!linesInfo.equals(""))
+				if(index == Integer.parseInt(linesInfo))
+					writer.println("Total lines: "+ index);
+			writer.close();
+		}
     }
 } 
 
