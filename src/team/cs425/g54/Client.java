@@ -47,22 +47,32 @@ public class Client {
 //					GrepObject grepObject = (GrepObject) objectInputStream.readObject();
 
 //		            String ret = input.readUTF();
-					String total = input.readUTF();
-					System.out.println(total);
+					String totals = input.readUTF();
+					String totalLines = totals.split(" ")[0];
+					String vmName = "VM"+totals.split(" ")[1];
+//					System.out.println(totalLines);
+					// write result to file
+					PrintWriter writer = new PrintWriter(vmName+".txt", "UTF-8");
+					writer.println(vmName);
 					InputStreamReader inputStreamReader = new InputStreamReader(input);
 					BufferedReader br = new BufferedReader(inputStreamReader);
 					String ret = null;
-					int lineCnt = 1;
+					int lineCnt = 0;
+
 					while((ret = br.readLine())!=null){
 						lineCnt++;
 						System.out.println(ret+"\n");
+						writer.println(vmName+" , totalLines: "+totalLines);
+
 					}
 					System.out.println(lineCnt+"\n");
-					if(Integer.parseInt(total)==lineCnt)
-						System.out.println(total+"\n");
+					if(Integer.parseInt(totalLines)==lineCnt){
+						writer.println(vmName+" , totalLines: "+totalLines);
+						System.out.println(totalLines+"\n");
+					}
 
 //		            System.out.println("server sent: " + "VM "+grepObject.vmNum+"; line "+grepObject.index+" "+";totallines "+ grepObject.totalline);
-		            
+					writer.close();
 		            out.close();
 		            input.close();
 //		            objectInputStream.close();
