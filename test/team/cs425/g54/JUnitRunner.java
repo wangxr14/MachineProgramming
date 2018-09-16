@@ -9,7 +9,9 @@ public class JUnitRunner {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		System.out.println("Start unit testing now");
 		//GrepHandler
+		System.out.println("Test GrepHandler");
 		Result grepResult = JUnitCore.runClasses(GrepHandlerTest.class);
 		for (Failure failure : grepResult.getFailures()) {
 			System.out.println(failure.toString());
