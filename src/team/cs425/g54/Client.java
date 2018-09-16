@@ -1,14 +1,6 @@
 package team.cs425.g54;
  
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -43,22 +35,26 @@ public class Client {
 		@Override
 		public void run() {
 			threadList.add(this);
-			DataInputStream input;
+//			DataInputStream input;
 			//while(true) {
 				try {
-					input = new DataInputStream(socket.getInputStream());
-		            DataOutputStream out = new DataOutputStream(socket.getOutputStream());    
-		            out.writeUTF(inputInfo);  
-		              
-		            String ret = input.readUTF();   
-		            System.out.println("server sent: " + ret);  
+//					input = new DataInputStream(socket.getInputStream());
+		            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+		            out.writeUTF(inputInfo);
+					ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+					GrepObject grepObject = (GrepObject) objectInputStream.readObject();
+
+//		            String ret = input.readUTF();
+		            System.out.println("server sent: " + "VM "+grepObject.vmNum+"; line "+grepObject.index+" "+grepObject.grepResult+";totallines "+ grepObject.totalline);
 		            
 		            out.close();
-		            input.close();
+		            objectInputStream.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} 
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
 			//}
             
 		}
