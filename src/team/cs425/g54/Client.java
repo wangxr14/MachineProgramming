@@ -6,8 +6,10 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
- 
+import java.util.Map;
+
 public class Client {
 
 	public static List<ClientThread> threadList = new ArrayList<ClientThread>();
@@ -15,6 +17,7 @@ public class Client {
 	public static List<Integer> portList = new ArrayList<Integer>(); 
 	public static GrepHandler grepHandler = new GrepHandler();
 	public static int myNum=0;
+	public static HashMap<String,Integer> map = new HashMap<>();
 	private static String inputInfo="";
 	
 	class ClientSocket extends Socket{
@@ -27,7 +30,7 @@ public class Client {
 	
 	static class ClientThread extends Thread{
 		private Socket socket;
-		
+		private long  startTime = System.currentTimeMillis();
 		public ClientThread(Socket s) throws IOException {
 			socket=s;
 			//Bufferreader or File
@@ -83,12 +86,13 @@ public class Client {
 		            out.close();
 		            input.close();
 //		            objectInputStream.close();
+					map.put(vmName,(int)(System.currentTimeMillis()-startTime)%1000);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			//}
-            
+
 		}
 	}
 	public static String getLogFilename() {
@@ -184,6 +188,11 @@ public class Client {
 			System.out.println("vm"+myNum+" received actual lines " +index+"\n");
 			System.out.println("vm"+myNum+" total lines "+linesInfo+"\n");
 			writer.close();
+			
+			// output the cost of time in each thread
+			for(Map.Entry<String,Integer> entry:map.entrySet()){
+				System.out.println(entry.getKey()+", cost : " + entry.getValue() +" seconds");
+			}
 		}
     }
 } 
