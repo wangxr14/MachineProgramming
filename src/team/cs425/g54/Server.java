@@ -68,13 +68,14 @@ public class Server {
                 System.out.println("Receive from client " + clientInputStr);
                 String retInfo="";
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
                 if (grepHandler.isGrepInfo(clientInputStr)) {
                 	System.out.println("is grep info");
                 	retInfo=grepHandler.getGrepResult(clientInputStr, getLogFilename(), "/Users/admin/Downloads/vm1.log");
 
                     GrepResults grepResults = grepHandler.getGrepResultByLines(clientInputStr, getLogFilename(), "/Users/admin/Downloads/vm1.log");
                     int index = 1;
-                    out.writeUTF(retInfo);
+                    out.writeUTF(retInfo+" "+String.valueOf(myNum));  // return totallines and vm name first;
                     for(GrepResult result:grepResults){
 
 //                        GrepObject grepObject = new GrepObject(retInfo,index,result.toString(),myNum);
