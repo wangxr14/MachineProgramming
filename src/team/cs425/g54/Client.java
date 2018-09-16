@@ -1,3 +1,4 @@
+package team.cs425.g54;
  
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -64,7 +65,7 @@ public class Client {
 	}
 	
     public static void main(String[] args) throws IOException {  
-        //Get grep info
+        
     	//
     	System.out.println("Please Input:");  
 		try {

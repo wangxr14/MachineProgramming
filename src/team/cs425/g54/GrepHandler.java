@@ -1,3 +1,5 @@
+package team.cs425.g54;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,7 +39,8 @@ public class GrepHandler {
 		if(inputInfo.isEmpty())
 			return false;
 		String[] words = inputInfo.split(" ");
-		for (int i=0;i<inputInfo.length();i++) {
+		//System.out.println(words.length);
+		for (int i=0;i<words.length;i++) {
 			if(words[i].toLowerCase().equals("grep")) {
 				return true;
 			}

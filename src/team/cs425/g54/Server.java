@@ -1,3 +1,5 @@
+package team.cs425.g54;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -13,7 +15,9 @@ public class Server {
 	public static GrepHandler grepHandler = new GrepHandler();
 	
     public static void main(String[] args) {  
-        // Config
+        Boolean res=grepHandler.isGrepInfo("heartbeats");
+        System.out.println(res);
+    	// Config
         String configFile="mp.config";
     	try {
     		BufferedReader in=new BufferedReader(new FileReader(configFile));
