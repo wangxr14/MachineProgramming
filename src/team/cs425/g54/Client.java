@@ -172,14 +172,17 @@ public class Client {
 				if(index == Integer.parseInt(linesInfo)){
 					writer.println("Total lines: "+ index);
 				}
-				else
+				else {
+					linesInfo = "0";
 					writer.println("Total lines: 0");
-				linesInfo = "0";
+				}
 			}
-			else
+			else{
+				linesInfo = "0";
 				writer.println("Total lines: 0");
+			}
 			System.out.println("vm"+myNum+" received actual lines " +index+"\n");
-			System.out.println("vm"+myNum+ "total lines "+linesInfo+"\n");
+			System.out.println("vm"+myNum+" total lines "+linesInfo+"\n");
 			writer.close();
 		}
     }
