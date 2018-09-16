@@ -47,9 +47,11 @@ public class Client {
 //					GrepObject grepObject = (GrepObject) objectInputStream.readObject();
 
 //		            String ret = input.readUTF();
-					String totals = input.readUTF();
-					String totalLines = totals.split(" ")[0];
-					String vmName = "VM"+totals.split(" ")[1];
+					String totals = input.readUTF(),totalLines="0",vmName="";
+					if(totals.length()>1 || totals.split(" ").length>1){
+						totalLines = totals.split(" ")[0];
+						vmName = "VM"+totals.split(" ")[1];
+					}
 //					System.out.println(totalLines);
 					// write result to file
 					PrintWriter writer = new PrintWriter(vmName+".txt", "UTF-8");
@@ -59,7 +61,7 @@ public class Client {
 					String ret = null;
 					int lineCnt = 0;
 
-					while((ret = br.readLine())!=null){
+					while((ret = br.readLine())!=null && !totalLines.equals("0")){
 						lineCnt++;
 						System.out.println(ret+"\n");
 						writer.println(vmName+" , totalLines: "+totalLines);
