@@ -35,24 +35,39 @@ public class Client {
 		@Override
 		public void run() {
 			threadList.add(this);
-//			DataInputStream input;
+			DataInputStream input;
 			//while(true) {
 				try {
-//					input = new DataInputStream(socket.getInputStream());
+					input = new DataInputStream(socket.getInputStream());
 		            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 		            out.writeUTF(inputInfo);
-					ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-					GrepObject grepObject = (GrepObject) objectInputStream.readObject();
+		            System.out.println("begin Input Object");
+//					ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+
+//					GrepObject grepObject = (GrepObject) objectInputStream.readObject();
 
 //		            String ret = input.readUTF();
-		            System.out.println("server sent: " + "VM "+grepObject.vmNum+"; line "+grepObject.index+" "+grepObject.grepResult+";totallines "+ grepObject.totalline);
+					String total = input.readUTF();
+					System.out.println(total);
+					InputStreamReader inputStreamReader = new InputStreamReader(input);
+					BufferedReader br = new BufferedReader(inputStreamReader);
+					String ret = null;
+					int lineCnt = 1;
+					while((ret = br.readLine())!=null){
+						lineCnt++;
+						System.out.println(ret+"\n");
+					}
+					System.out.println(lineCnt+"\n");
+					if(Integer.parseInt(total)==lineCnt)
+						System.out.println(total+"\n");
+
+//		            System.out.println("server sent: " + "VM "+grepObject.vmNum+"; line "+grepObject.index+" "+";totallines "+ grepObject.totalline);
 		            
 		            out.close();
-		            objectInputStream.close();
+		            input.close();
+//		            objectInputStream.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
 			//}

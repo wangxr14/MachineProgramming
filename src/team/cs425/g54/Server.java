@@ -70,18 +70,25 @@ public class Server {
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                 if (grepHandler.isGrepInfo(clientInputStr)) {
                 	System.out.println("is grep info");
-                	retInfo=grepHandler.getGrepResult(clientInputStr, getLogFilename(), getLogFilepath());
+                	retInfo=grepHandler.getGrepResult(clientInputStr, getLogFilename(), "/Users/admin/Downloads/vm1.log");
 
-                    GrepResults grepResults = grepHandler.getGrepResultByLines(clientInputStr, getLogFilename(), getLogFilepath());
-                    int totallines = grepResults.size();
+                    GrepResults grepResults = grepHandler.getGrepResultByLines(clientInputStr, getLogFilename(), "/Users/admin/Downloads/vm1.log");
                     int index = 1;
+                    out.writeUTF(retInfo);
                     for(GrepResult result:grepResults){
 
-                        GrepObject grepObject = new GrepObject(totallines,index,result.toString(),myNum);
-                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                        objectOutputStream.writeObject(grepObject);
-                        index++;
-//                        out.writeUTF("VM"+myNum+", Line number "+result.toString()+"; totalLines: "+totallines);
+//                        GrepObject grepObject = new GrepObject(retInfo,index,result.toString(),myNum);
+//                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//                        objectOutputStream.writeObject(grepObject);
+
+                        String s = grepResults.toString();
+                        for(String str: s.split("\n")){
+                            System.out.println(str);
+                            out.writeUTF(str+"\n");
+                        }
+
+
+
 
                     }
                 }
@@ -92,7 +99,7 @@ public class Server {
                 System.out.println(retInfo);
 
           
-                out.writeUTF(retInfo);  
+
                 
                 out.close();  
                 input.close();  
