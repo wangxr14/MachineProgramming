@@ -76,7 +76,9 @@ public class Client {
 					}
 					System.out.println(vmName+" received actual lines " +lineCnt+"\n");
 					System.out.println(vmName+" total lines "+totalLines+"\n");
-					if(Integer.parseInt(totalLines)==lineCnt){
+					if(totalLines.equals(""))
+						writer.println(vmName+" , totalLines: 0");
+					else if(Integer.parseInt(totalLines)==lineCnt){
 						writer.println(vmName+" , totalLines: "+totalLines);
 
 					}
@@ -188,7 +190,7 @@ public class Client {
 			System.out.println("vm"+myNum+" received actual lines " +index+"\n");
 			System.out.println("vm"+myNum+" total lines "+linesInfo+"\n");
 			writer.close();
-			
+
 			// output the cost of time in each thread
 			for(Map.Entry<String,Integer> entry:map.entrySet()){
 				System.out.println(entry.getKey()+", cost : " + entry.getValue() +" seconds");
