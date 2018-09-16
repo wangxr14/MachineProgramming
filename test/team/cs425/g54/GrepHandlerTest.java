@@ -8,7 +8,9 @@ public class GrepHandlerTest {
 	
 	@Test
 	public void testGetGrepInfo() {
-		GrepHandler grepHandler=new GrepHandler();	
+		System.out.println("Create GrepHandler");
+		GrepHandler grepHandler=new GrepHandler();
+		System.out.println("Test getGrepInfo");
 		assertEquals("asdf",grepHandler.getGrepInfo("grep asdf"));
 		assertEquals("",grepHandler.getGrepInfo(""));
 		assertEquals("",grepHandler.getGrepInfo("just try"));
