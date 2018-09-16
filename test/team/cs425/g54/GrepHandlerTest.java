@@ -28,7 +28,7 @@ public class GrepHandlerTest {
 	public void testGetGrepResult() {
 		GrepHandler grepHandler=new GrepHandler();
 		String testFilename="test.log";
-		String testFilepath="E://workplace/MP1/test.log";
+		String testFilepath="/home/MachineProgramming/test.log";
 		String res=grepHandler.getGrepResult("grep no", testFilename, testFilepath);
 		//assertEquals("Nothing to add",res);
 		res=grepHandler.getGrepResult("testme", testFilename, testFilepath);
