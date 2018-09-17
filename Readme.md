@@ -15,26 +15,22 @@ git clone https://gitlab.engr.illinois.edu/xinranw5/MachineProgramming.git
 ```bash
 // go to /home/MachineProgramming/
 cd /home/MachineProgramming/
-// move file
-mv grep4j-with-dependencies.jar src/
-sudo mv mp.config src/
 
 // change the first line of mp.config to the number of each vm
-sudo vi mp.config
+// make sure that this file is in /home/MachineProgramming/src
+sudo vi mp.config  
+
+// make sure that /home/mp1/ contains vm_x.log file
 ```
-
-
 
 2. Compile all the ".java" file into executable files
 
 ```bash
 // go to /home/MachineProgramming/src/
 cd /home/MachineProgramming/src/
-// complie Server
-sudo javac -cp  grep4j-with-dependencies.jar team/cs425/g54/GrepObject.java team/cs425/g54/GrepHandler.java team/cs425/g54/Server.java
 
-// complie Client
-sudo javac -cp  grep4j-with-dependencies.jar team/cs425/g54/GrepObject.java team/cs425/g54/GrepHandler.java team/cs425/g54/Client.java
+//complie
+sudo javac -cp ../junit-4.10.jar:../grep4j-with-dependencies.jar:../hamcrest-core-1.3.jar team/cs425/g54/*.java
 ```
 
 
@@ -46,10 +42,10 @@ sudo javac -cp  grep4j-with-dependencies.jar team/cs425/g54/GrepObject.java team
 ```bash
 cd /home/MachineProgramming/src/
 // Run Server
-sudo java -cp  grep4j-with-dependencies.jar team.cs425.g54.Server
+sudo java -cp .:../junit-4.10.jar:../grep4j-with-dependencies.jar:../hamcrest-core-1.3.jar team.cs425.g54.Server
 
 // Run Client
-sudo java -cp  grep4j-with-dependencies.jar team.cs425.g54.Client
+sudo java -cp .:../junit-4.10.jar:../grep4j-with-dependencies.jar:../hamcrest-core-1.3.jar team.cs425.g54.Client
 ```
 
 
@@ -76,9 +72,12 @@ line_number match pattern line
 Total lines: xxx   // if client cannot fetch the whole file, the number of total lines would be 0
 ```
 
-
-
 ## 5 - Branch
 
 - The code version that includes  unit test is on master branch
 - The code version that includes main function only is on develop branch
+
+
+
+## 6 - File Description
+
