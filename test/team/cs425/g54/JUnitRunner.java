@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
-
+import team.cs425.g54.*;
 public class JUnitRunner {
 	public static void main(String[] args) {
 		System.out.println("Start unit testing now");
