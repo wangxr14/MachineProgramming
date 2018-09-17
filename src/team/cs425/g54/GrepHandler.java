@@ -29,9 +29,9 @@ public class GrepHandler {
 		String grepInfo=getGrepInfo(inputInfo);
 		Profile locallog = ProfileBuilder.newBuilder().name(filename).filePath(filepath).onLocalhost().build();
 		System.out.println(locallog.toString());
-
 		// call regular expression pattern to find the strings that are in the log
 		GrepResults results = Grep4j.grep(Grep4j.regularExpression(grepInfo),locallog, Option.countMatches());
+		System.out.println(results.toString());
 		return results.toString();
 
 	}

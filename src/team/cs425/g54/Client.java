@@ -13,13 +13,16 @@ import java.util.Map;
 public class Client {
 
 	public static List<ClientThread> threadList = new ArrayList<ClientThread>();
-	public static List<String> ipAddrList = new ArrayList<String>();
-	public static List<Integer> portList = new ArrayList<Integer>(); 
+	public List<String> ipAddrList = new ArrayList<String>();
+	public List<Integer> portList = new ArrayList<Integer>(); 
 	public static GrepHandler grepHandler = new GrepHandler();
 	public static int myNum=0;
-//	public static HashMap<String,Integer> map = new HashMap<>();
-	private static String inputInfo="";
-	
+	public String inputInfo="";
+	public String outputFilepath="";
+	public String logFilepath="";
+	public String logFilename="";
+	//public static HashMap<String,Integer> map = new HashMap<>();
+
 	class ClientSocket extends Socket{
 		protected Socket client;
 		public ClientSocket(String ipAddr, int port) throws Exception{
@@ -28,7 +31,7 @@ public class Client {
 		}
 	}
 	
-	static class ClientThread extends Thread{
+	class ClientThread extends Thread{
 		private Socket socket;
 		private long  startTime = System.currentTimeMillis();
 		public ClientThread(Socket s) throws IOException {
@@ -60,7 +63,7 @@ public class Client {
 					}
 //					System.out.println(totalLines);
 					// write result to file
-					PrintWriter writer = new PrintWriter(vmName+".txt", "UTF-8");
+					PrintWriter writer = new PrintWriter(getOutputFilepath(vmName), "UTF-8");
 					writer.println(vmName);
 					InputStreamReader inputStreamReader = new InputStreamReader(input);
 					BufferedReader br = new BufferedReader(inputStreamReader);
@@ -97,16 +100,29 @@ public class Client {
 
 		}
 	}
-	public static String getLogFilename() {
-		return "vm"+myNum+".log";
+	
+	public String getOutputFilepath(String vmName) {
+		if (outputFilepath.length()>0) {
+			return outputFilepath+vmName+".txt";
+		}
+		return vmName+".txt";
 	}
-	public static String getLogFilepath() {
+
+	 public String getLogFilename() {
+    	if (logFilename.length()>0) {
+    		return logFilename;
+    	}
+    	return "vm"+myNum+".log";
+	}
+	
+	public String getLogFilepath() {
+		if(logFilepath.length()>0) {
+			return logFilepath;
+		}
 		return "/home/mp1/"+getLogFilename();
 	}
 
-    public static void main(String[] args) throws IOException {  
-        
-    	//
+	public void getUserInput() {
     	System.out.println("Please Input:");  
 		try {
 			String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
@@ -116,8 +132,9 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-    	//Read in ip and port, vm set
+	}
+	
+	public void setConfig() {
     	String configFile="mp.config";
     	try {
     		BufferedReader in=new BufferedReader(new FileReader(configFile));
@@ -143,10 +160,10 @@ public class Client {
     	}catch(IOException e){
     		e.printStackTrace();
     	}
-    	
-    	
-    	//Create sockets and threads
-    	for (int i=0; i<ipAddrList.size();i++) {
+	}
+	
+	public void execute() {
+		for (int i=0; i<ipAddrList.size();i++) {
     		try {
 				System.out.println("sent to vm "+i);
     			Socket socket = new Socket(ipAddrList.get(i),portList.get(i));
@@ -157,45 +174,73 @@ public class Client {
 				e.printStackTrace();
 			}
     	}
-
-    	// get own log file
+	}
+	
+	public void generateLogFile() {
 		if (grepHandler.isGrepInfo(inputInfo)){
 			String linesInfo = grepHandler.getGrepResult(inputInfo,getLogFilename(),getLogFilepath());
 			GrepResults grepResults = grepHandler.getGrepResultByLines(inputInfo,getLogFilename(),getLogFilepath());
 			if(linesInfo.length()>0)
 				linesInfo = linesInfo.substring(0,linesInfo.length()-1);
 			String s = grepResults.toString();
-			PrintWriter writer = new PrintWriter("vm"+myNum+".txt", "UTF-8");
-			writer.println("vm"+myNum);
-			int index = 0;
-			for(String str: s.split("\n")){
-				if(index<30)
-					System.out.println("vm"+myNum+" "+str);
-				writer.println(str);
-				index++;
-			}
-			if(!linesInfo.equals("")){
-				if(index == Integer.parseInt(linesInfo)){
-					writer.println("Total lines: "+ index);
+			try {
+				PrintWriter writer = new PrintWriter(getOutputFilepath(""+myNum), "UTF-8");
+				writer.println("vm"+myNum);
+				int index = 0;
+				for(String str: s.split("\n")){
+					if(index<30)
+						System.out.println("vm"+myNum+" "+str);
+					writer.println(str);
+					index++;
 				}
-				else {
+				if(!linesInfo.equals("")){
+					if(index == Integer.parseInt(linesInfo)){
+						writer.println("Total lines: "+ index);
+					}
+					else {
+						linesInfo = "0";
+						writer.println("Total lines: 0");
+					}
+				}
+				else{
 					linesInfo = "0";
 					writer.println("Total lines: 0");
 				}
-			}
-			else{
-				linesInfo = "0";
-				writer.println("Total lines: 0");
-			}
-			System.out.println("vm"+myNum+" received actual lines " +index+"\n");
-			System.out.println("vm"+myNum+" total lines "+linesInfo+"\n");
-			writer.close();
+				System.out.println("vm"+myNum+" received actual lines " +index+"\n");
+				System.out.println("vm"+myNum+" total lines "+linesInfo+"\n");
+				writer.close();
 
 			// output the cost of time in each thread
 //			for(Map.Entry<String,Integer> entry:map.entrySet()){
 //				System.out.println(entry.getKey()+", cost : " + entry.getValue() +" seconds");
 //			}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
+
+	}
+	
+    public static void main(String[] args) throws IOException {  
+        
+    	Client client=new Client();
+    	
+    	// Read user input
+    	client.getUserInput();
+    	
+    	//Read in ip and port, set vm number
+    	client.setConfig();
+    	
+    	//Create sockets and threads
+    	client.execute();
+
+    	// get own log file
+    	client.generateLogFile();
     }
 } 
 
