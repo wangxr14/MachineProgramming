@@ -71,10 +71,13 @@ public class Server {
 
                 if (grepHandler.isGrepInfo(clientInputStr)) {
                 	System.out.println("is grep info");
-                	retInfo=grepHandler.getGrepResult(clientInputStr, getLogFilename(), "/Users/admin/Downloads/vm1.log");
+                	retInfo=grepHandler.getGrepResult(clientInputStr, getLogFilename(), getLogFilepath());
 
-                    GrepResults grepResults = grepHandler.getGrepResultByLines(clientInputStr, getLogFilename(), "/Users/admin/Downloads/vm1.log");
+                    GrepResults grepResults = grepHandler.getGrepResultByLines(clientInputStr, getLogFilename(), getLogFilepath());
                     int index = 1;
+                    if(retInfo.length()>0)
+                        retInfo = retInfo.substring(0,retInfo.length()-1);
+//                    System.out.println("output lines: "+retInfo);
                     out.writeUTF(retInfo+" "+String.valueOf(myNum));  // return totallines and vm name first;
                     for(GrepResult result:grepResults){
 
