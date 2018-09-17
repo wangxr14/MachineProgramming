@@ -9,8 +9,8 @@ import java.util.List;
 public class Client {
 
 	public static List<ClientThread> threadList = new ArrayList<ClientThread>();
-	public static List<String> ipAddrList = new ArrayList<String>();
-	public static List<Integer> portList = new ArrayList<Integer>(); 
+	public List<String> ipAddrList = new ArrayList<String>();
+	public List<Integer> portList = new ArrayList<Integer>(); 
 	public static GrepHandler grepHandler = new GrepHandler();
 	public static int myNum=0;
 	private static String inputInfo="";
@@ -87,7 +87,7 @@ public class Client {
 		}
 	}
 	
-	public static void getUserInput() {
+	public void getUserInput() {
     	System.out.println("Please Input:");  
 		try {
 			String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
@@ -99,7 +99,7 @@ public class Client {
 		}
 	}
 	
-	public static void setConfig() {
+	public void setConfig() {
     	String configFile="mp.config";
     	try {
     		BufferedReader in=new BufferedReader(new FileReader(configFile));
@@ -127,16 +127,8 @@ public class Client {
     	}
 	}
 	
-    public static void main(String[] args) throws IOException {  
-        
-    	// Read user input
-    	getUserInput();
-    	
-    	//Read in ip and port, set vm number
-    	setConfig();
-    	
-    	//Create sockets and threads
-    	for (int i=0; i<ipAddrList.size();i++) {
+	public void execute() {
+		for (int i=0; i<ipAddrList.size();i++) {
     		try {
     			Socket socket = new Socket(ipAddrList.get(i),portList.get(i));
 				ClientThread thread = new ClientThread(socket);
@@ -145,6 +137,20 @@ public class Client {
 				e.printStackTrace();
 			}
     	}
+	}
+	
+    public static void main(String[] args) throws IOException {  
+        
+    	Client client=new Client();
+    	
+    	// Read user input
+    	client.getUserInput();
+    	
+    	//Read in ip and port, set vm number
+    	client.setConfig();
+    	
+    	//Create sockets and threads
+    	client.execute();
     }
 } 
 

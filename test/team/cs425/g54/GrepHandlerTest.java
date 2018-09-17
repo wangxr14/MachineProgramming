@@ -26,12 +26,17 @@ public class GrepHandlerTest {
 	
 	@Test
 	public void testGetGrepResult() {
-		//GrepHandler grepHandler=new GrepHandler();
+		GrepHandler grepHandler=new GrepHandler();
 		String testFilename="test.log";
 		String testFilepath="/home/MachineProgramming/test.log";
 		//String res=grepHandler.getGrepResult("grep no", testFilename, testFilepath);
 		//assertEquals("Nothing to add",res);
 		//res=grepHandler.getGrepResult("testme", testFilename, testFilepath);
 		//assertNull(res);
+	}
+	
+	@Test
+	public void testGetGrepResultByLines() {
+		
 	}
 }

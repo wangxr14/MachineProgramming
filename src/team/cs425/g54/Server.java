@@ -8,20 +8,21 @@ import java.net.ServerSocket;
 import java.net.Socket;
  
 public class Server {
-	public static final int PORT = 12345; 
-	public static int myNum=0;
+	public int PORT = 12345; 
+	public int myNum=0;
 	public static GrepHandler grepHandler = new GrepHandler();
 	
     public static void main(String[] args) {  
         Boolean res=grepHandler.isGrepInfo("heartbeats");
         System.out.println(res);
-    	// Config
+        Server server = new Server();
+        // Config
         String configFile="mp.config";
     	try {
     		BufferedReader in=new BufferedReader(new FileReader(configFile));
     		String line=in.readLine();
     		if(line!=null) {
-    			myNum=Integer.parseInt(line);
+    			server.myNum=Integer.parseInt(line);
     			line=in.readLine();
     		}
     		
@@ -29,12 +30,13 @@ public class Server {
     		e.printStackTrace();
     	}
   
-        Server server = new Server();  
+          
         server.init();  
     }  
   
     public void init() {  
         try {  
+        	System.out.println("port:"+PORT);
             ServerSocket serverSocket = new ServerSocket(PORT);
             System.out.println("Server listening at "+PORT);
             while(true) {
@@ -45,6 +47,7 @@ public class Server {
             System.out.println("Server error: " + e.getMessage());  
         }  
     }  
+    
     
     public String getLogFilename() {
     	return "vm"+myNum+".log";
@@ -88,9 +91,6 @@ public class Server {
                             out.writeUTF(str+"\n");
                         }
 
-
-
-
                     }
                 }
                 else {
@@ -98,9 +98,6 @@ public class Server {
                 	retInfo=clientInputStr;
                 }
                 System.out.println(retInfo);
-
-          
-
                 
                 out.close();  
                 input.close();  
