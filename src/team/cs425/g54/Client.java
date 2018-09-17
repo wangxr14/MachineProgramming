@@ -17,7 +17,7 @@ public class Client {
 	public static List<Integer> portList = new ArrayList<Integer>(); 
 	public static GrepHandler grepHandler = new GrepHandler();
 	public static int myNum=0;
-	public static HashMap<String,Integer> map = new HashMap<>();
+//	public static HashMap<String,Integer> map = new HashMap<>();
 	private static String inputInfo="";
 	
 	class ClientSocket extends Socket{
@@ -88,7 +88,7 @@ public class Client {
 		            out.close();
 		            input.close();
 //		            objectInputStream.close();
-					map.put(vmName,(int)(System.currentTimeMillis()-startTime)%1000);
+					System.out.println(vmName+"cost: "+(int)(System.currentTimeMillis()-startTime)%1000);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -192,9 +192,9 @@ public class Client {
 			writer.close();
 
 			// output the cost of time in each thread
-			for(Map.Entry<String,Integer> entry:map.entrySet()){
-				System.out.println(entry.getKey()+", cost : " + entry.getValue() +" seconds");
-			}
+//			for(Map.Entry<String,Integer> entry:map.entrySet()){
+//				System.out.println(entry.getKey()+", cost : " + entry.getValue() +" seconds");
+//			}
 		}
     }
 } 
