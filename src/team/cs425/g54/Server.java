@@ -1,25 +1,28 @@
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+package team.cs425.g54;
+
+import org.grep4j.core.result.GrepResult;
+import org.grep4j.core.result.GrepResults;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
  
 public class Server {
-	public static final int PORT = 12345; 
-	public static int myNum=0;
-	public static GrepHandler grepHandler = new GrepHandler();
+	public int PORT = 12345; 
+	public int myNum=0;
+	public GrepHandler grepHandler = new GrepHandler();
+	public String logFilepath="";
+	public String logFilename="";
 	
     public static void main(String[] args) {  
+        Server server = new Server();
         // Config
         String configFile="mp.config";
     	try {
     		BufferedReader in=new BufferedReader(new FileReader(configFile));
     		String line=in.readLine();
     		if(line!=null) {
-    			myNum=Integer.parseInt(line);
+    			server.myNum=Integer.parseInt(line);
     			line=in.readLine();
     		}
     		
@@ -27,12 +30,13 @@ public class Server {
     		e.printStackTrace();
     	}
   
-        Server server = new Server();  
+          
         server.init();  
     }  
   
     public void init() {  
         try {  
+        	System.out.println("port:"+PORT);
             ServerSocket serverSocket = new ServerSocket(PORT);
             System.out.println("Server listening at "+PORT);
             while(true) {
@@ -44,11 +48,18 @@ public class Server {
         }  
     }  
     
+    
     public String getLogFilename() {
+    	if (logFilename.length()>0) {
+    		return logFilename;
+    	}
     	return "vm"+myNum+".log";
     }
     
     public String getLogFilepath() {
+    	if(logFilepath.length()>0) {
+    		return logFilepath;
+    	}
     	return "/home/mp1/"+getLogFilename();
     }
   
@@ -65,18 +76,37 @@ public class Server {
                 String clientInputStr = input.readUTF();
                 System.out.println("Receive from client " + clientInputStr);
                 String retInfo="";
+                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
                 if (grepHandler.isGrepInfo(clientInputStr)) {
                 	System.out.println("is grep info");
                 	retInfo=grepHandler.getGrepResult(clientInputStr, getLogFilename(), getLogFilepath());
+
+                    GrepResults grepResults = grepHandler.getGrepResultByLines(clientInputStr, getLogFilename(), getLogFilepath());
+                    int index = 1;
+                    if(retInfo.length()>0)
+                        retInfo = retInfo.substring(0,retInfo.length()-1);
+//                    System.out.println("output lines: "+retInfo);
+                    out.writeUTF(retInfo+" "+String.valueOf(myNum));  // return totallines and vm name first;
+                    for(GrepResult result:grepResults){
+
+//                        GrepObject grepObject = new GrepObject(retInfo,index,result.toString(),myNum);
+//                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//                        objectOutputStream.writeObject(grepObject);
+
+                        String s = grepResults.toString();
+                        for(String str: s.split("\n")){
+                            System.out.println(str);
+                            out.writeUTF(str+"\n");
+                        }
+
+                    }
                 }
                 else {
                 	System.out.println("not grep info");
                 	retInfo=clientInputStr;
                 }
-               System.out.println(retInfo);
-                DataOutputStream out = new DataOutputStream(socket.getOutputStream());  
-          
-                out.writeUTF(retInfo);  
+                System.out.println(retInfo);
                 
                 out.close();  
                 input.close();  
