@@ -1,11 +1,15 @@
 package team.cs425.g54;
  
+import org.grep4j.core.result.GrepResults;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
- 
+import java.util.Map;
+
 public class Client {
 
 	public static List<ClientThread> threadList = new ArrayList<ClientThread>();
@@ -15,6 +19,10 @@ public class Client {
 	public static int myNum=0;
 	public String inputInfo="";
 	public String outputFilepath="";
+	public String logFilepath="";
+	public String logFilename="";
+	public static HashMap<String,Integer> map = new HashMap<>();
+
 	
 	class ClientSocket extends Socket{
 		protected Socket client;
@@ -26,10 +34,11 @@ public class Client {
 	
 	class ClientThread extends Thread{
 		private Socket socket;
-		
+		private long  startTime = System.currentTimeMillis();
 		public ClientThread(Socket s) throws IOException {
 			socket=s;
 			//Bufferreader or File
+
 			start();
 		}
 		
@@ -51,7 +60,7 @@ public class Client {
 					String totals = input.readUTF(),totalLines="0",vmName="";
 					if(totals.length()>1 || totals.split(" ").length>1){
 						totalLines = totals.split(" ")[0];
-						vmName = "VM"+totals.split(" ")[1];
+						vmName = "vm"+totals.split(" ")[1];
 					}
 //					System.out.println(totalLines);
 					// write result to file
@@ -64,14 +73,18 @@ public class Client {
 
 					while((ret = br.readLine())!=null && !totalLines.equals("0")){
 						lineCnt++;
-						System.out.println(ret+"\n");
-						writer.println(vmName+" , totalLines: "+totalLines);
+						if(lineCnt<30)
+							System.out.println(vmName+" "+ret+"\n");
+						writer.println(ret);
 
 					}
-					System.out.println(lineCnt+"\n");
-					if(Integer.parseInt(totalLines)==lineCnt){
+					System.out.println(vmName+" received actual lines " +lineCnt+"\n");
+					System.out.println(vmName+" total lines "+totalLines+"\n");
+					if(totalLines.equals(""))
+						writer.println(vmName+" , totalLines: 0");
+					else if(Integer.parseInt(totalLines)==lineCnt){
 						writer.println(vmName+" , totalLines: "+totalLines);
-						System.out.println(totalLines+"\n");
+
 					}
 
 //		            System.out.println("server sent: " + "VM "+grepObject.vmNum+"; line "+grepObject.index+" "+";totallines "+ grepObject.totalline);
@@ -79,12 +92,13 @@ public class Client {
 		            out.close();
 		            input.close();
 //		            objectInputStream.close();
+					map.put(vmName,(int)(System.currentTimeMillis()-startTime)%1000);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			//}
-            
+
 		}
 	}
 	
@@ -94,7 +108,21 @@ public class Client {
 		}
 		return vmName+".txt";
 	}
+
+	 public String getLogFilename() {
+    	if (logFilename.length()>0) {
+    		return logFilename;
+    	}
+    	return "vm"+myNum+".log";
+	}
 	
+	public String getLogFilepath() {
+		if(logFilepath.length()>0) {
+			return logFilepath;
+		}
+		return "/home/mp1/"+getLogFilename();
+	}
+
 	public void getUserInput() {
     	System.out.println("Please Input:");  
 		try {
@@ -138,13 +166,65 @@ public class Client {
 	public void execute() {
 		for (int i=0; i<ipAddrList.size();i++) {
     		try {
+				System.out.println("sent to vm "+i);
     			Socket socket = new Socket(ipAddrList.get(i),portList.get(i));
+//    			System.out.println("sent to vm "+i);
 				ClientThread thread = new ClientThread(socket);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}
+	}
+	
+	public void generateLogFile() {
+		if (grepHandler.isGrepInfo(inputInfo)){
+			String linesInfo = grepHandler.getGrepResult(inputInfo,getLogFilename(),getLogFilepath());
+			GrepResults grepResults = grepHandler.getGrepResultByLines(inputInfo,getLogFilename(),getLogFilepath());
+			if(linesInfo.length()>0)
+				linesInfo = linesInfo.substring(0,linesInfo.length()-1);
+			String s = grepResults.toString();
+			try {
+				PrintWriter writer = new PrintWriter(getOutputFilepath(""+myNum), "UTF-8");
+				writer.println("vm"+myNum);
+				int index = 0;
+				for(String str: s.split("\n")){
+					if(index<30)
+						System.out.println("vm"+myNum+" "+str);
+					writer.println(str);
+					index++;
+				}
+				if(!linesInfo.equals("")){
+					if(index == Integer.parseInt(linesInfo)){
+						writer.println("Total lines: "+ index);
+					}
+					else {
+						linesInfo = "0";
+						writer.println("Total lines: 0");
+					}
+				}
+				else{
+					linesInfo = "0";
+					writer.println("Total lines: 0");
+				}
+				System.out.println("vm"+myNum+" received actual lines " +index+"\n");
+				System.out.println("vm"+myNum+" total lines "+linesInfo+"\n");
+				writer.close();
+
+				// output the cost of time in each thread
+				for(Map.Entry<String,Integer> entry:map.entrySet()){
+					System.out.println(entry.getKey()+", cost : " + entry.getValue() +" seconds");
+				}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+
 	}
 	
     public static void main(String[] args) throws IOException {  
@@ -159,6 +239,9 @@ public class Client {
     	
     	//Create sockets and threads
     	client.execute();
+
+    	// get own log file
+    	client.generateLogFile();
     }
 } 
 

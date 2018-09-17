@@ -81,7 +81,7 @@ public class JUnitRunner {
 			server.PORT=port;
 			server.myNum=i;
 			server.logFilename=""+i;
-			server.logFilepath="testcases/"+i;
+			server.logFilepath="/home/MachineProgramming/testcases/"+i;
 			try {   
 				TestThread thread=new TestThread(server);
 	        } catch (Exception e) {  
@@ -91,7 +91,7 @@ public class JUnitRunner {
 		
 		client.ipAddrList=ipAddrList;
 		client.portList=portList;
-		client.outputFilepath="testResult/";
+		client.outputFilepath="/home/MachineProgramming/testResult/";
 		client.inputInfo=query;
 		client.execute();
 		
