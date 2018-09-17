@@ -21,9 +21,8 @@ public class Client {
 	public String outputFilepath="";
 	public String logFilepath="";
 	public String logFilename="";
-	public static HashMap<String,Integer> map = new HashMap<>();
+	//public static HashMap<String,Integer> map = new HashMap<>();
 
-	
 	class ClientSocket extends Socket{
 		protected Socket client;
 		public ClientSocket(String ipAddr, int port) throws Exception{
@@ -92,7 +91,7 @@ public class Client {
 		            out.close();
 		            input.close();
 //		            objectInputStream.close();
-					map.put(vmName,(int)(System.currentTimeMillis()-startTime)%1000);
+					System.out.println(vmName+"cost: "+(int)(System.currentTimeMillis()-startTime)%1000);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -211,10 +210,10 @@ public class Client {
 				System.out.println("vm"+myNum+" total lines "+linesInfo+"\n");
 				writer.close();
 
-				// output the cost of time in each thread
-				for(Map.Entry<String,Integer> entry:map.entrySet()){
-					System.out.println(entry.getKey()+", cost : " + entry.getValue() +" seconds");
-				}
+			// output the cost of time in each thread
+//			for(Map.Entry<String,Integer> entry:map.entrySet()){
+//				System.out.println(entry.getKey()+", cost : " + entry.getValue() +" seconds");
+//			}
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
