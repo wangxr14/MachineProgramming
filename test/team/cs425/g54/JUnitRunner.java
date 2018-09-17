@@ -91,9 +91,10 @@ public class JUnitRunner {
 		
 		client.ipAddrList=ipAddrList;
 		client.portList=portList;
-		client.outputFilepath="/home/MachineProgramming/testResult/";
+		client.outputFilepath="/home/MachineProgramming/testresults/";
 		client.inputInfo=query;
 		client.execute();
+		
 		
 	}
 	
