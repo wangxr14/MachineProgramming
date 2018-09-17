@@ -13,7 +13,8 @@ public class Client {
 	public List<Integer> portList = new ArrayList<Integer>(); 
 	public static GrepHandler grepHandler = new GrepHandler();
 	public static int myNum=0;
-	private static String inputInfo="";
+	public String inputInfo="";
+	public String outputFilepath="";
 	
 	class ClientSocket extends Socket{
 		protected Socket client;
@@ -23,7 +24,7 @@ public class Client {
 		}
 	}
 	
-	static class ClientThread extends Thread{
+	class ClientThread extends Thread{
 		private Socket socket;
 		
 		public ClientThread(Socket s) throws IOException {
@@ -54,7 +55,7 @@ public class Client {
 					}
 //					System.out.println(totalLines);
 					// write result to file
-					PrintWriter writer = new PrintWriter(vmName+".txt", "UTF-8");
+					PrintWriter writer = new PrintWriter(getOutputFilepath(vmName), "UTF-8");
 					writer.println(vmName);
 					InputStreamReader inputStreamReader = new InputStreamReader(input);
 					BufferedReader br = new BufferedReader(inputStreamReader);
@@ -85,6 +86,13 @@ public class Client {
 			//}
             
 		}
+	}
+	
+	public String getOutputFilepath(String vmName) {
+		if (outputFilepath.length()>0) {
+			return outputFilepath+vmName+".txt";
+		}
+		return vmName+".txt";
 	}
 	
 	public void getUserInput() {

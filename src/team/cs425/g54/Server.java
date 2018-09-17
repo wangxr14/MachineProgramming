@@ -10,11 +10,11 @@ import java.net.Socket;
 public class Server {
 	public int PORT = 12345; 
 	public int myNum=0;
-	public static GrepHandler grepHandler = new GrepHandler();
+	public GrepHandler grepHandler = new GrepHandler();
+	public String logFilepath="";
+	public String logFilename="";
 	
     public static void main(String[] args) {  
-        Boolean res=grepHandler.isGrepInfo("heartbeats");
-        System.out.println(res);
         Server server = new Server();
         // Config
         String configFile="mp.config";
@@ -50,10 +50,16 @@ public class Server {
     
     
     public String getLogFilename() {
+    	if (logFilename.length()>0) {
+    		return logFilename;
+    	}
     	return "vm"+myNum+".log";
     }
     
     public String getLogFilepath() {
+    	if(logFilepath.length()>0) {
+    		return logFilepath;
+    	}
     	return "/home/mp1/"+getLogFilename();
     }
   
@@ -74,9 +80,9 @@ public class Server {
 
                 if (grepHandler.isGrepInfo(clientInputStr)) {
                 	System.out.println("is grep info");
-                	retInfo=grepHandler.getGrepResult(clientInputStr, getLogFilename(), "/Users/admin/Downloads/vm1.log");
+                	retInfo=grepHandler.getGrepResult(clientInputStr, getLogFilename(), getLogFilepath());
 
-                    GrepResults grepResults = grepHandler.getGrepResultByLines(clientInputStr, getLogFilename(), "/Users/admin/Downloads/vm1.log");
+                    GrepResults grepResults = grepHandler.getGrepResultByLines(clientInputStr, getLogFilename(), getLogFilepath());
                     int index = 1;
                     out.writeUTF(retInfo+" "+String.valueOf(myNum));  // return totallines and vm name first;
                     for(GrepResult result:grepResults){

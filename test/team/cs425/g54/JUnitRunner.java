@@ -42,7 +42,7 @@ public class JUnitRunner {
 		
 		// To test the function of client and server
 		JUnitRunner runner=new JUnitRunner();
-		runner.runTest("grep a");
+		runner.runTest("grep 900");
 		//runner.runTest("grep asdfg");
 		//runner.runTest("grep asd");
 		
@@ -80,6 +80,8 @@ public class JUnitRunner {
 			Server server = new Server();
 			server.PORT=port;
 			server.myNum=i;
+			server.logFilename=""+i;
+			server.logFilepath="testcases/"+i;
 			try {   
 				TestThread thread=new TestThread(server);
 	        } catch (Exception e) {  
@@ -89,6 +91,8 @@ public class JUnitRunner {
 		
 		client.ipAddrList=ipAddrList;
 		client.portList=portList;
+		client.outputFilepath="testResult/";
+		client.inputInfo=query;
 		client.execute();
 		
 	}
