@@ -27,6 +27,7 @@ public class GrepHandler {
 
 	public String getGrepResult(String inputInfo, String filename, String filepath) {
 		String grepInfo=getGrepInfo(inputInfo);
+                System.out.println(Option.countMatches());
 		Profile locallog = ProfileBuilder.newBuilder().name(filename).filePath(filepath).onLocalhost().build();
 		System.out.println(locallog.toString());
 		// call regular expression pattern to find the strings that are in the log
