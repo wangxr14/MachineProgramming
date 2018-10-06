@@ -21,7 +21,7 @@ task Client(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
 }
-task Client(type: JavaExec) {
+task Detector(type: JavaExec) {
     main = "team.cs425.g54.MP"
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
