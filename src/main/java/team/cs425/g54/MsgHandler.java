@@ -101,6 +101,8 @@ public class MsgHandler {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (JSONException e){
+            e.printStackTrace();
         }
     }
     // renew membership list
