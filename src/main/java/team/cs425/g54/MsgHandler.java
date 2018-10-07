@@ -200,7 +200,7 @@ public class MsgHandler extends Thread{
             if(messageType.equals("ping")){
                 logger.info("Handling ping situation...");
                 String id = String.valueOf(serverNode.nodeID);
-                DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.nodePort);
+                DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                 try {
                     server.send(send_ack);
                 } catch (IOException e) {
