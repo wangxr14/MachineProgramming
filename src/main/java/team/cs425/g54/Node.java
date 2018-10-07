@@ -1,4 +1,4 @@
-package main.java.team.cs425.g54;
+package team.cs425.g54;
 
 public class Node {
 	public int nodeID = 0;

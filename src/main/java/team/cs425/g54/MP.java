@@ -1,4 +1,4 @@
-package main.java.team.cs425.g54;
+package team.cs425.g54;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

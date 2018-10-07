@@ -1,4 +1,4 @@
-package main.java.team.cs425.g54;
+package team.cs425.g54;
 
 //import main.java.team.cs425.g54.Node;
 import org.json.JSONArray;
@@ -158,10 +158,12 @@ public class MsgHandler {
     public void run(){
         logger.info("messageHandle start...");
         String receivedData = receivedPacket.toString();
-        JSONObject jsonData = new JSONObject(receivedData);
-        String messageType = jsonData.get("type").toString();
-
+        
         try{
+            JSONObject jsonData = new JSONObject(receivedData);
+        
+            String messageType = jsonData.get("type").toString();
+
                     // get new node information
             Node node = new Node(0,"",0);  // join need not use node but the whole list membership
             if(!jsonData.get("type").equals("join")){

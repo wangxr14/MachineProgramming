@@ -1,4 +1,4 @@
-package main.java.team.cs425.g54;
+package team.cs425.g54;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -38,21 +38,26 @@ public class Pinger extends Thread{
 	
 	private String packPingMsg() {
 		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("type", "ping");
+		try{
+			jsonObj.put("type", "ping");	
+		} catch (JSONException e){
+			e.printStackTrace();
+		}
 		return jsonObj.toString();	
 	}
 	
 	private String packDeleteMsg(Node node) {
+		JSONObject jsonObj = new JSONObject();
 		try{
-			JSONObject jsonObj = new JSONObject();
+			
 			jsonObj.put("type", "delete");
 			jsonObj.put("nodeID", node.nodeID);
 			jsonObj.put("nodeAddr", node.nodeAddr);
 			jsonObj.put("nodePort", node.nodePort);
-			return jsonObj.toString();	
-		}catch (JSONException e){
+		} catch (JSONException e){
 			e.printStackTrace();
 		}
+		return jsonObj.toString();	
 	}
 	
 	public void removeNode(Node node) {
@@ -74,9 +79,7 @@ public class Pinger extends Thread{
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (JSONException e){
-				e.printStackTrace();
-			}	
+			} 
 			
 		}
 	}
