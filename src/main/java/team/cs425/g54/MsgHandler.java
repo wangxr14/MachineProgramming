@@ -168,7 +168,7 @@ public class MsgHandler extends Thread{
 
                     // get new node information
             Node node = new Node(0,"",0);  // join need not use node but the whole list membership
-            if(!jsonData.get("type").equals("join") || (jsonData.get("type").equals("join") && isIntroducer)){
+            if((!jsonData.get("type").equals("join") && !jsonData.get("type").equals("ping")) || (jsonData.get("type").equals("join") && isIntroducer)){
                 node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
                 node.nodeAddr = jsonData.get("nodeAddr").toString();
                 node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
