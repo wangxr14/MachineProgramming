@@ -50,6 +50,9 @@ public class Pinger extends Thread{
 		JSONObject jsonObj = new JSONObject();
 		try{
 			jsonObj.put("type", "ping");	
+			jsonObj.put("nodeID", myNode.nodeID);
+			jsonObj.put("nodeAddr", myNode.nodeAddr);
+			jsonObj.put("nodePort", myNode.nodePort);
 		} catch (JSONException e){
 			e.printStackTrace();
 		}
