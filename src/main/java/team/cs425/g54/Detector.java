@@ -63,7 +63,7 @@ public class Detector {
 	
 	public void init() {
 		setConfig();
-		pinger = new Pinger(pingerPort, membershipList, groupList);
+		pinger = new Pinger(myNode, pingerPort, membershipList, groupList);
 		pinger.start();
 
 		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);

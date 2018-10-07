@@ -26,12 +26,15 @@ public class Pinger extends Thread{
 	private static final int TIMEOUT = 5000;
 	private boolean stopped = false;
 	static Logger logger = Logger.getLogger("main.java.team.cs425.g54.Pinger");
+	public Node myNode = new Node();
+	int memberListSize = 3;
 	
-	public Pinger(int port, CopyOnWriteArrayList<Node> memberList, CopyOnWriteArrayList<Node> groupList ) {
+	public Pinger(Node node, int port, CopyOnWriteArrayList<Node> memberList, CopyOnWriteArrayList<Node> groupList ) {
 		this.memberList = memberList;
 		this.groupList = groupList;
 		stopped = false;
 		myPort = port;
+		myNode = node;
 	}
 	
 	public void showMembershipList() {
@@ -87,9 +90,44 @@ public class Pinger extends Thread{
 		}
 	}
 
+	public int containsInstance(CopyOnWriteArrayList<Node> list, Node node) {
+        for (int i=0;i<list.size();i++) {
+            if (compareNode(node,list.get(i))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public boolean compareNode(Node n1,Node n2){
+        if (n1.nodeID==n2.nodeID && n1.nodeAddr.equals(n2.nodeAddr) && n1.nodePort==n2.nodePort)
+            return true;
+        else
+            return false;
+    }
+
+
+	public void renewMembershipList(){
+		logger.info("renew member list...");
+        int index = containsInstance(groupList,myNode);
+        int selfIndex = index;
+        memberList.clear();
+        for(int i=0;i<memberListSize;i++){
+            index = (index+1) % groupList.size();
+            if(containsInstance(memberList,groupList.get(index))>=0 || selfIndex==index)
+                break;
+            else
+                memberList.add(groupList.get(index));
+        }
+        logger.info("Node " +myNode.nodeID+ "finishing renew membership list");
+        showMembershipList();
+	}
+
 	public void removeNode(Node node) {
 		removeNodeFromMemberList(node);
 		removeNodeFromGroupList(node);
+
+		renewMembershipList();
 
 		for (Node member : memberList) {
 			try {
