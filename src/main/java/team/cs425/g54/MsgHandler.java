@@ -212,11 +212,12 @@ public class MsgHandler extends Thread{
                 if(!isIntroducer){
                     JSONArray arr = jsonData.getJSONArray("totalList");
                     CopyOnWriteArrayList<Node> newTotalList = new CopyOnWriteArrayList<>();
-                    Node tmp_node = new Node(0,"",0);
                     for(int i=0;i<arr.length();i++){
+                        Node tmp_node = new Node(0,"",0);
                         tmp_node.nodeID = Integer.parseInt(arr.getJSONObject(i).get("nodeID").toString());
                         tmp_node.nodeAddr = arr.getJSONObject(i).get("nodeAddr").toString();
                         tmp_node.nodePort = Integer.parseInt(arr.getJSONObject(i).get("nodePort").toString());
+                        System.out.println("tmp_node.nodeID "+tmp_node.nodeAddr);
                         newTotalList.add(tmp_node);
                     }
                     logger.info("Size of newTotalList group:"+newTotalList.size());
