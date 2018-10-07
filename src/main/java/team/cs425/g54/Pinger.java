@@ -127,14 +127,17 @@ public class Pinger extends Thread{
 		int memPointer = 0;
 		
 		while(!Thread.currentThread().isInterrupted() && !stopped) {
-			Node node = memberList.get(memPointer);
-			try {
-				ping(node);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			int memPointer=0;
+			if(memberList.size()>0){
+				Node node = memberList.get(memPointer);
+				try {
+					ping(node);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				memPointer = (memPointer+1)%memberList.size();
 			}
-			memPointer = (memPointer+1)%memberList.size();
 		}
 	}
 }
