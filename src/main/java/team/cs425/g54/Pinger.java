@@ -43,13 +43,16 @@ public class Pinger extends Thread{
 	}
 	
 	private String packDeleteMsg(Node node) {
-		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("type", "delete");
-		jsonObj.put("nodeID", node.nodeID);
-		jsonObj.put("nodeAddr", node.nodeAddr);
-		jsonObj.put("nodePort", node.nodePort);
-		return jsonObj.toString();	
-
+		try{
+			JSONObject jsonObj = new JSONObject();
+			jsonObj.put("type", "delete");
+			jsonObj.put("nodeID", node.nodeID);
+			jsonObj.put("nodeAddr", node.nodeAddr);
+			jsonObj.put("nodePort", node.nodePort);
+			return jsonObj.toString();	
+		}catch (JSONException e){
+			e.printStackTrace();
+		}
 	}
 	
 	public void removeNode(Node node) {
