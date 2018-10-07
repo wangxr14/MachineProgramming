@@ -66,6 +66,8 @@ public class MsgHandler extends Thread{
                         totalListJson.put(m);
                     }
                     for (Node member : totalMemberList) {
+                        if(compareNode(member,serverNode))
+                            continue;
                         JSONObject message = new JSONObject();
 
                         message.put("type", "join");
@@ -166,7 +168,7 @@ public class MsgHandler extends Thread{
 
                     // get new node information
             Node node = new Node(0,"",0);  // join need not use node but the whole list membership
-            if(!jsonData.get("type").equals("join")){
+            if(!jsonData.get("type").equals("join") || (jsonData.get("type").equals("join") && isIntroducer)){
                 node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
                 node.nodeAddr = jsonData.get("nodeAddr").toString();
                 node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
@@ -183,19 +185,26 @@ public class MsgHandler extends Thread{
             }
             else if(messageType.equals("join")){
                 logger.info("Handling join situation...");
-                JSONArray arr = jsonData.getJSONArray("totalList");
-                CopyOnWriteArrayList<Node> newTotalList = new CopyOnWriteArrayList<>();
-                Node tmp_node = new Node(0,"",0);
-                for(int i=0;i<arr.length();i++){
-                    tmp_node.nodeID = Integer.parseInt(arr.getJSONObject(i).get("nodeID").toString());
-                    tmp_node.nodeAddr = arr.getJSONObject(i).get("nodeAddr").toString();
-                    tmp_node.nodePort = Integer.parseInt(arr.getJSONObject(i).get("nodePort").toString());
-                    newTotalList.add(tmp_node);
+                if(!isIntroducer){
+                    JSONArray arr = jsonData.getJSONArray("totalList");
+                    CopyOnWriteArrayList<Node> newTotalList = new CopyOnWriteArrayList<>();
+                    Node tmp_node = new Node(0,"",0);
+                    for(int i=0;i<arr.length();i++){
+                        tmp_node.nodeID = Integer.parseInt(arr.getJSONObject(i).get("nodeID").toString());
+                        tmp_node.nodeAddr = arr.getJSONObject(i).get("nodeAddr").toString();
+                        tmp_node.nodePort = Integer.parseInt(arr.getJSONObject(i).get("nodePort").toString());
+                        newTotalList.add(tmp_node);
+                    }
+                    if(!compareAndRenewTotalList(newTotalList)){
+                        renewMemberList();
+                    }
                 }
-                if(!compareAndRenewTotalList(newTotalList)){
+                else{
+                    renewTotalList(node);
+                    renewMemberList(node);
                     broadcast(messageType,node);
-                    renewMemberList();
                 }
+                
 
             }
             else if(messageType.equals("leave")){
