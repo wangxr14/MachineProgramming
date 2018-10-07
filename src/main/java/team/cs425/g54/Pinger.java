@@ -14,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.json.JSONObject;
 import org.json.JSONException;
 import java.util.logging.Logger;
+import java.lang.InterruptedException;
 
 
 public class Pinger extends Thread{
@@ -165,18 +166,23 @@ public class Pinger extends Thread{
 	public void run() {
 		
 		while(!Thread.currentThread().isInterrupted()) {
-			int memPointer=-1;
-			if(memberList.size()>0 && !stopped){
-				memPointer = (memPointer+1)%memberList.size();
-				Node node = memberList.get(memPointer);
-				try {
-					ping(node);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			try{
+				int memPointer=-1;
+				if(memberList.size()>0 && !stopped){
+					memPointer = (memPointer+1)%memberList.size();
+					Node node = memberList.get(memPointer);
+					try {
+						ping(node);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
+				sleep(1000);
+			} catch (InterruptedException e){
+				e.printStackTrace();
 			}
-			sleep(1000);
+			
 		}
 	}
 }
