@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import java.lang.InterruptedException;
 
 
+
 public class Pinger extends Thread{
 	
 	public CopyOnWriteArrayList<Node> memberList = new CopyOnWriteArrayList<Node>();

@@ -15,6 +15,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.json.JSONObject;
 import org.json.JSONException;
+import java.util.logging.Logger;
+
 
 
 public class Detector {
