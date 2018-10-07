@@ -157,7 +157,7 @@ public class MsgHandler extends Thread{
     }
     public void run(){
         logger.info("messageHandle start...");
-        String receivedData = receivedPacket.toString();
+        String receivedData = new String(receivedPacket.getData());
         
         try{
             JSONObject jsonData = new JSONObject(receivedData);
