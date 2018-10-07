@@ -64,7 +64,10 @@ public class Detector {
 	public void init() {
 		setConfig();
 		pinger = new Pinger(pingerPort, membershipList);
+		pinger.start();
+
 		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
+		listener.start();
 	}
 	
 	public int findPositionToInsert(Node node, CopyOnWriteArrayList<Node> nodeList) {
@@ -246,6 +249,7 @@ public class Detector {
 				if(cmdInput.toLowerCase().equals("show")) {
 					mp.showID();
 					mp.showMembershipList();
+					mp.showGroupList();
 				}
 				if(cmdInput.toLowerCase().equals("introducer")) {
 					

@@ -47,6 +47,7 @@ public class Listener extends Thread{
                 }
                 if(receivedResponse){
                     MsgHandler handler = new MsgHandler(serverNode,server,receivedPacket,isIntroducer,totalMemberList,memberList);
+                    handler.start();
                 }
             }
         } catch (SocketException e) {
