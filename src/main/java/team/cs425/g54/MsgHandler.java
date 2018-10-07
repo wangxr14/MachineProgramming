@@ -225,6 +225,7 @@ public class MsgHandler extends Thread{
 
                     // logger.info("Ping message bytes: "+num2);
                     Listener.cnt++;
+                    logger.info("random number: "+ con);
                     logger.info("cnt for false positive: "+Listener.cnt);
                     try {
                         server.send(send_ack);
