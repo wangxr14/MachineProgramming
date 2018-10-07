@@ -154,7 +154,7 @@ public class Detector {
 		if(myNode.nodeID==introducer.nodeID) {
 			System.out.println("I am Introducer");
 			joinNodeIntoGroup();
-			broadcastToAll("join");
+			//broadcastToAll("join");
 		}
 		else {
 			sendMsgToIntroducer("join");
