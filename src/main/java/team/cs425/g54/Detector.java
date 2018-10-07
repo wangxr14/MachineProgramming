@@ -116,24 +116,23 @@ public class Detector {
 	            ds.send(send_message);
 			}
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JSONException e){
 			e.printStackTrace();
+		} finally {
+			ds.close();
 		}
 		
 	}
 	
 	public void sendMsgToIntroducer(String type) {
+		DatagramSocket ds;
 		try {
-			System.out.println("send join massage to Introducer");
-			DatagramSocket ds = new DatagramSocket(nodePort);
+			ds = new DatagramSocket(nodePort);
 			JSONObject message = new JSONObject();
 	        message.put("type", type);
 	        message.put("nodeID", myNode.nodeID);
@@ -147,6 +146,8 @@ public class Detector {
 			e.printStackTrace();
 		} catch (JSONException e){
 			e.printStackTrace();
+		} finally {
+			ds.close();
 		}
 	}
 	
@@ -187,6 +188,8 @@ public class Detector {
 			e.printStackTrace();
 		} catch (JSONException e){
 			e.printStackTrace();
+		} finally {
+			ds.close();
 		}
 	}
 	
@@ -262,6 +265,8 @@ public class Detector {
 			}
 			
 		}
+
+		System.out.println("Program End");
 		
 		
 	}
