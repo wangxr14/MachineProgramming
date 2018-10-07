@@ -79,7 +79,7 @@ public class MsgHandler extends Thread{
                     }
                 }
             } else if (messageType.equals("leave")) {
-                logger.info("broadcasting leave from "+serverNode.nodeID+" ...");
+                logger.info("broadcasting leave from "+node.nodeID+" ...");
                 for (Node member : memberList) {
                     JSONObject message = new JSONObject();
                     message.put("type", "leave");
@@ -91,7 +91,7 @@ public class MsgHandler extends Thread{
                     server.send(send_message);
                 }
             } else if (messageType.equals("delete")) {
-                logger.info("broadcasting delete from "+serverNode.nodeID+" ...");
+                logger.info("broadcasting delete from "+node.nodeID+" ...");
                 for (Node member : memberList) {
                     JSONObject message = new JSONObject();
                     message.put("type", "delete");
@@ -236,12 +236,12 @@ public class MsgHandler extends Thread{
 
             }
             else if(messageType.equals("leave")){
-                logger.info("Handling leave situation...");
+                logger.info("Handling leave situation from "+node.nodeID);
                 int nodeIndex = containsInstance(totalMemberList,node);
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
-                    broadcast(messageType,node);
                     renewMemberList();
+                    broadcast(messageType,node);
                 }
 
             }
@@ -250,8 +250,8 @@ public class MsgHandler extends Thread{
                 int nodeIndex = containsInstance(totalMemberList,node);
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
-                    broadcast(messageType,node);
                     renewMemberList();
+                    broadcast(messageType,node);
                 }
 
             }

@@ -150,6 +150,8 @@ public class Detector {
 	}
 	
 	public void joinGroup() {
+		pinger.start();
+		listener.start();
 		// If this node is Introducer
 		if(myNode.nodeID==introducer.nodeID) {
 			System.out.println("I am Introducer");
@@ -160,8 +162,25 @@ public class Detector {
 			sendMsgToIntroducer("join");
 		}
 	}
+
+
+	public void removeNodeFromGroupList(Node node){
+		for (int i=0;i<groupList.size();i++){
+			Node tmpNode=groupList.get(i);
+			if(node.nodeID==tmpNode.nodeID && node.nodeAddr.equals(tmpNode.nodeAddr) && node.nodePort==tmpNode.nodePort){
+				groupList.remove(i);
+				return;
+			}
+		}
+	}
+
 	
 	public void sendLeaveMsg() {
+
+		removeNodeFromGroupList(myNode);
+		pinger.stopPinger();
+		listener.stopListen();
+
 		try {
 			DatagramSocket ds = new DatagramSocket();
 		
