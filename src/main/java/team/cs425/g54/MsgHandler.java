@@ -201,7 +201,7 @@ public class MsgHandler extends Thread{
                 }
                 else{
                     renewTotalList(node);
-                    renewMemberList(node);
+                    renewMemberList();
                     broadcast(messageType,node);
                 }
                 
