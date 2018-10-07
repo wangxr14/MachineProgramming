@@ -118,6 +118,10 @@ public class Pinger extends Thread{
 		stopped = true;
 	}
 
+	public void restartPinger(){
+		stopped = false;
+	}
+
 	
 	private void ping(Node node) throws IOException {
 		boolean receivedResponse = false;
@@ -160,9 +164,9 @@ public class Pinger extends Thread{
 	
 	public void run() {
 		
-		while(!Thread.currentThread().isInterrupted() && !stopped) {
+		while(!Thread.currentThread().isInterrupted()) {
 			int memPointer=-1;
-			if(memberList.size()>0){
+			if(memberList.size()>0 && !stopped){
 				memPointer = (memPointer+1)%memberList.size();
 				Node node = memberList.get(memPointer);
 				try {

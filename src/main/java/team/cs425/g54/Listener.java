@@ -29,13 +29,16 @@ public class Listener extends Thread{
         this.isFinished = true;
     }
 
+    public void restartListen(){
+        this.isFinished = false;
+    }
 
     public void run(){
         try {
             server = new DatagramSocket(this.serverNode.nodePort);
             //server.setSoTimeout(500);  // the time of socket time out
 
-            while(!Thread.currentThread().isInterrupted() && !isFinished){ // running
+            while(!Thread.currentThread().isInterrupted() ){ // running
                 boolean receivedResponse = false;     //mark whether the data is received
                 byte[] receivedData = new byte[2048];
                 DatagramPacket receivedPacket = new DatagramPacket(receivedData,receivedData.length); // receive package
@@ -46,12 +49,11 @@ public class Listener extends Thread{
 //                    e.printStackTrace();
                     continue;  // packet has not come yet
                 }
-                if(receivedResponse){
+                if(receivedResponse && !isFinished){
                     MsgHandler handler = new MsgHandler(serverNode,server,receivedPacket,isIntroducer,totalMemberList,memberList);
                     handler.start();
                 }
             }
-            server.close();
         } catch (SocketException e) {
             e.printStackTrace();
         }

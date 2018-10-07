@@ -63,11 +63,11 @@ public class Detector {
 	
 	public void init() {
 		setConfig();
-		//pinger = new Pinger(pingerPort, membershipList, groupList);
-		//pinger.start();
+		pinger = new Pinger(pingerPort, membershipList, groupList);
+		pinger.start();
 
-		//listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
-		//listener.start();
+		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
+		listener.start();
 	}
 	
 	public int findPositionToInsert(Node node, CopyOnWriteArrayList<Node> nodeList) {
@@ -150,11 +150,9 @@ public class Detector {
 	}
 	
 	public void joinGroup() {
-		pinger = new Pinger(pingerPort, membershipList, groupList);
-		//pinger.start();
+		//pinger.restartPinger();
 
-		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
-		listener.start();
+		listener.restartListen();
 		// If this node is Introducer
 		if(myNode.nodeID==introducer.nodeID) {
 			System.out.println("I am Introducer");
