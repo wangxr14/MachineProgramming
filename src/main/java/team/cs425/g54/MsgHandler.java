@@ -139,6 +139,7 @@ public class MsgHandler extends Thread{
                 totalMemberList.add(node);
 
         }
+        showGroupList();
     }
     public boolean compareAndRenewTotalList(CopyOnWriteArrayList<Node> newTotalList){
         logger.info("compareAndRenewTotalList..");

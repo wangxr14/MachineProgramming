@@ -128,7 +128,6 @@ public class Pinger extends Thread{
 		try {
 			DatagramSocket ds = new DatagramSocket();
 			ds.setSoTimeout(TIMEOUT);
-			byte[] data = new byte[1024];
 			
 			String pingMsg = packPingMsg();
 			InetAddress address = InetAddress.getByName(node.nodeAddr);
@@ -136,7 +135,10 @@ public class Pinger extends Thread{
 			
 			
 			DatagramPacket dpSent= new DatagramPacket(pingMsg.getBytes(),pingMsg.length(),address,node.nodePort);	
-			DatagramPacket dpReceived = new DatagramPacket(data, 1024);
+			
+			byte[] data = new byte[2048];
+			
+			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
 			
 			ds.send(dpSent);
 			

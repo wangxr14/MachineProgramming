@@ -64,7 +64,7 @@ public class Detector {
 	public void init() {
 		setConfig();
 		pinger = new Pinger(pingerPort, membershipList, groupList);
-		//pinger.start();
+		pinger.start();
 
 		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
 		listener.start();
@@ -150,7 +150,7 @@ public class Detector {
 	}
 	
 	public void joinGroup() {
-		//pinger.restartPinger();
+		pinger.restartPinger();
 
 		listener.restartListen();
 		// If this node is Introducer
