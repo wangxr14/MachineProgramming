@@ -124,7 +124,6 @@ public class Pinger extends Thread{
 	}
 	
 	public void run() {
-		int memPointer = 0;
 		
 		while(!Thread.currentThread().isInterrupted() && !stopped) {
 			int memPointer=0;
