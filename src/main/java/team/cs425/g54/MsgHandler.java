@@ -224,8 +224,8 @@ public class MsgHandler extends Thread{
                     int num2 = tmp2.getBytes().length;
 
                     logger.info("Ping message bytes: "+num2);
-                    cnt++;
-                    logger.info("cnt for false positive: "+cnt);
+                    Listener.cnt++;
+                    logger.info("cnt for false positive: "+Listener.cnt);
                     try {
                         server.send(send_ack);
                     } catch (IOException e) {
