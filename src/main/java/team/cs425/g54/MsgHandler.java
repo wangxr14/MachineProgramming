@@ -218,7 +218,7 @@ public class MsgHandler extends Thread{
                 Random random = new Random();
                 double con = random.nextDouble();
                 logger.info("random number: "+ con);
-                if(con>0.03){
+                if(con>0.1){
                     DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                 
                     String tmp2 = new String(send_ack.getData());
