@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.json.JSONObject;
+import org.json.JSONException;
+
 
 public class Pinger extends Thread{
 	
@@ -69,7 +71,9 @@ public class Pinger extends Thread{
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			} catch (JSONException e){
+				e.printStackTrace();
+			}	
 			
 		}
 	}
