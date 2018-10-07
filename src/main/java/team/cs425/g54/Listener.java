@@ -51,6 +51,7 @@ public class Listener extends Thread{
                     handler.start();
                 }
             }
+            server.close();
         } catch (SocketException e) {
             e.printStackTrace();
         }
