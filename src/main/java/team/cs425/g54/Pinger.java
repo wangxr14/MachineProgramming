@@ -117,6 +117,7 @@ public class Pinger extends Thread{
 	public void stopPinger() {
 		stopped = true;
 	}
+
 	
 	private void ping(Node node) throws IOException {
 		boolean receivedResponse = false;

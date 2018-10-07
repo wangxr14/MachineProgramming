@@ -63,10 +63,10 @@ public class Detector {
 	
 	public void init() {
 		setConfig();
-		pinger = new Pinger(pingerPort, membershipList, groupList);
+		//pinger = new Pinger(pingerPort, membershipList, groupList);
 		//pinger.start();
 
-		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
+		//listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
 		//listener.start();
 	}
 	
@@ -150,7 +150,10 @@ public class Detector {
 	}
 	
 	public void joinGroup() {
+		pinger = new Pinger(pingerPort, membershipList, groupList);
 		//pinger.start();
+
+		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
 		listener.start();
 		// If this node is Introducer
 		if(myNode.nodeID==introducer.nodeID) {

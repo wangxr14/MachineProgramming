@@ -29,6 +29,7 @@ public class Listener extends Thread{
         this.isFinished = true;
     }
 
+
     public void run(){
         try {
             server = new DatagramSocket(this.serverNode.nodePort);
