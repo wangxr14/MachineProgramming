@@ -150,7 +150,7 @@ public class Detector {
 	}
 	
 	public void joinGroup() {
-		//pinger.start();
+		pinger.start();
 		listener.start();
 		// If this node is Introducer
 		if(myNode.nodeID==introducer.nodeID) {
