@@ -1,6 +1,8 @@
 apply plugin: 'application'
 
 apply plugin: 'java'
+mainClassName = 'team.cs425.g54.Detector'
+
 repositories {
 	 mavenCentral()
 }
@@ -22,7 +24,7 @@ task Client(type: JavaExec) {
     standardInput = System.in
 }
 task Detector(type: JavaExec) {
-    main = "team.cs425.g54.MP"
+    main = "team.cs425.g54.Detector"
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
 }
