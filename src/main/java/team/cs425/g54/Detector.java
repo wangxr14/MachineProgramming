@@ -102,8 +102,9 @@ public class Detector {
 	}
 	
 	public void broadcastToAll(String type) {
-		DatagramSocket ds = new DatagramSocket(nodePort);
 		try {
+			DatagramSocket ds = new DatagramSocket(nodePort);
+		
 			for(Node node : groupList) {
 	            JSONObject message = new JSONObject();
 	            message.put("type", type);
@@ -113,6 +114,7 @@ public class Detector {
 	            InetAddress address = InetAddress.getByName(node.nodeAddr);
 	            DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, node.nodePort);
 	            ds.send(send_message);
+	            ds.close();
 			}
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -122,15 +124,14 @@ public class Detector {
 			e.printStackTrace();
 		} catch (JSONException e){
 			e.printStackTrace();
-		} finally {
-			ds.close();
-		}
+		} 
 		
 	}
 	
 	public void sendMsgToIntroducer(String type) {
-		DatagramSocket ds = new DatagramSocket(nodePort);
 		try {
+			DatagramSocket ds = new DatagramSocket(nodePort);
+		
 			JSONObject message = new JSONObject();
 	        message.put("type", type);
 	        message.put("nodeID", myNode.nodeID);
@@ -139,14 +140,13 @@ public class Detector {
 	        InetAddress address = InetAddress.getByName(introducer.nodeAddr);
 	        DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, introducer.nodePort);
 			ds.send(send_message);
+			ds.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JSONException e){
 			e.printStackTrace();
-		} finally {
-			ds.close();
-		}
+		} 
 	}
 	
 	public void joinGroup() {
@@ -162,9 +162,9 @@ public class Detector {
 	}
 	
 	public void sendLeaveMsg() {
-		DatagramSocket ds = new DatagramSocket(nodePort);
 		try {
-			
+			DatagramSocket ds = new DatagramSocket(nodePort);
+		
 			for(Node node : membershipList) {
 	            JSONObject message = new JSONObject();
 	            message.put("type", "leave");
@@ -174,6 +174,7 @@ public class Detector {
 	            InetAddress address = InetAddress.getByName(node.nodeAddr);
 	            DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, node.nodePort);
 	            ds.send(send_message);
+	            ds.close();
 			}
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
@@ -186,9 +187,7 @@ public class Detector {
 			e.printStackTrace();
 		} catch (JSONException e){
 			e.printStackTrace();
-		} finally {
-			ds.close();
-		}
+		} 
 	}
 	
 	public void leaveGroup() {
