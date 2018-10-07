@@ -144,14 +144,18 @@ public class MsgHandler extends Thread{
         logger.info("compareAndRenewTotalList..");
         if(newTotalList.size()!=totalMemberList.size()){
             totalMemberList.clear();
-            totalMemberList = newTotalList;
+            for(Node m:newTotalList){
+                totalMemberList.add(m);
+            }
+
             return false; // different and renew
         }
-
         for(int i=0;i<newTotalList.size();i++){
             if(!compareNode(newTotalList.get(i),totalMemberList.get(i))){
                 totalMemberList.clear();
-                totalMemberList = newTotalList;
+                for(Node m:newTotalList){
+                    totalMemberList.add(m);
+                }
                 return false; // different and renew
             }
         }
