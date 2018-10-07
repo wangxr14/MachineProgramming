@@ -13,6 +13,9 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
+import java.util.Random;
+
+
 
 /*
 MessageHandler is used to handle all different types of message includes ping,join,leave,stop
@@ -26,14 +29,16 @@ public class MsgHandler extends Thread{
     CopyOnWriteArrayList<Node> totalMemberList;
     boolean isIntroducer;
     int memberListSize = 3;
+    int cnt = 0;
     static Logger logger = Logger.getLogger("main.java.team.cs425.g54.MessageHandler");
-    public MsgHandler(Node node, DatagramSocket server, DatagramPacket receivedPacket,boolean isIntroducer,CopyOnWriteArrayList<Node> totalMemberList,CopyOnWriteArrayList<Node> memberList){
+    public MsgHandler(Node node, DatagramSocket server, DatagramPacket receivedPacket,boolean isIntroducer,CopyOnWriteArrayList<Node> totalMemberList,CopyOnWriteArrayList<Node> memberList, int cnt){
         this.serverNode = new Node(node.nodeID,node.nodeAddr,node.nodePort);
         this.server = server;
         this.receivedPacket = receivedPacket;
         this.isIntroducer = isIntroducer;
         this.totalMemberList = totalMemberList;
         this.memberList = memberList;
+        this.cnt = cnt;
     }
     public int containsInstance(CopyOnWriteArrayList<Node> list, Node node) {
         for (int i=0;i<list.size();i++) {
@@ -210,17 +215,24 @@ public class MsgHandler extends Thread{
                 // logger.info("Ping message bytes: "+num);
                 logger.info("handling ping situation...");
                 String id = String.valueOf(serverNode.nodeID);
-                DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                Random random = new Random();
+                double con = random.nextDouble();
+                if(con>0.03){
+                    DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                 
-                String tmp2 = new String(send_ack.getData());
-                int num2 = tmp2.getBytes().length;
+                    String tmp2 = new String(send_ack.getData());
+                    int num2 = tmp2.getBytes().length;
 
-                logger.info("Ping message bytes: "+num2);
-                try {
-                    server.send(send_ack);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.info("Ping message bytes: "+num2);
+                    cnt++;
+                    logger.info("cnt for false positive: "+cnt);
+                    try {
+                        server.send(send_ack);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+                
             }
             else if(messageType.equals("join")){
                 logger.info("Node "+ node.nodeID +" is joining...");
