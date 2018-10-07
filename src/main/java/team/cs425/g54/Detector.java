@@ -132,6 +132,7 @@ public class Detector {
 	
 	public void sendMsgToIntroducer(String type) {
 		try {
+			System.out.println("send join massage to Introducer");
 			DatagramSocket ds = new DatagramSocket(nodePort);
 			JSONObject message = new JSONObject();
 	        message.put("type", type);
