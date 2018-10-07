@@ -91,7 +91,7 @@ public class Pinger extends Thread{
 	
 	private void ping(Node node) throws IOException {
 		try {
-			DatagramSocket ds = new DatagramSocket(myPort);
+			DatagramSocket ds = new DatagramSocket();
 			ds.setSoTimeout(TIMEOUT);
 			byte[] data = new byte[1024];
 			
