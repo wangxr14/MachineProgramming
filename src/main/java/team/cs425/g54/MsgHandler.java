@@ -115,11 +115,9 @@ public class MsgHandler extends Thread{
         int index = containsInstance(totalMemberList,serverNode);
         int selfIndex = index;
         memberList.clear();
-        if(index>0)
-            memberList.add(totalMemberList.get(index-1));
         for(int i=0;i<memberListSize;i++){
             index = (index+1) % totalMemberList.size();
-            if(containsInstance(memberList,totalMemberList.get(index))>=0 || selfIndex!=index)
+            if(containsInstance(memberList,totalMemberList.get(index))>=0 || selfIndex==index)
                 break;
             else
                 memberList.add(totalMemberList.get(index));
@@ -137,8 +135,9 @@ public class MsgHandler extends Thread{
                     break;
                 }
             }
-            if(i<totalMemberList.size())
+            if(i==totalMemberList.size())
                 totalMemberList.add(node);
+
         }
     }
     public boolean compareAndRenewTotalList(CopyOnWriteArrayList<Node> newTotalList){
