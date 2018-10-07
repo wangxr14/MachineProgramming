@@ -204,7 +204,6 @@ public class MsgHandler extends Thread{
             
             if(messageType.equals("ping")){
                 int num = receivedData.getBytes().length;
-                int num2 = jsonData.getBytes().length;
                 logger.info("Ping message bytes: "+num);
                 logger.info("Ping message bytes: "+num2);
                 logger.info("handling ping situation...");
