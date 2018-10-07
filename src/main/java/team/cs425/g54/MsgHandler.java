@@ -141,7 +141,7 @@ public class MsgHandler extends Thread{
         }
     }
     public boolean compareAndRenewTotalList(CopyOnWriteArrayList<Node> newTotalList){
-        logger.info("compareAndRenewTotalList..")
+        logger.info("compareAndRenewTotalList..");
         if(newTotalList.size()!=totalMemberList.size()){
             totalMemberList.clear();
             totalMemberList = newTotalList;
