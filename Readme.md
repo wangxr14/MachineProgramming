@@ -10,6 +10,9 @@
 git clone https://gitlab.engr.illinois.edu/xinranw5/MachineProgramming.git
 ```
 
+- The latest version of codes is on master branch
+
+
 2. Locate projects on /home of each VM, and move files
 
 ```bash
@@ -23,61 +26,43 @@ sudo vi mp.config
 // make sure that /home/mp1/ contains vm_x.log file
 ```
 
-2. Compile all the ".java" file into executable files
+
+## 2 - Compile & Run
+
+We use gradle in this MP to help us build and run the programs.
+
+1.  Run Detector (MP2)
+We define a task named Detector to execute the main program of MP2.
 
 ```bash
-// go to /home/MachineProgramming/src/
-cd /home/MachineProgramming/src/
-
-//complie
-sudo javac -cp ../junit-4.10.jar:../grep4j-with-dependencies.jar:../hamcrest-core-1.3.jar team/cs425/g54/*.java
+cd /home/MachineProgramming/
+// Run Detector 
+// Gradle will compile and run this task automatically
+gradle Detector
 ```
 
-
-
-## 2 - Run
-
-1.  Run Server/Client on different VMs
+2. Run Logger (MP1)
+For MP1, we can also use the same way to run Server and Client
 
 ```bash
-cd /home/MachineProgramming/src/
+cd /home/MachineProgramming/
+// Run Client 
+gradle Client
 // Run Server
-sudo java -cp .:../junit-4.10.jar:../grep4j-with-dependencies.jar:../hamcrest-core-1.3.jar team.cs425.g54.Server
-
-// Run Client
-sudo java -cp .:../junit-4.10.jar:../grep4j-with-dependencies.jar:../hamcrest-core-1.3.jar team.cs425.g54.Client
+gradle Server
 ```
 
 
+## 3 - User Input
 
-## 3 - Result
-
-1. All results are sent back to VM running client, and results from different vm would  be output into corresponding "vm_x.txt", which would be located in *"/home/MachineProgramming/src/"*.
-2. The "vm_x.txt" file would be override everytime the client starts a new command that accesses the txt file.
-
-
-
-## 4 - Evaluation
-
-1. In the output .txt file, the format would be like the following part:
-
-```
-vm 1  // or vm 2,3,4...10
-line_number match pattern line
-line_number match pattern line
-line_number match pattern line
-		.
-		.
-		.
-Total lines: xxx   // if client cannot fetch the whole file, the number of total lines would be 0
-```
-
-## 5 - Branch
-
-- The code version that includes  unit test is on master branch
-- The code version that includes main function only is on develop branch
-
-
-
-## 6 - File Description
+The Detector will continuously receive user input, until the input is "quit" or the process is killed.
+The program will deal with those input:
+1. quit
+Detector will quit.
+2. join
+This node will join into the group(If the introducer is active).
+3. leave
+This node will leave the group.
+4. show
+Show the id of this node, its membership list and all the members in this group.
 
