@@ -124,6 +124,7 @@ public class Pinger extends Thread{
 
 	
 	private void ping(Node node) throws IOException {
+		logger.info("Pinging "+node.nodeID+"......");
 		boolean receivedResponse = false;
 		try {
 			DatagramSocket ds = new DatagramSocket();
@@ -145,11 +146,8 @@ public class Pinger extends Thread{
 			ds.receive(dpReceived);
 			receivedResponse = true;
 			
-			if(!receivedResponse) {
-				//updater.removeNode(node);
-				
-				// Update my memberList
-				// Or wait for next round to update?
+			if(receivedResponse) {
+				logger.info("Node "+node.nodeID+" is alive!");
 			}
 			ds.close();
 			
@@ -178,6 +176,7 @@ public class Pinger extends Thread{
 					e.printStackTrace();
 				}
 			}
+			sleep(1000);
 		}
 	}
 }

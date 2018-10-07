@@ -199,7 +199,7 @@ public class MsgHandler extends Thread{
                 node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
             }
             if(messageType.equals("ping")){
-                //logger.info("Handling ping situation...");
+                logger.info("Handling ping situation...");
                 String id = String.valueOf(serverNode.nodeID);
                 DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                 try {
