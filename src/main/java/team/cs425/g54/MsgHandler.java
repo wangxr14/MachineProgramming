@@ -210,7 +210,7 @@ public class MsgHandler extends Thread{
                 DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                 
                 String tmp2 = new String(send_ack.getData());
-                int num2 = tmp2.length;
+                int num2 = tmp2.getBytes().length;
 
                 logger.info("Ping message bytes: "+num2);
                 try {
