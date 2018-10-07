@@ -196,12 +196,14 @@ public class MsgHandler extends Thread{
 
                     // get new node information
             Node node = new Node(0,"",0);  // join need not use node but the whole list membership 
-            node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
-            node.nodeAddr = jsonData.get("nodeAddr").toString();
-            node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+            if(!messageType.equals("ping")){
+                node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                node.nodeAddr = jsonData.get("nodeAddr").toString();
+                node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+            }
             
             if(messageType.equals("ping")){
-                logger.info("Node "+ node.nodeID +" is pinging me...");
+                logger.info("handling ping situation...");
                 String id = String.valueOf(serverNode.nodeID);
                 DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                 try {
