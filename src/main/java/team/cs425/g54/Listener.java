@@ -32,7 +32,7 @@ public class Listener extends Thread{
     public void run(){
         try {
             server = new DatagramSocket(this.serverNode.nodePort);
-            server.setSoTimeout(500);  // the time of socket time out
+            //server.setSoTimeout(500);  // the time of socket time out
 
             while(!Thread.currentThread().isInterrupted() && !isFinished){ // running
                 boolean receivedResponse = false;     //mark whether the data is received
