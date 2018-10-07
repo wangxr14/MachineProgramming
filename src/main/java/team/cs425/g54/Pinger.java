@@ -160,8 +160,9 @@ public class Pinger extends Thread{
 	public void run() {
 		
 		while(!Thread.currentThread().isInterrupted() && !stopped) {
-			int memPointer=0;
+			int memPointer=-1;
 			if(memberList.size()>0){
+				memPointer = (memPointer+1)%memberList.size();
 				Node node = memberList.get(memPointer);
 				try {
 					ping(node);
@@ -169,7 +170,6 @@ public class Pinger extends Thread{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				memPointer = (memPointer+1)%memberList.size();
 			}
 		}
 	}
