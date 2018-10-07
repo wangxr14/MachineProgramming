@@ -219,6 +219,12 @@ public class MsgHandler extends Thread{
                         tmp_node.nodePort = Integer.parseInt(arr.getJSONObject(i).get("nodePort").toString());
                         newTotalList.add(tmp_node);
                     }
+                    logger.info("Size of newTotalList group:"+newTotalList.size());
+                    for (int i=0;i<newTotalList.size();i++) {
+                        Node n=newTotalList.get(i);
+                        logger.info("Member"+(i+1)+" :");
+                        logger.info("Node ID:"+n.nodeID+", Node Address:"+n.nodeAddr+", Node Port:"+n.nodePort);
+                    }
                     logger.info("getting totalList from introducer..");
                     showGroupList();
                     showMembershipList();
