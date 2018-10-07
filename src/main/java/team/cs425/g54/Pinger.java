@@ -68,7 +68,7 @@ public class Pinger extends Thread{
 	
 	public void removeNodeFromMemberList(Node node){
 		for (int i=0;i<memberList.size();i++){
-			tmpNode=memberList.get(i);
+			Node tmpNode=memberList.get(i);
 			if(node.nodeID==tmpNode.nodeID && node.nodeAddr.equals(tmpNode.nodeAddr) && node.nodePort==tmpNode.nodePort){
 				memberList.remove(i);
 				return;
@@ -78,7 +78,7 @@ public class Pinger extends Thread{
 
 	public void removeNodeFromGroupList(Node node){
 		for (int i=0;i<groupList.size();i++){
-			tmpNode=groupList.get(i);
+			Node tmpNode=groupList.get(i);
 			if(node.nodeID==tmpNode.nodeID && node.nodeAddr.equals(tmpNode.nodeAddr) && node.nodePort==tmpNode.nodePort){
 				groupList.remove(i);
 				return;
@@ -119,6 +119,7 @@ public class Pinger extends Thread{
 	}
 	
 	private void ping(Node node) throws IOException {
+		boolean receivedResponse = false;
 		try {
 			DatagramSocket ds = new DatagramSocket();
 			ds.setSoTimeout(TIMEOUT);
@@ -127,7 +128,7 @@ public class Pinger extends Thread{
 			String pingMsg = packPingMsg();
 			InetAddress address = InetAddress.getByName(node.nodeAddr);
 			
-			boolean receivedResponse = false;
+			
 			
 			DatagramPacket dpSent= new DatagramPacket(pingMsg.getBytes(),pingMsg.length(),address,node.nodePort);	
 			DatagramPacket dpReceived = new DatagramPacket(data, 1024);
