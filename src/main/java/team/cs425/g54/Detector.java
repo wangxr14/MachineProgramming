@@ -174,8 +174,8 @@ public class Detector {
 	            InetAddress address = InetAddress.getByName(node.nodeAddr);
 	            DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, node.nodePort);
 	            ds.send(send_message);
-	            ds.close();
 			}
+			ds.close();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

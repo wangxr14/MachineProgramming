@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.json.JSONObject;
 import org.json.JSONException;
+import java.util.logging.Logger;
 
 
 public class Pinger extends Thread{
@@ -20,6 +22,7 @@ public class Pinger extends Thread{
 	public int myPort = 0;
 	private static final int TIMEOUT = 5000;
 	private boolean stopped = false;
+	static Logger logger = Logger.getLogger("main.java.team.cs425.g54.Pinger");
 	
 	public Pinger(int port, CopyOnWriteArrayList<Node> memberList) {
 		this.memberList = memberList;
@@ -110,13 +113,16 @@ public class Pinger extends Thread{
 			
 			if(!receivedResponse) {
 				//updater.removeNode(node);
-				removeNode(node);
+				
 				// Update my memberList
 				// Or wait for next round to update?
 			}
 			
 			
-		} catch (SocketException e) {
+		} catch(SocketTimeoutException e){
+			logger.warning("Node "+node.nodeID+"Fails!");
+			removeNode(node);
+		}catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
