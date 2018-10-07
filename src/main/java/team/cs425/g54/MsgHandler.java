@@ -122,6 +122,8 @@ public class MsgHandler extends Thread{
             else
                 memberList.add(totalMemberList.get(index));
         }
+        logger.info("Node " +serverNode.nodeID+ "finishing renew membership list");
+        showMembershipList();
     }
 
     public void renewTotalList(Node node){
