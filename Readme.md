@@ -22,8 +22,6 @@ cd /home/MachineProgramming/
 // change the first line of mp.config to the number of each vm
 // make sure that this file is in /home/MachineProgramming/src
 sudo vi mp.config  
-
-// make sure that /home/mp1/ contains vm_x.log file
 ```
 
 
@@ -50,6 +48,7 @@ cd /home/MachineProgramming/
 gradle Client
 // Run Server
 gradle Server
+// make sure that /home/mp1/ contains vm_x.log file
 ```
 
 
