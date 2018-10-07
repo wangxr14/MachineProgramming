@@ -144,10 +144,10 @@ public class Pinger extends Thread{
 				// Update my memberList
 				// Or wait for next round to update?
 			}
-			
+			ds.close();
 			
 		} catch(SocketTimeoutException e){
-			logger.warning("Node "+node.nodeID+"Fails!");
+			logger.warning("Node "+node.nodeID+" Fails!");
 			receivedResponse = false;
 			removeNode(node);
 		}catch (SocketException e) {

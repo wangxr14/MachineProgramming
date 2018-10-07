@@ -220,23 +220,12 @@ public class MsgHandler extends Thread{
                         System.out.println("tmp_node.nodeID "+tmp_node.nodeAddr);
                         newTotalList.add(tmp_node);
                     }
-                    logger.info("Size of newTotalList group:"+newTotalList.size());
-                    for (int i=0;i<newTotalList.size();i++) {
-                        Node n=newTotalList.get(i);
-                        logger.info("Member"+(i+1)+" :");
-                        logger.info("Node ID:"+n.nodeID+", Node Address:"+n.nodeAddr+", Node Port:"+n.nodePort);
-                    }
-                    logger.info("getting totalList from introducer..");
-                    showGroupList();
-                    showMembershipList();
-
+                    
 
                     if(!compareAndRenewTotalList(newTotalList)){
                         renewMemberList();
                     }
-                    logger.info("After renewing membership list..");
-                    showGroupList();
-                    showMembershipList();
+                    
                 }
                 else{
                     renewTotalList(node);
