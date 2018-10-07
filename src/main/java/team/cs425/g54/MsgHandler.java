@@ -156,10 +156,28 @@ public class MsgHandler extends Thread{
         }
         return true;
     }
+    public void showMembershipList() {
+        System.out.println("Number of Members:"+memberList.size());
+        for (int i=0;i<memberList.size();i++) {
+            Node node=memberList.get(i);
+            System.out.println("Member"+(i+1)+" :");
+            System.out.println("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
+        }
+    }
+    
+    public void showGroupList() {
+        System.out.println("Size of group:"+totalMemberList.size());
+        for (int i=0;i<totalMemberList.size();i++) {
+            Node node=totalMemberList.get(i);
+            System.out.println("Member"+(i+1)+" :");
+            System.out.println("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
+        }
+    }
+
     public void run(){
         logger.info("messageHandle start...");
         String receivedData = new String(receivedPacket.getData());
-        
+        logger.info("receivedData: "+ receivedData);
         try{
             JSONObject jsonData = new JSONObject(receivedData);
         
@@ -194,9 +212,17 @@ public class MsgHandler extends Thread{
                         tmp_node.nodePort = Integer.parseInt(arr.getJSONObject(i).get("nodePort").toString());
                         newTotalList.add(tmp_node);
                     }
+                    logger.info("getting totalList from introducer..");
+                    showGroupList();
+                    showMembershipList();
+
+
                     if(!compareAndRenewTotalList(newTotalList)){
                         renewMemberList();
                     }
+                    logger.info("After renewing membership list..");
+                    showGroupList();
+                    showMembershipList();
                 }
                 else{
                     renewTotalList(node);
