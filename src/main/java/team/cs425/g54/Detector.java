@@ -103,7 +103,7 @@ public class Detector {
 	
 	public void broadcastToAll(String type) {
 		try {
-			DatagramSocket ds = new DatagramSocket(nodePort);
+			DatagramSocket ds = new DatagramSocket();
 		
 			for(Node node : groupList) {
 	            JSONObject message = new JSONObject();
@@ -130,7 +130,7 @@ public class Detector {
 	
 	public void sendMsgToIntroducer(String type) {
 		try {
-			DatagramSocket ds = new DatagramSocket(nodePort);
+			DatagramSocket ds = new DatagramSocket();
 		
 			JSONObject message = new JSONObject();
 	        message.put("type", type);
@@ -163,7 +163,7 @@ public class Detector {
 	
 	public void sendLeaveMsg() {
 		try {
-			DatagramSocket ds = new DatagramSocket(nodePort);
+			DatagramSocket ds = new DatagramSocket();
 		
 			for(Node node : membershipList) {
 	            JSONObject message = new JSONObject();
