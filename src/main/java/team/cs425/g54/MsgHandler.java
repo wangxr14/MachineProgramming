@@ -69,10 +69,11 @@ public class MsgHandler extends Thread{
                         if(compareNode(member,serverNode))
                             continue;
                         JSONObject message = new JSONObject();
-
                         message.put("type", "join");
                         message.put("totalList",totalListJson);
-
+                        message.put("nodeID", member.nodeID);
+                        message.put("nodeAddr", member.nodeAddr);
+                        message.put("nodePort", member.nodePort);
                         InetAddress address = InetAddress.getByName(member.nodeAddr);
                         send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, member.nodePort);
                         server.send(send_message);
@@ -122,8 +123,8 @@ public class MsgHandler extends Thread{
             else
                 memberList.add(totalMemberList.get(index));
         }
-        logger.info("Node " +serverNode.nodeID+ "finishing renew membership list");
-        showMembershipList();
+        // logger.info("Node " +serverNode.nodeID+ "finishing renew membership list");
+        // showMembershipList();
     }
 
     public void renewTotalList(Node node){
@@ -141,7 +142,7 @@ public class MsgHandler extends Thread{
                 totalMemberList.add(node);
 
         }
-        showGroupList();
+        // showGroupList();
     }
     public boolean compareAndRenewTotalList(CopyOnWriteArrayList<Node> newTotalList){
         logger.info("compareAndRenewTotalList..");
@@ -162,8 +163,8 @@ public class MsgHandler extends Thread{
                 return false; // different and renew
             }
         }
-        showMembershipList();
-        showGroupList();
+        // showMembershipList();
+        // showGroupList();
         return true;
     }
     public void showMembershipList() {
@@ -194,12 +195,11 @@ public class MsgHandler extends Thread{
             String messageType = jsonData.get("type").toString();
 
                     // get new node information
-            Node node = new Node(0,"",0);  // join need not use node but the whole list membership
-            if((!jsonData.get("type").equals("join") && !jsonData.get("type").equals("ping")) || (jsonData.get("type").equals("join") && isIntroducer)){
-                node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
-                node.nodeAddr = jsonData.get("nodeAddr").toString();
-                node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
-            }
+            Node node = new Node(0,"",0);  // join need not use node but the whole list membership 
+            node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+            node.nodeAddr = jsonData.get("nodeAddr").toString();
+            node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+            
             if(messageType.equals("ping")){
                 logger.info("Handling ping situation...");
                 String id = String.valueOf(serverNode.nodeID);
@@ -211,7 +211,7 @@ public class MsgHandler extends Thread{
                 }
             }
             else if(messageType.equals("join")){
-                logger.info("Handling join situation...");
+                logger.info("Node "+ node.nodeID +" is joining...");
                 if(!isIntroducer){
                     JSONArray arr = jsonData.getJSONArray("totalList");
                     CopyOnWriteArrayList<Node> newTotalList = new CopyOnWriteArrayList<>();
@@ -220,7 +220,7 @@ public class MsgHandler extends Thread{
                         tmp_node.nodeID = Integer.parseInt(arr.getJSONObject(i).get("nodeID").toString());
                         tmp_node.nodeAddr = arr.getJSONObject(i).get("nodeAddr").toString();
                         tmp_node.nodePort = Integer.parseInt(arr.getJSONObject(i).get("nodePort").toString());
-                        System.out.println("tmp_node.nodeID "+tmp_node.nodeAddr);
+                        // System.out.println("tmp_node.nodeID "+tmp_node.nodeAddr);
                         newTotalList.add(tmp_node);
                     }
                     
@@ -239,7 +239,7 @@ public class MsgHandler extends Thread{
 
             }
             else if(messageType.equals("leave")){
-                logger.info("Handling leave situation from "+node.nodeID);
+                logger.info("Node "+node.nodeID+" is leaving...");
                 int nodeIndex = containsInstance(totalMemberList,node);
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
@@ -249,7 +249,7 @@ public class MsgHandler extends Thread{
 
             }
             else if(messageType.equals("delete")){
-                logger.info("Handling delete situation...");
+                logger.info("Node "+node.nodeID+" is being deleted...");
                 int nodeIndex = containsInstance(totalMemberList,node);
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
