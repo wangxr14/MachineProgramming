@@ -217,6 +217,7 @@ public class MsgHandler extends Thread{
                 String id = String.valueOf(serverNode.nodeID);
                 Random random = new Random();
                 double con = random.nextDouble();
+                logger.info("random number: "+ con);
                 if(con>0.03){
                     DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                 
@@ -225,7 +226,7 @@ public class MsgHandler extends Thread{
 
                     // logger.info("Ping message bytes: "+num2);
                     Listener.cnt++;
-                    logger.info("random number: "+ con);
+                    
                     logger.info("cnt for false positive: "+Listener.cnt);
                     try {
                         server.send(send_ack);
