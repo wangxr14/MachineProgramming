@@ -121,6 +121,8 @@ public class MP {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (JSONException e){
+			e.printStackTrace();
 		}
 		
 	}
@@ -138,6 +140,8 @@ public class MP {
 			ds.send(send_message);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e){
 			e.printStackTrace();
 		}
 	}
