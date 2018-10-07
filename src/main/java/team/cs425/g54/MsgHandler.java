@@ -141,6 +141,7 @@ public class MsgHandler extends Thread{
         }
     }
     public boolean compareAndRenewTotalList(CopyOnWriteArrayList<Node> newTotalList){
+        logger.info("compareAndRenewTotalList..")
         if(newTotalList.size()!=totalMemberList.size()){
             totalMemberList.clear();
             totalMemberList = newTotalList;
@@ -154,23 +155,25 @@ public class MsgHandler extends Thread{
                 return false; // different and renew
             }
         }
+        showMembershipList();
+        showGroupList();
         return true;
     }
     public void showMembershipList() {
-        System.out.println("Number of Members:"+memberList.size());
+        logger.info("Number of Members:"+memberList.size());
         for (int i=0;i<memberList.size();i++) {
             Node node=memberList.get(i);
-            System.out.println("Member"+(i+1)+" :");
-            System.out.println("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
+            logger.info("Member"+(i+1)+" :");
+            logger.info("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
         }
     }
     
     public void showGroupList() {
-        System.out.println("Size of group:"+totalMemberList.size());
+        logger.info("Size of group:"+totalMemberList.size());
         for (int i=0;i<totalMemberList.size();i++) {
             Node node=totalMemberList.get(i);
-            System.out.println("Member"+(i+1)+" :");
-            System.out.println("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
+            logger.info("Member"+(i+1)+" :");
+            logger.info("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
         }
     }
 
