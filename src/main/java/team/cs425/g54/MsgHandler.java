@@ -161,59 +161,64 @@ public class MsgHandler {
         JSONObject jsonData = new JSONObject(receivedData);
         String messageType = jsonData.get("type").toString();
 
-        // get new node information
-        Node node = new Node(0,"",0);  // join need not use node but the whole list membership
-        if(!jsonData.get("type").equals("join")){
-            node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
-            node.nodeAddr = jsonData.get("nodeAddr").toString();
-            node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
-        }
-        if(messageType.equals("ping")){
-            logger.info("Handling ping situation...");
-            String id = String.valueOf(serverNode.nodeID);
-            DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),serverNode.nodePort);
-            try {
-                server.send(send_ack);
-            } catch (IOException e) {
-                e.printStackTrace();
+        try{
+                    // get new node information
+            Node node = new Node(0,"",0);  // join need not use node but the whole list membership
+            if(!jsonData.get("type").equals("join")){
+                node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                node.nodeAddr = jsonData.get("nodeAddr").toString();
+                node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
             }
-        }
-        else if(messageType.equals("join")){
-            logger.info("Handling join situation...");
-            JSONArray arr = jsonData.getJSONArray("totalList");
-            CopyOnWriteArrayList<Node> newTotalList = new CopyOnWriteArrayList<>();
-            Node tmp_node = new Node(0,"",0);
-            for(int i=0;i<arr.length();i++){
-                tmp_node.nodeID = Integer.parseInt(arr.getJSONObject(i).get("nodeID").toString());
-                tmp_node.nodeAddr = arr.getJSONObject(i).get("nodeAddr").toString();
-                tmp_node.nodePort = Integer.parseInt(arr.getJSONObject(i).get("nodePort").toString());
-                newTotalList.add(tmp_node);
+            if(messageType.equals("ping")){
+                logger.info("Handling ping situation...");
+                String id = String.valueOf(serverNode.nodeID);
+                DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),serverNode.nodePort);
+                try {
+                    server.send(send_ack);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            if(!compareAndRenewTotalList(newTotalList)){
-                broadcast(messageType,node);
-                renewMemberList();
+            else if(messageType.equals("join")){
+                logger.info("Handling join situation...");
+                JSONArray arr = jsonData.getJSONArray("totalList");
+                CopyOnWriteArrayList<Node> newTotalList = new CopyOnWriteArrayList<>();
+                Node tmp_node = new Node(0,"",0);
+                for(int i=0;i<arr.length();i++){
+                    tmp_node.nodeID = Integer.parseInt(arr.getJSONObject(i).get("nodeID").toString());
+                    tmp_node.nodeAddr = arr.getJSONObject(i).get("nodeAddr").toString();
+                    tmp_node.nodePort = Integer.parseInt(arr.getJSONObject(i).get("nodePort").toString());
+                    newTotalList.add(tmp_node);
+                }
+                if(!compareAndRenewTotalList(newTotalList)){
+                    broadcast(messageType,node);
+                    renewMemberList();
+                }
+
+            }
+            else if(messageType.equals("leave")){
+                logger.info("Handling leave situation...");
+                int nodeIndex = containsInstance(totalMemberList,node);
+                if(nodeIndex>=0){
+                    totalMemberList.remove(nodeIndex);
+                    broadcast(messageType,node);
+                    renewMemberList();
+                }
+
+            }
+            else if(messageType.equals("delete")){
+                logger.info("Handling delete situation...");
+                int nodeIndex = containsInstance(totalMemberList,node);
+                if(nodeIndex>=0){
+                    totalMemberList.remove(nodeIndex);
+                    broadcast(messageType,node);
+                    renewMemberList();
+                }
+
             }
 
-        }
-        else if(messageType.equals("leave")){
-            logger.info("Handling leave situation...");
-            int nodeIndex = containsInstance(totalMemberList,node);
-            if(nodeIndex>=0){
-                totalMemberList.remove(nodeIndex);
-                broadcast(messageType,node);
-                renewMemberList();
-            }
-
-        }
-        else if(messageType.equals("delete")){
-            logger.info("Handling delete situation...");
-            int nodeIndex = containsInstance(totalMemberList,node);
-            if(nodeIndex>=0){
-                totalMemberList.remove(nodeIndex);
-                broadcast(messageType,node);
-                renewMemberList();
-            }
-
+        }catch (JSONException e){
+            e.printStackTrace();
         }
 
     }
