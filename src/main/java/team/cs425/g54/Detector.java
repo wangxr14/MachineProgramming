@@ -64,10 +64,10 @@ public class Detector {
 	public void init() {
 		setConfig();
 		pinger = new Pinger(pingerPort, membershipList, groupList);
-		pinger.start();
+		//pinger.start();
 
 		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
-		listener.start();
+		//listener.start();
 	}
 	
 	public int findPositionToInsert(Node node, CopyOnWriteArrayList<Node> nodeList) {
