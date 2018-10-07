@@ -24,7 +24,7 @@ public class Detector {
 	// Membership List & Group
 	// Make sure they are thread-safe
 	public static CopyOnWriteArrayList<Node> membershipList = new CopyOnWriteArrayList<Node>();
-	public CopyOnWriteArrayList<Node> groupList = new CopyOnWriteArrayList<Node>();
+	public static CopyOnWriteArrayList<Node> groupList = new CopyOnWriteArrayList<Node>();
 	// Listen & Ping
 	public Listener listener;
 	public Pinger pinger;
@@ -63,7 +63,7 @@ public class Detector {
 	
 	public void init() {
 		setConfig();
-		pinger = new Pinger(pingerPort, membershipList);
+		pinger = new Pinger(pingerPort, membershipList, groupList);
 		pinger.start();
 
 		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);

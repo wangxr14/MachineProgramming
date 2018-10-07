@@ -19,13 +19,16 @@ import java.util.logging.Logger;
 public class Pinger extends Thread{
 	
 	public CopyOnWriteArrayList<Node> memberList = new CopyOnWriteArrayList<Node>();
+	public CopyOnWriteArrayList<Node> groupList = new CopyOnWriteArrayList<Node>();
+	
 	public int myPort = 0;
 	private static final int TIMEOUT = 5000;
 	private boolean stopped = false;
 	static Logger logger = Logger.getLogger("main.java.team.cs425.g54.Pinger");
 	
-	public Pinger(int port, CopyOnWriteArrayList<Node> memberList) {
+	public Pinger(int port, CopyOnWriteArrayList<Node> memberList, CopyOnWriteArrayList<Node> groupList ) {
 		this.memberList = memberList;
+		this.groupList = groupList;
 		stopped = false;
 		myPort = port;
 	}
@@ -63,10 +66,33 @@ public class Pinger extends Thread{
 		return jsonObj.toString();	
 	}
 	
+	public void removeNodeFromMemberList(Node node){
+		for (int i=0;i<memberList.size();i++){
+			tmpNode=memberList.get(i);
+			if(node.nodeID==tmpNode.nodeID && node.nodeAddr.equals(tmpNode.nodeAddr) && node.nodePort==tmpNode.nodePort){
+				memberList.remove(i);
+				return;
+			}
+		}
+	}
+
+	public void removeNodeFromGroupList(Node node){
+		for (int i=0;i<groupList.size();i++){
+			tmpNode=groupList.get(i);
+			if(node.nodeID==tmpNode.nodeID && node.nodeAddr.equals(tmpNode.nodeAddr) && node.nodePort==tmpNode.nodePort){
+				groupList.remove(i);
+				return;
+			}
+		}
+	}
+
 	public void removeNode(Node node) {
+		removeNodeFromMemberList(node);
+		removeNodeFromGroupList(node);
+
 		for (Node member : memberList) {
 			try {
-				DatagramSocket ds = new DatagramSocket(myPort);
+				DatagramSocket ds = new DatagramSocket();
 				byte[] data = new byte[1024];
 				String deleteMsg = packDeleteMsg(node);
 				
@@ -121,6 +147,7 @@ public class Pinger extends Thread{
 			
 		} catch(SocketTimeoutException e){
 			logger.warning("Node "+node.nodeID+"Fails!");
+			receivedResponse = false;
 			removeNode(node);
 		}catch (SocketException e) {
 			// TODO Auto-generated catch block
