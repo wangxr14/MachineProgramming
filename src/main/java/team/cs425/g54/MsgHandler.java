@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 MessageHandler is used to handle all different types of message includes ping,join,leave,stop
 */
 
-public class MsgHandler {
+public class MsgHandler extends Thread{
     Node serverNode;
     DatagramSocket server;
     DatagramPacket receivedPacket;
