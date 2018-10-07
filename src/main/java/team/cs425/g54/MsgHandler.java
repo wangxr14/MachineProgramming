@@ -203,6 +203,8 @@ public class MsgHandler extends Thread{
             }
             
             if(messageType.equals("ping")){
+                int num = receivedData.getBytes().length;
+                logger.info("Ping message bytes: "+num);
                 logger.info("handling ping situation...");
                 String id = String.valueOf(serverNode.nodeID);
                 DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
