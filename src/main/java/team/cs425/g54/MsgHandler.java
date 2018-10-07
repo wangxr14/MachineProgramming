@@ -31,14 +31,14 @@ public class MsgHandler extends Thread{
     int memberListSize = 3;
     int cnt = 0;
     static Logger logger = Logger.getLogger("main.java.team.cs425.g54.MessageHandler");
-    public MsgHandler(Node node, DatagramSocket server, DatagramPacket receivedPacket,boolean isIntroducer,CopyOnWriteArrayList<Node> totalMemberList,CopyOnWriteArrayList<Node> memberList, int cnt){
+    public MsgHandler(Node node, DatagramSocket server, DatagramPacket receivedPacket,boolean isIntroducer,CopyOnWriteArrayList<Node> totalMemberList,CopyOnWriteArrayList<Node> memberList){
         this.serverNode = new Node(node.nodeID,node.nodeAddr,node.nodePort);
         this.server = server;
         this.receivedPacket = receivedPacket;
         this.isIntroducer = isIntroducer;
         this.totalMemberList = totalMemberList;
         this.memberList = memberList;
-        this.cnt = cnt;
+        // this.cnt = cnt;
     }
     public int containsInstance(CopyOnWriteArrayList<Node> list, Node node) {
         for (int i=0;i<list.size();i++) {
@@ -223,7 +223,7 @@ public class MsgHandler extends Thread{
                     String tmp2 = new String(send_ack.getData());
                     int num2 = tmp2.getBytes().length;
 
-                    logger.info("Ping message bytes: "+num2);
+                    // logger.info("Ping message bytes: "+num2);
                     Listener.cnt++;
                     logger.info("cnt for false positive: "+Listener.cnt);
                     try {

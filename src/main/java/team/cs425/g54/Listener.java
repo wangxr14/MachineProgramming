@@ -50,7 +50,7 @@ public class Listener extends Thread{
                     continue;  // packet has not come yet
                 }
                 if(receivedResponse && !isFinished){
-                    MsgHandler handler = new MsgHandler(serverNode,server,receivedPacket,isIntroducer,totalMemberList,memberList,cnt);
+                    MsgHandler handler = new MsgHandler(serverNode,server,receivedPacket,isIntroducer,totalMemberList,memberList);
                     handler.start();
                 }
             }
