@@ -164,10 +164,9 @@ public class Pinger extends Thread{
 	}
 	
 	public void run() {
-		
+		int memPointer=-1;
 		while(!Thread.currentThread().isInterrupted()) {
 			try{
-				int memPointer=-1;
 				if(memberList.size()>0 && !stopped){
 					memPointer = (memPointer+1)%memberList.size();
 					Node node = memberList.get(memPointer);
