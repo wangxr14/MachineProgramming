@@ -75,6 +75,7 @@ public class MsgHandler extends Thread{
                         message.put("nodeAddr", member.nodeAddr);
                         message.put("nodePort", member.nodePort);
                         InetAddress address = InetAddress.getByName(member.nodeAddr);
+                        logger.info("Introducer send join to all bytes: "+message.toString().getBytes().length);
                         send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, member.nodePort);
                         server.send(send_message);
                     }
@@ -100,6 +101,7 @@ public class MsgHandler extends Thread{
                     message.put("nodeAddr", node.nodeAddr);
                     message.put("nodePort", node.nodePort);
                     InetAddress address = InetAddress.getByName(member.nodeAddr);
+                    
                     send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, member.nodePort);
                     server.send(send_message);
                 }
@@ -203,8 +205,9 @@ public class MsgHandler extends Thread{
             }
             
             if(messageType.equals("ping")){
-                int num = receivedData.getBytes().length;
-                logger.info("Ping message bytes: "+num);
+                //measure bytes
+                // int num = receivedData.getBytes().length;
+                // logger.info("Ping message bytes: "+num);
                 logger.info("handling ping situation...");
                 String id = String.valueOf(serverNode.nodeID);
                 DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());

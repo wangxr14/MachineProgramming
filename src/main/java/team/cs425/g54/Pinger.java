@@ -140,6 +140,7 @@ public class Pinger extends Thread{
 				
 				InetAddress address = InetAddress.getByName(member.nodeAddr);
 				
+				logger.info(deleteMsg.getBytes().length);
 				DatagramPacket dpSent= new DatagramPacket(deleteMsg.getBytes(),deleteMsg.length(),address,member.nodePort);	
 				
 				ds.send(dpSent);
@@ -178,7 +179,7 @@ public class Pinger extends Thread{
 			
 			
 			DatagramPacket dpSent= new DatagramPacket(pingMsg.getBytes(),pingMsg.length(),address,node.nodePort);	
-			
+			logger.info("ping send bytes length: "+pingMsg.getBytes().length);
 			byte[] data = new byte[2048];
 			
 			DatagramPacket dpReceived = new DatagramPacket(data, 2048);

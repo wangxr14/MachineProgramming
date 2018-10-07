@@ -138,6 +138,7 @@ public class Detector {
 	        message.put("nodeAddr", myNode.nodeAddr);
 	        message.put("nodePort", myNode.nodePort);
 	        InetAddress address = InetAddress.getByName(introducer.nodeAddr);
+	        logger.info("Send join to introducer bytes: "+message.toString().getBytes().length);
 	        DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, introducer.nodePort);
 			ds.send(send_message);
 			ds.close();
@@ -192,6 +193,7 @@ public class Detector {
 	            message.put("nodeAddr", myNode.nodeAddr);
 	            message.put("nodePort", myNode.nodePort);
 	            InetAddress address = InetAddress.getByName(node.nodeAddr);
+	            logger.info("Send leave message bytes length: "+ message.toString().getBytes().length);
 	            DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, node.nodePort);
 	            ds.send(send_message);
 			}
