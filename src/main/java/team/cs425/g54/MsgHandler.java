@@ -77,9 +77,14 @@ public class MsgHandler extends Thread{
             message.put("nodeAddr", node.nodeAddr);
             message.put("nodePort", node.nodePort);
             // Pack master, for the nodes joining in
-            message.put("masterID", Detector.master.nodeID);
-            message.put("masterAddr", Detector.master.nodeAddr);
-            message.put("masterPort", Detector.master.nodePort);
+            if (Detector.master!=null) {
+            	message.put("hasmaster",1);
+            	message.put("masterID", Detector.master.nodeID);
+            	message.put("masterAddr", Detector.master.nodeAddr);
+            	message.put("masterPort", Detector.master.nodePort);
+            }else {
+            	message.put("hasmaster",0);
+            }
             
     	}catch (JSONException e) {
     		e.printStackTrace();
@@ -286,7 +291,8 @@ public class MsgHandler extends Thread{
                     }
                     
                     // Update master
-                    if(Detector.master==null) {
+                    if(Detector.master==null && jsonData.get("masterID").toString()=="1") {
+                    	
                     	Node master=new Node();
                     	master.nodeID=Integer.parseInt(jsonData.get("masterID").toString());
                     	master.nodeAddr=jsonData.get("nodeAddr").toString();
