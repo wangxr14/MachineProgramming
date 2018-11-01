@@ -76,6 +76,10 @@ public class MsgHandler extends Thread{
             message.put("nodeID", node.nodeID);
             message.put("nodeAddr", node.nodeAddr);
             message.put("nodePort", node.nodePort);
+            // Pack master, for the nodes joining in
+            message.put("masterID", Detector.master.nodeID);
+            message.put("masterAddr", Detector.master.nodeAddr);
+            message.put("masterPort", Detector.master.nodePort);
             
     	}catch (JSONException e) {
     		e.printStackTrace();
@@ -279,6 +283,16 @@ public class MsgHandler extends Thread{
 
                     if(!compareAndRenewTotalList(newTotalList)){
                         renewMemberList();
+                    }
+                    
+                    // Update master
+                    if(Detector.master==null) {
+                    	Node master=new Node();
+                    	master.nodeID=Integer.parseInt(jsonData.get("masterID").toString());
+                    	master.nodeAddr=jsonData.get("nodeAddr").toString();
+                    	master.nodePort=Integer.parseInt(jsonData.get("masterPort").toString());
+                    	
+                    	Detector.master=master;
                     }
                     
                 }
