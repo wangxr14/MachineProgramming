@@ -236,7 +236,7 @@ public class MsgHandler extends Thread{
         //logger.info("messageHandle start...");
         String receivedData = new String(receivedPacket.getData());
         //logger.info("receivedData: "+ receivedData);
-        try{
+        //try{
             JSONObject jsonData = new JSONObject(receivedData);
         
             String messageType = jsonData.get("type").toString();
@@ -350,9 +350,7 @@ public class MsgHandler extends Thread{
             	Detector.master=node;
             }
 
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
+        //}
 
     }
 }
