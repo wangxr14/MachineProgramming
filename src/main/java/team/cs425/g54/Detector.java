@@ -245,7 +245,7 @@ public class Detector {
 	
 	public void showMaster() {
 		System.out.println("Current master is:");
-		Syetem.out.println("Node "+master.nodeID);
+		System.out.println("Node "+master.nodeID);
 	}
 
 	public void broadcastMasterMsgToAll() {
