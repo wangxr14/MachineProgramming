@@ -49,31 +49,79 @@ public class MsgHandler extends Thread{
         else
             return false;
     }
-    public void broadcast(String messageType,Node node ){
+    
+    public JSONArray packTotalList() {
+    	try {
+            JSONArray totalListJson = new JSONArray();
+            for (Node member : totalMemberList) {
+                JSONObject m = new JSONObject();
+                m.put("type", "join");
+                m.put("nodeID", member.nodeID);
+                m.put("nodeAddr", member.nodeAddr);
+                m.put("nodePort", member.nodePort);
+                totalListJson.put(m);
+            }
+            return totalListJson;
+        
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+    
+    public JSONObject packJoinMsg(Node node, JSONArray totalListJson) {
+    	try {
+    		JSONObject message = new JSONObject();
+            message.put("type", "join");
+            message.put("totalList",totalListJson);
+            message.put("nodeID", node.nodeID);
+            message.put("nodeAddr", node.nodeAddr);
+            message.put("nodePort", node.nodePort);
+            
+            return message;
+    	}catch (JSONException e) {
+    		e.printStackTrace();
+    	}
+    }
+    public JSONObject packDeleteMsg(String type, Node node) {
+    	try {
+	    	JSONObject message = new JSONObject();
+	        message.put("type", type);
+	        message.put("nodeID", node.nodeID);
+	        message.put("nodeAddr", node.nodeAddr);
+	        message.put("nodePort", node.nodePort);
+	        
+	        //Detector
+	        
+	        return message;
+    	}catch (JSONException e) {
+    		e.printStackTrace();
+    	}
+    }
+    
+    
+    public boolean deleteMsgNeedToSend(Node failNode, Node detector) {
+    	int nodeId = containsInstance(totalMemberList,failNode);
+    	if(nodeId!=-1 || detector.nodeID != Detector.master.nodeID) {
+    		return true;
+    	}
+    	else {		
+    		return false;
+    	}
+    }
+    
+    // TODO: Change the input. Use other functions to pack the messages
+    public void broadcast(String messageType, Node node){
         // introducer broadcast join message to all nodes
         try {
             DatagramPacket send_message;
             if (messageType.equals("join")) {
                 if (isIntroducer) {
                     logger.info("broadcasting join from introducer...");
-                    JSONArray totalListJson = new JSONArray();
-                    for (Node member : totalMemberList) {
-                        JSONObject m = new JSONObject();
-                        m.put("type", "join");
-                        m.put("nodeID", member.nodeID);
-                        m.put("nodeAddr", member.nodeAddr);
-                        m.put("nodePort", member.nodePort);
-                        totalListJson.put(m);
-                    }
+                    JSONArray totalListJson = packTotalList();
                     for (Node member : totalMemberList) {
                         if(compareNode(member,serverNode))
                             continue;
-                        JSONObject message = new JSONObject();
-                        message.put("type", "join");
-                        message.put("totalList",totalListJson);
-                        message.put("nodeID", member.nodeID);
-                        message.put("nodeAddr", member.nodeAddr);
-                        message.put("nodePort", member.nodePort);
+                        JSONObject message=packJoinMsg(member,totalListJson);
                         InetAddress address = InetAddress.getByName(member.nodeAddr);
                         send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, member.nodePort);
                         server.send(send_message);
@@ -81,28 +129,26 @@ public class MsgHandler extends Thread{
                 }
             } else if (messageType.equals("leave")) {
                 logger.info("broadcasting leave from "+node.nodeID+" ...");
-                for (Node member : memberList) {
-                    JSONObject message = new JSONObject();
-                    message.put("type", "leave");
-                    message.put("nodeID", node.nodeID);
-                    message.put("nodeAddr", node.nodeAddr);
-                    message.put("nodePort", node.nodePort);
-                    InetAddress address = InetAddress.getByName(member.nodeAddr);
+                
+                
+            	for (Node member : memberList) {
+                	JSONObject message = packDeleteMsg("leave", node);
+                	InetAddress address = InetAddress.getByName(member.nodeAddr);
                     send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, member.nodePort);
                     server.send(send_message);
                 }
+            
+                
+                
             } else if (messageType.equals("delete")) {
                 logger.info("broadcasting delete from "+node.nodeID+" ...");
                 for (Node member : memberList) {
-                    JSONObject message = new JSONObject();
-                    message.put("type", "delete");
-                    message.put("nodeID", node.nodeID);
-                    message.put("nodeAddr", node.nodeAddr);
-                    message.put("nodePort", node.nodePort);
+                    JSONObject message = packDeleteMsg("delete", node);
                     InetAddress address = InetAddress.getByName(member.nodeAddr);
                     send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, member.nodePort);
                     server.send(send_message);
                 }
+            
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -195,12 +241,12 @@ public class MsgHandler extends Thread{
             String messageType = jsonData.get("type").toString();
 
                     // get new node information
-            Node node = new Node(0,"",0);  // join need not use node but the whole list membership 
-            if(!messageType.equals("ping")){
-                node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
-                node.nodeAddr = jsonData.get("nodeAddr").toString();
-                node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
-            }
+            //Node node = new Node(0,"",0);  // join need not use node but the whole list membership 
+            //if(!messageType.equals("ping")){
+            //    node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+            //    node.nodeAddr = jsonData.get("nodeAddr").toString();
+            //    node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+           // }
             
             if(messageType.equals("ping")){
                 logger.info("handling ping situation...");
@@ -213,6 +259,11 @@ public class MsgHandler extends Thread{
                 }
             }
             else if(messageType.equals("join")){
+            	Node node = new Node(0,"",0);
+            	node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                node.nodeAddr = jsonData.get("nodeAddr").toString();
+                node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+                
                 logger.info("Node "+ node.nodeID +" is joining...");
                 if(!isIntroducer){
                     JSONArray arr = jsonData.getJSONArray("totalList");
@@ -241,24 +292,61 @@ public class MsgHandler extends Thread{
 
             }
             else if(messageType.equals("leave")){
-                logger.info("Node "+node.nodeID+" is leaving...");
+            	Node failNode = new Node(0,"",0);
+            	failNode.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                failNode.nodeAddr = jsonData.get("nodeAddr").toString();
+                failNode.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+                
+                Node detector = new Node(0,"",0);
+                detector.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                detector.nodeAddr = jsonData.get("nodeAddr").toString();
+                detector.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+                
+                logger.info("Node "+failNode.nodeID+" is leaving...");
+                
+            	int nodeIndex = containsInstance(totalMemberList,failNode);
+                if(nodeIndex>=0){
+                    totalMemberList.remove(nodeIndex);
+                    renewMemberList();
+                  //update master
+                    if(failNode.nodeID == Detector.master.nodeID) {
+                    	Detector.master=totalMemberList.get(0);
+                    }
+                    
+                    broadcast(messageType,failNode);
+                
+                }
+                
+                
+
+            }
+            else if(messageType.equals("delete")){
+            	Node node = new Node(0,"",0);
+            	node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                node.nodeAddr = jsonData.get("nodeAddr").toString();
+                node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+                
+                logger.info("Node "+node.nodeID+" is being deleted..."); 
+                
                 int nodeIndex = containsInstance(totalMemberList,node);
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
                     renewMemberList();
+                    if(node.nodeID == Detector.master.nodeID) {
+                    	Detector.master=totalMemberList.get(0);
+                    }
                     broadcast(messageType,node);
                 }
 
             }
-            else if(messageType.equals("delete")){
-                logger.info("Node "+node.nodeID+" is being deleted...");
-                int nodeIndex = containsInstance(totalMemberList,node);
-                if(nodeIndex>=0){
-                    totalMemberList.remove(nodeIndex);
-                    renewMemberList();
-                    broadcast(messageType,node);
-                }
-
+            else if(messageType.equals("master")) {
+            	Node node = new Node(0,"",0);
+            	node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                node.nodeAddr = jsonData.get("nodeAddr").toString();
+                node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+                
+            	logger.info("Node "+node.nodeID+" is set as master");
+            	Detector.master=node;
             }
 
         }catch (JSONException e){

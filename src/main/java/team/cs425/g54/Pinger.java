@@ -67,6 +67,11 @@ public class Pinger extends Thread{
 			jsonObj.put("nodeID", node.nodeID);
 			jsonObj.put("nodeAddr", node.nodeAddr);
 			jsonObj.put("nodePort", node.nodePort);
+			// Add information of detector, for selecting master of dfs
+			jsonObj.put("detectorID", myNode.nodeID);
+			jsonObj.put("detectorAddr", myNode.nodeAddr);
+			jsonObj.put("detectorPort", myNode.nodePort);
+			
 		} catch (JSONException e){
 			e.printStackTrace();
 		}

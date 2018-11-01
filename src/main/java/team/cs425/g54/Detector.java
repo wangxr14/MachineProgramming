@@ -31,6 +31,7 @@ public class Detector {
 	public int pingerPort = 12333;
 	public int nodePort = 12345;
 	public String configFile="mp.config";
+	public static Node master;
 	
 	public void setConfig() {
 		// Read From File to Know the ID of this VM
@@ -241,7 +242,44 @@ public class Detector {
 			System.out.println("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
 		}
 	}
+	
+	public void showMaster() {
+		System.out.println("Current master is:");
+		Syetem.out.println("Node "+master.nodeID);
+	}
 
+	public void broadcastMasterMsgToAll() {
+		String type = "master";
+		try {
+			DatagramSocket ds = new DatagramSocket();
+		
+			for(Node node : groupList) {
+	            JSONObject message = new JSONObject();
+	            message.put("type", type);
+	            message.put("nodeID", master.nodeID);
+	            message.put("nodeAddr", master.nodeAddr);
+	            message.put("nodePort", master.nodePort);
+	            InetAddress address = InetAddress.getByName(node.nodeAddr);
+	            DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, node.nodePort);
+	            ds.send(send_message);
+	            ds.close();
+			}
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void setMaster() {
+		master=myNode;
+		//Broadcast this message to all 
+		broadcastMasterMsgToAll();
+	}
 	
 	public static void main(String[] args) {  
 		
@@ -272,9 +310,10 @@ public class Detector {
 					mp.showID();
 					mp.showMembershipList();
 					mp.showGroupList();
+					mp.showMaster();
 				}
-				if(cmdInput.toLowerCase().equals("introducer")) {
-					
+				if(cmdInput.toLowerCase().equals("master")) {
+					mp.setMaster();
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
