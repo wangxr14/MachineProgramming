@@ -291,7 +291,7 @@ public class MsgHandler extends Thread{
                     }
                     
                     // Update master
-                    if(Detector.master==null && jsonData.get("masterID").toString()=="1") {
+                    if(Detector.master==null && jsonData.get("hasmaster").toString()=="1") {
                     	
                     	Node master=new Node();
                     	master.nodeID=Integer.parseInt(jsonData.get("masterID").toString());
