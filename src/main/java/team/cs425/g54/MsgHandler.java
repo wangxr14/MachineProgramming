@@ -51,8 +51,8 @@ public class MsgHandler extends Thread{
     }
     
     public JSONArray packTotalList() {
+    	JSONArray totalListJson = new JSONArray();
     	try {
-            JSONArray totalListJson = new JSONArray();
             for (Node member : totalMemberList) {
                 JSONObject m = new JSONObject();
                 m.put("type", "join");
@@ -61,11 +61,11 @@ public class MsgHandler extends Thread{
                 m.put("nodePort", member.nodePort);
                 totalListJson.put(m);
             }
-            return totalListJson;
         
         } catch (JSONException e){
             e.printStackTrace();
         }
+    	return totalListJson;
     }
     
     public JSONObject packJoinMsg(Node node, JSONArray totalListJson) {
