@@ -69,33 +69,34 @@ public class MsgHandler extends Thread{
     }
     
     public JSONObject packJoinMsg(Node node, JSONArray totalListJson) {
+    	JSONObject message = new JSONObject();
     	try {
-    		JSONObject message = new JSONObject();
-            message.put("type", "join");
+    		message.put("type", "join");
             message.put("totalList",totalListJson);
             message.put("nodeID", node.nodeID);
             message.put("nodeAddr", node.nodeAddr);
             message.put("nodePort", node.nodePort);
             
-            return message;
     	}catch (JSONException e) {
     		e.printStackTrace();
     	}
+    	return message;
     }
     public JSONObject packDeleteMsg(String type, Node node) {
+    	JSONObject message = new JSONObject();
     	try {
-	    	JSONObject message = new JSONObject();
-	        message.put("type", type);
+	    	message.put("type", type);
 	        message.put("nodeID", node.nodeID);
 	        message.put("nodeAddr", node.nodeAddr);
 	        message.put("nodePort", node.nodePort);
 	        
 	        //Detector
 	        
-	        return message;
+	        
     	}catch (JSONException e) {
     		e.printStackTrace();
     	}
+    	return message;
     }
     
     
@@ -297,10 +298,10 @@ public class MsgHandler extends Thread{
                 failNode.nodeAddr = jsonData.get("nodeAddr").toString();
                 failNode.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
                 
-                Node detector = new Node(0,"",0);
-                detector.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
-                detector.nodeAddr = jsonData.get("nodeAddr").toString();
-                detector.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+                //Node detector = new Node(0,"",0);
+                //detector.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                //detector.nodeAddr = jsonData.get("nodeAddr").toString();
+                //detector.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
                 
                 logger.info("Node "+failNode.nodeID+" is leaving...");
                 
