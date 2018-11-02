@@ -71,7 +71,7 @@ public class SDFSMsgHandler extends Thread{
 
             else if(messageType.equals("ls")){
                 String sdfsName = jsonData.get("sdfsName").toString();
-                File dict = new File(""); // get all local file
+                File dict = new File("."); // get all local file
                 File[] fileArray = dict.listFiles();
                 String result = "";
                 int i;
@@ -92,7 +92,7 @@ public class SDFSMsgHandler extends Thread{
             else if(messageType.equals("get_version")){
                 String sdfsName = jsonData.get("sdfsName").toString();
                 int num = Integer.parseInt(jsonData.get("versionNum").toString());
-                File dict = new File(""); // get all local file
+                File dict = new File("."); // get all local file
                 File[] fileArray = dict.listFiles();
                 String result = "";
                 ArrayList<Long> versions = new ArrayList<>();
@@ -129,7 +129,7 @@ public class SDFSMsgHandler extends Thread{
             }
             else if(messageType.equals("get")){
                 String sdfsName = jsonData.get("sdfsName").toString();
-                File dict = new File(""); // get all local file
+                File dict = new File("."); // get all local file
                 File[] fileArray = dict.listFiles();
                 String result = "";
                 int i;
@@ -155,7 +155,7 @@ public class SDFSMsgHandler extends Thread{
             else if(messageType.equals("delete")){
                 String sdfsName = jsonData.get("sdfsName").toString();
                 ArrayList<String> files = new ArrayList<>();
-                File dict = new File(""); // get all local file
+                File dict = new File("."); // get all local file
                 File[] fileArray = dict.listFiles();
 
                 if(fileArray==null)
@@ -174,8 +174,8 @@ public class SDFSMsgHandler extends Thread{
                         logger.info(files.get(i)+" delete failed");
                 }
             }
-            else if(messageType.equals("store")){
-                File dict = new File("testcorrect/."); // get all local file
+            else if(messageType.equals("store")){  // checked
+                File dict = new File("testcorrect/."); // get all local file "." is corrunt file dictionary
                 File[] fileArray = dict.listFiles();
                 System.out.println("Current store file");
                 System.out.println(dict.getCanonicalPath());

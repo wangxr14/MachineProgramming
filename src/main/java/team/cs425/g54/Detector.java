@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.json.JSONException;
+
 import java.util.logging.Logger;
 
 
@@ -300,7 +302,23 @@ public class Detector {
 
 					outputStream.writeUTF(obj.toString());
 				}
+				if(cmdInput.toLowerCase().contains("put")){
+					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
+					mp.client.setSoTimeout(200000);
+					String filename = "testcorrect/1";
+					String sdfs = "sdfs";
+					String timestamp = String.valueOf(System.currentTimeMillis());
+					JSONObject obj = new JSONObject();
+					obj.put("type","put");
+					obj.put("sdfsName",sdfs);
+					obj.put("timestamp",timestamp);
+					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
+					outputStream.writeUTF(obj.toString());
 
+					FileInputStream fis = new FileInputStream(filename);
+					IOUtils.copy(fis,outputStream);
+					outputStream.flush();
+				}
 				if(cmdInput.toLowerCase().equals("introducer")) {
 					
 				}
