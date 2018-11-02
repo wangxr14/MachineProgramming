@@ -295,7 +295,9 @@ public class Detector {
 					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
 					mp.client.setSoTimeout(200000); //
 					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
-					outputStream.writeUTF("store");
+					JSONObject obj = new JSONObject();
+					obj.put("type","store");
+					outputStream.writeUTF(obj.toString());
 				}
 
 				if(cmdInput.toLowerCase().equals("introducer")) {
@@ -304,8 +306,10 @@ public class Detector {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
-			
+
 		}
 
 		System.out.println("Program End");
