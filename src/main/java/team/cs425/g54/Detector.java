@@ -335,7 +335,7 @@ public class Detector {
 					fos.flush();
 
 				}
-				if(cmdInput.toLowerCase().equals("get_verstion")) {
+				if(cmdInput.toLowerCase().equals("get_version")) {
 					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
 					mp.client.setSoTimeout(200000);
 					String local = "testfile2";
