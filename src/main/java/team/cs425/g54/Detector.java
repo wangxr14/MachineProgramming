@@ -25,6 +25,7 @@ public class Detector {
 	public Pinger pinger;
 	public int pingerPort = 12333;
 	public int nodePort = 12345;
+	public int testnode = 12001;
 	public String configFile="mp.config";
 	Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
 
@@ -288,7 +289,8 @@ public class Detector {
 				}
 				if(cmdInput.toLowerCase().equals("store")) {
 					mp.store();
-					mp.client = new Socket(mp.introducer.nodeAddr,mp.introducer.nodePort);
+					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
+
 					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
 					outputStream.writeUTF("store");
 				}
