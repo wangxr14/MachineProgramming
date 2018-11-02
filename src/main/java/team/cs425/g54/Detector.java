@@ -305,7 +305,7 @@ public class Detector {
 				if(cmdInput.toLowerCase().contains("put")){
 					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
 					mp.client.setSoTimeout(200000);
-					String filename = "testcorrect/1";
+					String filename = "L19-20.FA18.pdf";
 					String sdfs = "sdfs";
 					String timestamp = String.valueOf(System.currentTimeMillis());
 					JSONObject obj = new JSONObject();
