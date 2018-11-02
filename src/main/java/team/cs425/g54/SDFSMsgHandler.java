@@ -57,7 +57,7 @@ public class SDFSMsgHandler extends Thread{
             JSONObject jsonData = new JSONObject(receivedData);
 
             String messageType = jsonData.get("type").toString(); // the first message to get command
-
+            logger.info("messagetype "+messageType);
             // write the file as the sdfsname
             if(messageType.equals("put")){
                 String sdfsName = jsonData.get("sdfsName").toString();
