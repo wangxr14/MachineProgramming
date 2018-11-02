@@ -1,14 +1,7 @@
 package team.cs425.g54;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -34,7 +27,8 @@ public class Detector {
 	public int nodePort = 12345;
 	public String configFile="mp.config";
 	Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
-	
+
+	Socket client;
 	public void setConfig() {
 		// Read From File to Know the ID of this VM
     	try {
@@ -246,6 +240,18 @@ public class Detector {
 			System.out.println("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
 		}
 	}
+	public void store(){
+		File dict = new File(""); // get all local file
+		File[] fileArray = dict.listFiles();
+		if(fileArray==null)
+			return;
+		System.out.println("Current store file");
+		for(int i=0;i<fileArray.length;i++){
+			if(fileArray[i].isFile()){
+				System.out.println(fileArray[i].getName());
+			}
+		}
+	}
 
 	
 	public static void main(String[] args) {  
@@ -253,9 +259,11 @@ public class Detector {
 		Detector mp = new Detector();
 		mp.init();
 		// User input
+
 		InputStreamReader is_reader = new InputStreamReader(System.in);
 		while(true) {
 			try {
+
 				System.out.println("Input Your Command:");
 				String cmdInput = new BufferedReader(is_reader).readLine();
 				System.out.println("Get Input:"+cmdInput);
@@ -278,6 +286,13 @@ public class Detector {
 					mp.showMembershipList();
 					mp.showGroupList();
 				}
+				if(cmdInput.toLowerCase().equals("store")) {
+					mp.store();
+					mp.client = new Socket(mp.introducer.nodeAddr,mp.introducer.nodePort);
+					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
+					outputStream.writeUTF("store");
+				}
+
 				if(cmdInput.toLowerCase().equals("introducer")) {
 					
 				}
