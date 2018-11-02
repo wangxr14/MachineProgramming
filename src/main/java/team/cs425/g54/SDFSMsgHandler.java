@@ -175,7 +175,7 @@ public class SDFSMsgHandler extends Thread{
                 }
             }
             else if(messageType.equals("store")){
-                File dict = new File("."); // get all local file
+                File dict = new File("testcorrect/."); // get all local file
                 File[] fileArray = dict.listFiles();
                 System.out.println("Current store file");
                 System.out.println(dict.getCanonicalPath());
