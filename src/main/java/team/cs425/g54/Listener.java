@@ -17,14 +17,13 @@ public class Listener extends Thread{
     DatagramSocket server;  // UDP connection
     boolean isFinished = false;  // whether stop instruction is received
     boolean isIntroducer;
-
+    static int cnt = 0; // count false positive 
     public Listener(Node node,CopyOnWriteArrayList<Node> memberList,CopyOnWriteArrayList<Node> totalMemberList,boolean isIntroducer){
         this.serverNode = new Node(node.nodeID,node.nodeAddr,node.nodePort);
         this.memberList = memberList;
         this.totalMemberList = totalMemberList;
         this.isIntroducer = isIntroducer;
     }
-
     public void stopListen(){
         this.isFinished = true;
     }

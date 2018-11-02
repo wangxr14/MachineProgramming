@@ -13,6 +13,9 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
+import java.util.Random;
+
+
 
 /*
 MessageHandler is used to handle all different types of message includes ping,join,leave,stop
@@ -26,6 +29,7 @@ public class MsgHandler extends Thread{
     CopyOnWriteArrayList<Node> totalMemberList;
     boolean isIntroducer;
     int memberListSize = 3;
+    int cnt = 0;
     static Logger logger = Logger.getLogger("main.java.team.cs425.g54.MessageHandler");
     public MsgHandler(Node node, DatagramSocket server, DatagramPacket receivedPacket,boolean isIntroducer,CopyOnWriteArrayList<Node> totalMemberList,CopyOnWriteArrayList<Node> memberList){
         this.serverNode = new Node(node.nodeID,node.nodeAddr,node.nodePort);
@@ -34,6 +38,7 @@ public class MsgHandler extends Thread{
         this.isIntroducer = isIntroducer;
         this.totalMemberList = totalMemberList;
         this.memberList = memberList;
+        // this.cnt = cnt;
     }
     public int containsInstance(CopyOnWriteArrayList<Node> list, Node node) {
         for (int i=0;i<list.size();i++) {
@@ -133,6 +138,7 @@ public class MsgHandler extends Thread{
                             continue;
                         JSONObject message=packJoinMsg(member,totalListJson);
                         InetAddress address = InetAddress.getByName(member.nodeAddr);
+                        logger.info("Introducer send join to all bytes: "+message.toString().getBytes().length);
                         send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, member.nodePort);
                         server.send(send_message);
                     }
@@ -155,6 +161,7 @@ public class MsgHandler extends Thread{
                 for (Node member : memberList) {
                     JSONObject message = packDeleteMsg("delete", node);
                     InetAddress address = InetAddress.getByName(member.nodeAddr);
+                    
                     send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, member.nodePort);
                     server.send(send_message);
                 }
@@ -257,14 +264,31 @@ public class MsgHandler extends Thread{
            // }
             
             if(messageType.equals("ping")){
+                //measure bytes
+                // int num = receivedData.getBytes().length;
+                // logger.info("Ping message bytes: "+num);
                 logger.info("handling ping situation...");
                 String id = String.valueOf(serverNode.nodeID);
-                DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
-                try {
-                    server.send(send_ack);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                Random random = new Random();
+                double con = random.nextDouble();
+                logger.info("random number: "+ con);
+                if(con>0.3){
+                    DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                
+                    String tmp2 = new String(send_ack.getData());
+                    int num2 = tmp2.getBytes().length;
+
+                    // logger.info("Ping message bytes: "+num2);
+                    Listener.cnt++;
+                    
+                    logger.info("cnt for false positive: "+Listener.cnt);
+                    try {
+                        server.send(send_ack);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+                
             }
             else if(messageType.equals("join")){
             	Node node = new Node(0,"",0);
@@ -311,6 +335,7 @@ public class MsgHandler extends Thread{
 
             }
             else if(messageType.equals("leave")){
+
             	Node failNode = new Node(0,"",0);
             	failNode.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
                 failNode.nodeAddr = jsonData.get("nodeAddr").toString();

@@ -1,20 +1,17 @@
 package team.cs425.g54;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.json.JSONException;
+
+import java.util.logging.Logger;
+
 
 
 public class Detector {
@@ -27,12 +24,18 @@ public class Detector {
 	public static CopyOnWriteArrayList<Node> groupList = new CopyOnWriteArrayList<Node>();
 	// Listen & Ping
 	public Listener listener;
+	public SDFSListener sdfsListener;
 	public Pinger pinger;
 	public int pingerPort = 12333;
 	public int nodePort = 12345;
+	public int testnode = 12001;
 	public String configFile="mp.config";
 	public static Node master;
 	
+	Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
+
+	Socket client;
+
 	public void setConfig() {
 		// Read From File to Know the ID of this VM
     	try {
@@ -69,6 +72,8 @@ public class Detector {
 
 		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
 		listener.start();
+		sdfsListener = new SDFSListener(myNode,testnode);
+		sdfsListener.start();
 	}
 	
 	public int findPositionToInsert(Node node, CopyOnWriteArrayList<Node> nodeList) {
@@ -139,6 +144,7 @@ public class Detector {
 	        message.put("nodeAddr", myNode.nodeAddr);
 	        message.put("nodePort", myNode.nodePort);
 	        InetAddress address = InetAddress.getByName(introducer.nodeAddr);
+	        // logger.info("Send join to introducer bytes: "+message.toString().getBytes().length);
 	        DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, introducer.nodePort);
 			ds.send(send_message);
 			ds.close();
@@ -193,6 +199,7 @@ public class Detector {
 	            message.put("nodeAddr", myNode.nodeAddr);
 	            message.put("nodePort", myNode.nodePort);
 	            InetAddress address = InetAddress.getByName(node.nodeAddr);
+	            // logger.info("Send leave message bytes length: "+ message.toString().getBytes().length);
 	            DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, node.nodePort);
 	            ds.send(send_message);
 			}
@@ -251,6 +258,17 @@ public class Detector {
 			System.out.println("Nobody");
 		}
 		
+	public void store(){
+		File dict = new File(""); // get all local file
+		File[] fileArray = dict.listFiles();
+		if(fileArray==null)
+			return;
+		System.out.println("Current store file");
+		for(int i=0;i<fileArray.length;i++){
+			if(fileArray[i].isFile()){
+				System.out.println(fileArray[i].getName());
+			}
+		}
 	}
 
 	public void broadcastMasterMsgToAll() {
@@ -291,9 +309,11 @@ public class Detector {
 		Detector mp = new Detector();
 		mp.init();
 		// User input
+
 		InputStreamReader is_reader = new InputStreamReader(System.in);
 		while(true) {
 			try {
+
 				System.out.println("Input Your Command:");
 				String cmdInput = new BufferedReader(is_reader).readLine();
 				System.out.println("Get Input:"+cmdInput);
@@ -319,12 +339,74 @@ public class Detector {
 				}
 				if(cmdInput.toLowerCase().equals("master")) {
 					mp.setMaster();
+				if(cmdInput.toLowerCase().equals("store")) {
+					mp.store();
+					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
+					mp.client.setSoTimeout(200000); //
+					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
+					JSONObject obj = new JSONObject();
+					obj.put("type","store");
+
+					outputStream.writeUTF(obj.toString());
 				}
+				if(cmdInput.toLowerCase().contains("put")){
+					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
+					mp.client.setSoTimeout(200000);
+					String filename = "L19-20.FA18.pdf";
+					String sdfs = "sdfs";
+					String timestamp = String.valueOf(System.currentTimeMillis());
+					JSONObject obj = new JSONObject();
+					obj.put("type","put");
+					obj.put("sdfsName",sdfs);
+					obj.put("timestamp",timestamp);
+					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
+					outputStream.writeUTF(obj.toString());
+
+					FileInputStream fis = new FileInputStream(filename);
+					IOUtils.copy(fis,outputStream);
+					outputStream.flush();
+				}
+				if(cmdInput.toLowerCase().equals("get")) {
+					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
+					mp.client.setSoTimeout(200000);
+					String local = "testfile1";
+					String sdfs = "sdfs";
+					JSONObject obj = new JSONObject();
+					obj.put("type","get");
+					obj.put("sdfsName",sdfs);
+					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
+					outputStream.writeUTF(obj.toString());
+					DataInputStream input =  new DataInputStream(mp.client.getInputStream());
+					FileOutputStream fos = new FileOutputStream(local);
+					IOUtils.copy(input,fos);
+					fos.flush();
+
+				}
+				if(cmdInput.toLowerCase().equals("get_version")) {
+					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
+					mp.client.setSoTimeout(200000);
+					String local = "testfile2";
+					String sdfs = "sdfs";
+					JSONObject obj = new JSONObject();
+					obj.put("type","get_version");
+					obj.put("sdfsName",sdfs);
+					obj.put("versionNum",2);
+					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
+					outputStream.writeUTF(obj.toString());
+					DataInputStream input =  new DataInputStream(mp.client.getInputStream());
+					FileOutputStream fos = new FileOutputStream(local);
+					IOUtils.copy(input,fos);
+					fos.flush();
+
+				}
+			  }
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
-			
+
 		}
 
 		System.out.println("Program End");
