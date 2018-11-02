@@ -11,8 +11,8 @@ public class SDFSListener extends Thread{
     boolean isFinished = false;  // whether stop instruction is received
     ServerSocket serverSocket;
     Node serverNode;
-    SDFSListener(Node node){
-        this.serverNode = new Node(node.nodeID,node.nodeAddr,node.nodePort);
+    SDFSListener(Node node,int testNode){
+        this.serverNode = new Node(node.nodeID,node.nodeAddr,testNode);
         try {
             serverSocket = new ServerSocket(serverNode.nodePort);
         } catch (IOException e) {
@@ -32,7 +32,7 @@ public class SDFSListener extends Thread{
 
         try {
             while(!Thread.currentThread().isInterrupted() ) { // running
-                System.out.println("listerning");
+//                System.out.println("listerning");
                 Socket receivedSocket = serverSocket.accept(); // build tcp connection receivedSocket is a new socket
                 SDFSMsgHandler sdfsMsgHandler = new SDFSMsgHandler(receivedSocket,serverNode);
                 sdfsMsgHandler.start();

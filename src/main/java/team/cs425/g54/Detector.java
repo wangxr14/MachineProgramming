@@ -67,7 +67,7 @@ public class Detector {
 
 		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
 		listener.start();
-		sdfsListener = new SDFSListener(myNode);
+		sdfsListener = new SDFSListener(myNode,testnode);
 		sdfsListener.start();
 	}
 	
@@ -293,6 +293,7 @@ public class Detector {
 				if(cmdInput.toLowerCase().equals("store")) {
 					mp.store();
 					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
+					mp.client.setSoTimeout(200000); //
 					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
 					outputStream.writeUTF("store");
 				}
