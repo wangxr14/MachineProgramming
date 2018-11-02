@@ -343,6 +343,7 @@ public class Detector {
 					JSONObject obj = new JSONObject();
 					obj.put("type","get_version");
 					obj.put("sdfsName",sdfs);
+					obj.put("versionNum",2);
 					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
 					outputStream.writeUTF(obj.toString());
 					DataInputStream input =  new DataInputStream(mp.client.getInputStream());
