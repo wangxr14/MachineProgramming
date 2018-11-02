@@ -11,7 +11,7 @@ public class SDFSListener extends Thread{
     boolean isFinished = false;  // whether stop instruction is received
     ServerSocket serverSocket;
     Node serverNode;
-    SDFSListener(ServerSocket _serverSocket,Node node){
+    SDFSListener(Node node){
         this.serverNode = new Node(node.nodeID,node.nodeAddr,node.nodePort);
         try {
             serverSocket = new ServerSocket(serverNode.nodePort);

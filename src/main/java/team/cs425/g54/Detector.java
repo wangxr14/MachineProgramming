@@ -22,6 +22,7 @@ public class Detector {
 	public static CopyOnWriteArrayList<Node> groupList = new CopyOnWriteArrayList<Node>();
 	// Listen & Ping
 	public Listener listener;
+	public SDFSListener sdfsListener;
 	public Pinger pinger;
 	public int pingerPort = 12333;
 	public int nodePort = 12345;
@@ -66,6 +67,8 @@ public class Detector {
 
 		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
 		listener.start();
+		sdfsListener = new SDFSListener(myNode);
+		sdfsListener.start();
 	}
 	
 	public int findPositionToInsert(Node node, CopyOnWriteArrayList<Node> nodeList) {
@@ -290,7 +293,6 @@ public class Detector {
 				if(cmdInput.toLowerCase().equals("store")) {
 					mp.store();
 					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
-
 					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
 					outputStream.writeUTF("store");
 				}
