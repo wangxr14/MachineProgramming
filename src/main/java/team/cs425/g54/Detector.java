@@ -251,12 +251,13 @@ public class Detector {
 	}
 	
 	public void showMaster() {
-		System.out.println("Current master is:");
-		if (master!=null) {
-			System.out.println("Node "+master.nodeID);
-		}else {
-			System.out.println("Nobody");
-		}
+        System.out.println("Current master is:");
+        if (master != null) {
+            System.out.println("Node " + master.nodeID);
+        } else {
+            System.out.println("Nobody");
+        }
+    }
 		
 	public void store(){
 		File dict = new File(""); // get all local file
@@ -298,7 +299,7 @@ public class Detector {
 		}
 	}
 	
-	public void setMaster() {
+	public void setMaster(){
 		master=myNode;
 		//Broadcast this message to all 
 		broadcastMasterMsgToAll();
