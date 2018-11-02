@@ -319,6 +319,22 @@ public class Detector {
 					IOUtils.copy(fis,outputStream);
 					outputStream.flush();
 				}
+				if(cmdInput.toLowerCase().equals("get")) {
+					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
+					mp.client.setSoTimeout(200000);
+					String local = "testfile1";
+					String sdfs = "sdfs";
+					JSONObject obj = new JSONObject();
+					obj.put("type","get");
+					obj.put("sdfsName",sdfs);
+					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
+					outputStream.writeUTF(obj.toString());
+					DataInputStream input =  new DataInputStream(mp.client.getInputStream());
+					FileOutputStream fos = new FileOutputStream(local);
+					IOUtils.copy(input,fos);
+					fos.flush();
+
+				}
 				if(cmdInput.toLowerCase().equals("introducer")) {
 					
 				}
