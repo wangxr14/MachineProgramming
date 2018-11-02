@@ -341,7 +341,7 @@ public class Detector {
 					String local = "testfile2";
 					String sdfs = "sdfs";
 					JSONObject obj = new JSONObject();
-					obj.put("type","get");
+					obj.put("type","get_version");
 					obj.put("sdfsName",sdfs);
 					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
 					outputStream.writeUTF(obj.toString());
