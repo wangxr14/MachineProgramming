@@ -157,6 +157,7 @@ public class SDFSMsgHandler extends Thread{
                 ArrayList<String> files = new ArrayList<>();
                 File dict = new File(""); // get all local file
                 File[] fileArray = dict.listFiles();
+
                 if(fileArray==null)
                     return;
                 long min_timestamp = Long.MAX_VALUE;
@@ -176,9 +177,10 @@ public class SDFSMsgHandler extends Thread{
             else if(messageType.equals("store")){
                 File dict = new File(""); // get all local file
                 File[] fileArray = dict.listFiles();
+                System.out.println("Current store file");
+                System.out.println(dict.getCanonicalPath());
                 if(fileArray==null)
                     return;
-                System.out.println("Current store file");
                 for(int i=0;i<fileArray.length;i++){
                     if(fileArray[i].isFile()){
                         System.out.println(fileArray[i].getName());
