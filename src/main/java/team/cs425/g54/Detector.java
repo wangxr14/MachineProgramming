@@ -323,7 +323,7 @@ public class Detector {
 					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
 					mp.client.setSoTimeout(200000);
 					String local = "testfile1";
-					String sdfs = "sdfs";
+					String sdfs = "Readme.md";
 					JSONObject obj = new JSONObject();
 					obj.put("type","get");
 					obj.put("sdfsName",sdfs);
