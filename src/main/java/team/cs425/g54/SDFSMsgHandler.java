@@ -142,9 +142,14 @@ public class SDFSMsgHandler extends Thread{
 
                 for(i=0;i<fileArray.length;i++){
                     if(fileArray[i].isFile() && fileArray[i].getName().contains(sdfsName)){
-                        String timestamp = fileArray[i].getName().split("_")[1];
-                        max_timestamp = Math.max(Long.parseLong(timestamp),max_timestamp);
+//                        String timestamp = fileArray[i].getName().split("_")[1];
+//                        max_timestamp = Math.max(Long.parseLong(timestamp),max_timestamp);
+                        break;
                     }
+                }
+                if(max_timestamp==0){
+                    dataOutputStream.writeUTF("no file existed");
+                    return;
                 }
                 String fileName = sdfsName+"_"+String.valueOf(max_timestamp);
                 fileInputStream = new FileInputStream(fileName);

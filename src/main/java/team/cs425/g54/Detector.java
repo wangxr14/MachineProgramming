@@ -323,7 +323,23 @@ public class Detector {
 					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
 					mp.client.setSoTimeout(200000);
 					String local = "testfile1";
-					String sdfs = "Readme.md";
+					String sdfs = "sdfs";
+					JSONObject obj = new JSONObject();
+					obj.put("type","get");
+					obj.put("sdfsName",sdfs);
+					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
+					outputStream.writeUTF(obj.toString());
+					DataInputStream input =  new DataInputStream(mp.client.getInputStream());
+					FileOutputStream fos = new FileOutputStream(local);
+					IOUtils.copy(input,fos);
+					fos.flush();
+
+				}
+				if(cmdInput.toLowerCase().equals("get_verstion")) {
+					mp.client = new Socket(mp.introducer.nodeAddr,mp.testnode);
+					mp.client.setSoTimeout(200000);
+					String local = "testfile2";
+					String sdfs = "sdfs";
 					JSONObject obj = new JSONObject();
 					obj.put("type","get");
 					obj.put("sdfsName",sdfs);
