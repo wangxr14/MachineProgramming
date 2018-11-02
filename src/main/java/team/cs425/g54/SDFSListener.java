@@ -32,6 +32,7 @@ public class SDFSListener extends Thread{
 
         try {
             while(!Thread.currentThread().isInterrupted() ) { // running
+                System.out.println("listerning");
                 Socket receivedSocket = serverSocket.accept(); // build tcp connection receivedSocket is a new socket
                 SDFSMsgHandler sdfsMsgHandler = new SDFSMsgHandler(receivedSocket,serverNode);
                 sdfsMsgHandler.start();
