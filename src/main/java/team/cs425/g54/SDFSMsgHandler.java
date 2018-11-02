@@ -179,8 +179,8 @@ public class SDFSMsgHandler extends Thread{
                 File[] fileArray = dict.listFiles();
                 System.out.println("Current store file");
                 System.out.println(dict.getCanonicalPath());
-                if(fileArray==null)
-                    return;
+//                if(fileArray==null)
+//                    return;
                 for(int i=0;i<fileArray.length;i++){
                     if(fileArray[i].isFile()){
                         System.out.println(fileArray[i].getName());

@@ -24,7 +24,6 @@ public class Listener extends Thread{
         this.totalMemberList = totalMemberList;
         this.isIntroducer = isIntroducer;
     }
-
     public void stopListen(){
         this.isFinished = true;
     }

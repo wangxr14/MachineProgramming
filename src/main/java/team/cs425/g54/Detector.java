@@ -297,6 +297,7 @@ public class Detector {
 					DataOutputStream outputStream = new DataOutputStream(mp.client.getOutputStream());
 					JSONObject obj = new JSONObject();
 					obj.put("type","store");
+
 					outputStream.writeUTF(obj.toString());
 				}
 

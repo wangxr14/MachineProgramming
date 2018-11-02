@@ -267,6 +267,7 @@ public class MsgHandler extends Thread{
             else if(messageType.equals("leave")){
                 logger.info("Node "+node.nodeID+" is leaving...");
                 int nodeIndex = containsInstance(totalMemberList,node);
+
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
                     renewMemberList();
