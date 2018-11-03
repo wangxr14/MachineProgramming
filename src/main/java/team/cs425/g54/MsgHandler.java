@@ -381,7 +381,6 @@ public class MsgHandler extends Thread{
                 
                 }
                 
-                
 
             }
             else if(messageType.equals("delete")){
@@ -399,6 +398,7 @@ public class MsgHandler extends Thread{
                     if(node.nodeID == Detector.master.nodeID) {
                     	Detector.master=totalMemberList.get(0);
                     }
+
                     broadcast(messageType,node);
                 }
 
@@ -428,6 +428,13 @@ public class MsgHandler extends Thread{
                     node.nodeAddr = jsonData.get("nodeAddr").toString();
                     node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
                     ArrayList<Node> nodes = Detector.masterInfo.getListToPut(node);
+                    String msg = packNodesToJson(nodes);
+                    DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                    server.send(send_msg);
+                }
+                else if(command.equals("ls")){
+                    String sdfsFile = jsonData.get("sdfsName").toString();
+                    ArrayList<Node> nodes = Detector.masterInfo.getNodesForLs(sdfsFile);
                     String msg = packNodesToJson(nodes);
                     DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                     server.send(send_msg);

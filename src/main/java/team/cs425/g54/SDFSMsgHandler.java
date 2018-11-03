@@ -48,6 +48,9 @@ public class SDFSMsgHandler extends Thread{
                 fileOutputStream.flush();
                 logger.info("file writtern ...");
                 Detector.storeInfo.addFileUpdate(sdfsName,timestamp); // update the file list and clean old version on disk
+                // update master info
+                Detector.masterInfo.addNodeFile(serverNode,sdfsName);
+                Detector.masterInfo.updateFileVersion(sdfsName,timestamp);
             }
 
             else if(messageType.equals("ls")){
@@ -88,6 +91,7 @@ public class SDFSMsgHandler extends Thread{
             else if(messageType.equals("delete")){
                 String sdfsName = jsonData.get("sdfsName").toString();
                 Detector.storeInfo.deleteFileUpdate(sdfsName); // update the list
+                Detector.masterInfo.deleteNodeFile(serverNode,sdfsName);
             }
             else if(messageType.equals("store")){  // checked
                 Detector.storeInfo.showFiles();

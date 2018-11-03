@@ -543,6 +543,45 @@ public class Detector {
 		}
 
 	}
+	public void lsCommand(String cmdInput){
+		String[] command = cmdInput.split(" ");
+		if(command.length<2)
+			return;
+		String sdfsName = command[1];
+
+		try {
+			DatagramSocket ds  = new DatagramSocket();
+			ds.setSoTimeout(TIMEOUT);
+			// send msg to master
+			JSONObject obj = new JSONObject();
+			obj.put("type","toMaster");
+			obj.put("command","ls");
+			obj.put("sdfsName",sdfsName);
+
+			String msgToMaster = obj.toString();
+			InetAddress address = InetAddress.getByName(master.nodeAddr);
+			DatagramPacket dpSent= new DatagramPacket(msgToMaster.getBytes(),msgToMaster.length(),address,master.nodePort);
+
+			// get nodeList from master
+			byte[] data = new byte[2048];
+			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
+			ds.send(dpSent);
+			ds.receive(dpReceived);
+
+			String dpRecivedData = new String(dpReceived.getData());
+			ArrayList<Node> nodes = getNodeList(dpRecivedData);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+	}
 
 	public static void main(String[] args) {  
 		
@@ -591,8 +630,11 @@ public class Detector {
 					if(cmdInput.toLowerCase().contains("delete")) {
 						mp.deleteCommand(cmdInput);
 					}
-				if(cmdInput.toLowerCase().equals("get_version")) {
+				if(cmdInput.toLowerCase().contains("get_version")) {
 						mp.getVersionCommand(cmdInput);
+				}
+				if(cmdInput.toLowerCase().contains("ls")){
+
 				}
 			  }
 			} catch (IOException e) {
