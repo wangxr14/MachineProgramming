@@ -178,7 +178,7 @@ public class Pinger extends Thread{
 
 	
 	private void ping(Node node) throws IOException {
-		logger.info("Pinging "+node.nodeID+"......");
+//		logger.info("Pinging "+node.nodeID+"......");
 		boolean receivedResponse = false;
 		try {
 			DatagramSocket ds = new DatagramSocket();
@@ -199,7 +199,7 @@ public class Pinger extends Thread{
 			receivedResponse = true;
 			
 			if(receivedResponse) {
-				logger.info("Node "+node.nodeID+" is alive!");
+//				logger.info("Node "+node.nodeID+" is alive!");
 			}
 			ds.close();
 			
