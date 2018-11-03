@@ -3,8 +3,6 @@ package team.cs425.g54;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.IOUtils;
@@ -603,12 +601,14 @@ public class Detector {
 				
 				// Join command
 				if(cmdInput.toLowerCase().equals("join")) {
+					mp.storeInfo.deleteAllSDFSFilesOnDisk();
 					mp.joinGroup();
 					mp.showGroupList();
 				}
 				
 				if(cmdInput.toLowerCase().equals("leave")) {
 					mp.leaveGroup();
+					mp.storeInfo.deleteAllSDFSFilesOnDisk();
 				}
 				if(cmdInput.toLowerCase().equals("show")) {
 					mp.showID();

@@ -100,6 +100,17 @@ public class StoreInfo {
             return fileVersions.get(name).get(fileVersions.get(name).size()-1);
         return "NULL";
     }
+    public void deleteAllSDFSFilesOnDisk(){
+        for(String file:fileLists){
+            for(String version:fileVersions.get(file)){
+                File deletefile = new File(file+"_"+version);
+                if(deletefile.delete())
+                    logger.info("delete file "+file+"_"+version+"success");
+            }
+        }
+        fileLists.clear();
+        fileVersions.clear();
+    }
     public CopyOnWriteArrayList<String> getAllFiles(){
         return fileLists;
     }
