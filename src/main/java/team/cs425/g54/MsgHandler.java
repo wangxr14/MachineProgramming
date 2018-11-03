@@ -1,20 +1,17 @@
 package team.cs425.g54;
 
 //import main.java.team.cs425.g54.Node;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
-import java.util.Random;
 
 
 
@@ -113,7 +110,32 @@ public class MsgHandler extends Thread{
     	}
     	return message;
     }
-    
+    public JSONObject packNodeInfo(){
+        JSONObject jsonNodeInfo = new JSONObject();
+        try {
+            CopyOnWriteArrayList<String> nodeFiles = Detector.storeInfo.getAllFiles();
+            Hashtable<String,CopyOnWriteArrayList<String>> versions = Detector.storeInfo.getAllVersions();
+            JSONArray fileList = new JSONArray();
+            for(String file:nodeFiles){
+                fileList.put(file);
+                JSONArray versionArr = new JSONArray();
+                for(String version:versions.get(file)){
+                    versionArr.put(version);
+                }
+                jsonNodeInfo.put(file,versionArr.toString());  // file -> versions list
+            }
+            jsonNodeInfo.put("fileList",fileList);  // file list on node
+            jsonNodeInfo.put("type","toMaster");
+            jsonNodeInfo.put("command","updateNodeInfo");
+            jsonNodeInfo.put("nodeID", serverNode.nodeID);
+            jsonNodeInfo.put("nodeAddr", serverNode.nodeAddr);
+            jsonNodeInfo.put("nodePort", serverNode.nodePort);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonNodeInfo;
+    }
     
     public boolean deleteMsgNeedToSend(Node failNode, Node detector) {
     	int nodeId = containsInstance(totalMemberList,failNode);
@@ -143,7 +165,105 @@ public class MsgHandler extends Thread{
         }
         return nodeListJson.toString();
     }
-    
+
+    public void updateNodeInfo(JSONObject jsonData ){
+        try {
+            Node node = new Node();
+            node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+            node.nodeAddr = jsonData.get("nodeAddr").toString();
+            node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+            JSONArray jsonfiles = (JSONArray) jsonData.get("fileList");
+            for(int i=0;i<jsonfiles.length();i++){
+                String file = jsonfiles.getString(i);
+                Detector.masterInfo.addNodeFile(node,file);
+                JSONArray jsonVersions = (JSONArray) jsonData.get(file);
+                for(int j=0;j<jsonVersions.length();j++){
+                    Detector.masterInfo.updateFileVersion(file,jsonVersions.getString(i));
+                }
+            }
+            if(Detector.masterInfo.getNodeFilesSize()==Detector.groupList.size()){
+
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void sendReReplicaRequest(){
+        // check all file, see if replicas is enough
+        try {
+            ArrayList<String> files =  Detector.masterInfo.getAllFiles();
+            for(String file:files){
+                ArrayList<Node> replicas = Detector.masterInfo.hasFileNodes(file);
+                ArrayList<Node> needReplicas = Detector.masterInfo.getrereplicaList(file);
+                if(needReplicas.size()==0)
+                    continue;
+                Node replicaNode = replicas.get(0);
+                JSONArray jsonArray = new JSONArray();
+                JSONObject jsonMsg = new JSONObject();
+                jsonMsg.put("type","reReplica");
+                for(Node putReplica:needReplicas){
+                    JSONObject obj = new JSONObject();
+                    obj.put("nodeID",putReplica.nodeID);  // node that need to add replica
+                    obj.put("nodeAddr",putReplica.nodeAddr);
+                    obj.put("nodePort",putReplica.nodePort);
+                    obj.put("sdfsName",file);
+                    jsonArray.put(obj);
+                }
+                // send rereplica request can ask one or ask all
+                jsonMsg.put("NodeArray",jsonArray);
+                InetAddress address = InetAddress.getByName(replicaNode.nodeAddr);
+                logger.info("Introducer send join to all bytes: "+jsonArray.toString().getBytes().length);
+                DatagramPacket send_message = new DatagramPacket(jsonArray.toString().getBytes(), jsonArray.toString().getBytes().length, address, replicaNode.nodePort);
+                server.send(send_message);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // request nodes that have the replica to put replica on new machine
+    }
+
+    public void dealReReplicaRequest(JSONObject jsonData){
+        try {
+            JSONArray jsonArray = (JSONArray) jsonData.get("NodeArray");
+            for(int i=0;i<jsonArray.length();i++){
+                JSONObject jsonNode = jsonArray.getJSONObject(i);
+                String sdfsName = jsonNode.getString("sdfsName");
+                Socket socket = new Socket(jsonNode.getString("noderAddr"),jsonNode.getInt("noderPort"));
+                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                for(String version:Detector.storeInfo.fileVersions.get(sdfsName)){
+                    // send put command msg
+                    JSONObject obj = new JSONObject();
+                    obj.put("sdfsName",sdfsName);
+                    obj.put("timestamp",version);
+                    obj.put("type","put");
+                    dos.writeUTF(obj.toString());
+                    // then send file
+                    String name = sdfsName+"_"+version;
+                    FileInputStream fis = new FileInputStream(name);
+                    IOUtils.copy(fis,dos);
+                    dos.flush();
+                }
+                socket.close();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
     // TODO: Change the input. Use other functions to pack the messages
     public void broadcast(String messageType, Node node){
         // introducer broadcast join message to all nodes
@@ -376,7 +496,10 @@ public class MsgHandler extends Thread{
                     if(failNode.nodeID == Detector.master.nodeID) {
                     	Detector.master=totalMemberList.get(0);
                     }
-                    
+                    if(Detector.master.nodeID==serverNode.nodeID){ // check if it needs to send rereplica
+                        Detector.masterInfo.deleteNodeAllFiles(failNode);
+                        sendReReplicaRequest();
+                    }
                     broadcast(messageType,failNode);
                 
                 }
@@ -395,35 +518,12 @@ public class MsgHandler extends Thread{
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
                     renewMemberList();
-                    if(serverNode.nodeID == Detector.master.nodeID){  // check whether need to rereplica
-                        CopyOnWriteArrayList<String> deleteFileList = Detector.masterInfo.getNodeFiles(node);
-                        Detector.masterInfo.deleteNodeAllFiles(node);
-                        for(String file:deleteFileList){
-                            ArrayList<Node> rereplicas = Detector.masterInfo.getrereplicaList(file);
-                            ArrayList<Node> hasreplicas = Detector.masterInfo.hasFileNodes(file);
-                            Node sendReplicaRequest = hasreplicas.get(0);
-                            JSONArray jsonArray = new JSONArray();
-
-                            for(Node putReplica:rereplicas){
-                                JSONObject obj = new JSONObject();
-                                obj.put("type","rereplica");
-                                obj.put("nodeID",putReplica.nodeID);  // node that need to add replica
-                                obj.put("nodeAddr",putReplica.nodeAddr);
-                                obj.put("nodePort",putReplica.nodePort);
-                                obj.put("sdfsName",file);
-                                jsonArray.put(obj);
-                            }
-
-                            // send rereplica request can ask one or ask all
-                            InetAddress address = InetAddress.getByName(sendReplicaRequest.nodeAddr);
-                            logger.info("Introducer send join to all bytes: "+jsonArray.toString().getBytes().length);
-                            DatagramPacket send_message = new DatagramPacket(jsonArray.toString().getBytes(), jsonArray.toString().getBytes().length, address, sendReplicaRequest.nodePort);
-                            server.send(send_message);
-
-                        }
-                    }
                     if(node.nodeID == Detector.master.nodeID) {
                         Detector.master=totalMemberList.get(0);
+                    }
+                    if(Detector.master.nodeID==serverNode.nodeID){ // check if it needs to send rereplica
+                        Detector.masterInfo.deleteNodeAllFiles(node);
+                        sendReReplicaRequest();
                     }
                     broadcast(messageType,node);
                 }
@@ -438,7 +538,7 @@ public class MsgHandler extends Thread{
             	logger.info("Node "+node.nodeID+" is set as master");
             	Detector.master=node;
             }
-            else if(messageType.equals("toMaster")){
+            else if(messageType.equals("toMaster")){   // master receiving msg
                 String command = jsonData.get("command").toString();
                 if(command.equals("get") || command.equals("delete") || command.equals("get_version") ){
                     String sdfsFile = jsonData.get("sdfsName").toString();
@@ -465,8 +565,20 @@ public class MsgHandler extends Thread{
                     DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                     server.send(send_msg);
                 }
+                else if(command.equals("updateNodeInfo")){
+                    updateNodeInfo(jsonData);
+                }
+            }
+            else if(messageType.equals("requset")){ // send node info to new master
+                String msg = packNodeInfo().toString();
+                DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                server.send(send_msg);
+            }
+            else if(messageType.equals("reReplica")){
 
             }
+
+
 
         }catch (JSONException e){
             e.printStackTrace();

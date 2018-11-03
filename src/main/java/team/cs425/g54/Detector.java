@@ -634,7 +634,7 @@ public class Detector {
 						mp.getVersionCommand(cmdInput);
 				}
 				if(cmdInput.toLowerCase().contains("ls")){
-
+						mp.lsCommand(cmdInput);
 				}
 			  }
 			} catch (IOException e) {

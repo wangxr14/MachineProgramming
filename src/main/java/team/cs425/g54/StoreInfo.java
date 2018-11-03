@@ -100,4 +100,10 @@ public class StoreInfo {
             return fileVersions.get(name).get(fileVersions.get(name).size()-1);
         return "NULL";
     }
+    public CopyOnWriteArrayList<String> getAllFiles(){
+        return fileLists;
+    }
+    public Hashtable<String,CopyOnWriteArrayList<String>> getAllVersions(){
+        return fileVersions;
+    }
 }

@@ -13,11 +13,11 @@ import java.util.Hashtable;
 
 public class MasterInfo {
     Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
-    private Hashtable<Node, CopyOnWriteArrayList<String>> nodeFiles;
-    private Hashtable<String,CopyOnWriteArrayList<String>> fileVersions;
+    Hashtable<Node, CopyOnWriteArrayList<String>> nodeFiles;
+    Hashtable<String,CopyOnWriteArrayList<String>> fileVersions;
     final int max_versions = 5;
     final int replicas = 4;
-    void addNodeFile(Node node,String file){
+    public void addNodeFile(Node node,String file){
         if(nodeFiles.containsKey(node)){
             if(!nodeFiles.get(node).contains(file)){
                 nodeFiles.get(node).add(file);
@@ -25,7 +25,7 @@ public class MasterInfo {
             }
         }
     }
-    void deleteNodeFile(Node node,String file){
+    public void deleteNodeFile(Node node,String file){
         if(nodeFiles.containsKey(node)){
             if(nodeFiles.get(node).contains(file)){
                 nodeFiles.get(node).remove(file);
@@ -33,7 +33,7 @@ public class MasterInfo {
             }
         }
     }
-    void deleteNodeAllFiles(Node node){
+    public void deleteNodeAllFiles(Node node){
         CopyOnWriteArrayList<String> files = nodeFiles.get(node);
         if(nodeFiles.containsKey(node)){
             nodeFiles.remove(node);
@@ -53,17 +53,17 @@ public class MasterInfo {
         }
 
     }
-    void updateFileVersion(String file,String timestamp){
+    public void updateFileVersion(String file,String timestamp){
         if(fileVersions.contains(file)){
-            if(fileVersions.get(file).size()>=max_versions){
+            fileVersions.get(file).add(timestamp);
+            while(fileVersions.get(file).size()>max_versions){
                 fileVersions.get(file).remove(0);
-                fileVersions.get(file).add(timestamp);
-                logger.info("update file version from master succeed");
             }
+            logger.info("update file version from master succeed");
         }
     }
     // get all the nodes that have the file
-    ArrayList<Node> hasFileNodes(String file){
+    public ArrayList<Node> hasFileNodes(String file){
         ArrayList<Node> nodeList = new ArrayList<>();
         for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
             Node res = entry.getKey();
@@ -74,18 +74,18 @@ public class MasterInfo {
         return nodeList;
     }
     // return rereplicatList
-    ArrayList<Node> getrereplicaList(String file){
+    public ArrayList<Node> getrereplicaList(String file){
         ArrayList<Node> curNodes = hasFileNodes(file);
         ArrayList<Node> needRereplica = new ArrayList<>();
         // need to get more replicas;
         if(curNodes.size()<replicas){
             int needs = replicas - curNodes.size();
-            needRereplica = rereplicaList(curNodes,needs);
+            needRereplica = reReplicaList(curNodes,needs);
         }
         return needRereplica;
     }
     // get nodes that needs for more replicas
-    ArrayList<Node> rereplicaList(ArrayList<Node> cur, int num){
+    public ArrayList<Node> reReplicaList(ArrayList<Node> cur, int num){
         ArrayList<Node> result = new ArrayList<>();
         int maxx_id = 0;
         Node max_node = new Node();
@@ -106,7 +106,7 @@ public class MasterInfo {
 
 
     // for put
-    ArrayList<Node> getListToPut(Node node){ // request from node, type for command
+    public ArrayList<Node> getListToPut(Node node){ // request from node, type for command
          ArrayList<Node> nodeList = new ArrayList<>();
          int len = Detector.groupList.size();
          int origin = Detector.groupList.indexOf(node);
@@ -120,7 +120,7 @@ public class MasterInfo {
     }
 
     // get,get version and delete
-    ArrayList<Node> getNodeToGetFile(String file){
+    public ArrayList<Node> getNodeToGetFile(String file){
         ArrayList<Node> nodeList = new ArrayList<>();
         for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
             Node res = entry.getKey();
@@ -132,7 +132,7 @@ public class MasterInfo {
         logger.info("no node for file to get...");
         return null;
     }
-    ArrayList<Node> getNodesForLs(String file){
+    public ArrayList<Node> getNodesForLs(String file){
         ArrayList<Node> nodeList = new ArrayList<>();
         for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
             Node res = entry.getKey();
@@ -144,10 +144,21 @@ public class MasterInfo {
         return nodeList;
     }
 
-    CopyOnWriteArrayList<String> getNodeFiles(Node node){
+    public CopyOnWriteArrayList<String> getNodeFiles(Node node){
         CopyOnWriteArrayList<String> result =  new CopyOnWriteArrayList<>();
         if(nodeFiles.contains(node))
             return nodeFiles.get(node);
         return result;
     }
+    public int getNodeFilesSize(){
+        return nodeFiles.size();
+    }
+    public ArrayList<String> getAllFiles(){
+        ArrayList<String> fileList = new ArrayList<>();
+        for(Map.Entry<String,CopyOnWriteArrayList<String>> entry : fileVersions.entrySet()){
+            fileList.add(entry.getKey());
+        }
+        return fileList;
+    }
+
 }
