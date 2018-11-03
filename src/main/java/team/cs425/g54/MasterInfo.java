@@ -114,6 +114,7 @@ public class MasterInfo {
          int len = Detector.groupList.size();
          int origin = Detector.groupList.indexOf(node);
          int index = (origin+1)%len;
+         System.out.println(len+" "+index);
          while(index != origin){
              nodeList.add(Detector.groupList.get(index));
              index = (index+1)%len;
