@@ -623,8 +623,8 @@ public class Detector {
 				if(cmdInput.toLowerCase().equals("store")) {
 				    storeInfo.showFiles();
 				}
+				System.out.println(cmdInput.toLowerCase().contains("put"));
 				if(cmdInput.toLowerCase().contains("put")){
-					System.out.println("sdfsdfsdf");
 					mp.putCommand(cmdInput);
 				}
 				if(cmdInput.toLowerCase().contains("get")) {
