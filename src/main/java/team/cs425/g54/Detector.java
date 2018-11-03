@@ -624,8 +624,8 @@ public class Detector {
 				    storeInfo.showFiles();
 				}
 				if(cmdInput.toLowerCase().contains("put")){
-					mp.putCommand(cmdInput);
 					System.out.println("sdfsdfsdf");
+					mp.putCommand(cmdInput);
 				}
 				if(cmdInput.toLowerCase().contains("get")) {
 					mp.getCommand(cmdInput);
