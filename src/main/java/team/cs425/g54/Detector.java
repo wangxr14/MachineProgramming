@@ -600,7 +600,7 @@ public class Detector {
 				if(cmdInput.toLowerCase().equals("quit")) {
 					break;
 				}
-				
+				System.out.println(cmdInput.toLowerCase().contains("put"));
 				// Join command
 				if(cmdInput.toLowerCase().equals("join")) {
 					mp.storeInfo.deleteAllSDFSFilesOnDisk();
