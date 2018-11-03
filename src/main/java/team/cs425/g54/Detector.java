@@ -33,7 +33,7 @@ public class Detector {
 	public static Node master;
     public static MasterInfo masterInfo = new MasterInfo();
     public static StoreInfo storeInfo = new StoreInfo();
-
+	public static String SDFSPath = "files/";
 	Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
 
 	Socket clientToNodes;
@@ -369,7 +369,7 @@ public class Detector {
 				obj2.put("sdfsName",sdfs);
 				DataOutputStream outputStream = new DataOutputStream(clientToNodes.getOutputStream());
 				outputStream.writeUTF(obj2.toString()); // send the put command to the node first
-				FileInputStream fis = new FileInputStream(local);
+				FileInputStream fis = new FileInputStream(SDFSPath+local);
 				IOUtils.copy(fis,outputStream);
 				outputStream.flush();
 				clientToNodes.close();
@@ -428,7 +428,7 @@ public class Detector {
 				// get the file data
 				DataInputStream input =  new DataInputStream(clientToNodes.getInputStream());
 
-				FileOutputStream fos = new FileOutputStream(local);
+				FileOutputStream fos = new FileOutputStream(SDFSPath+local);
 				IOUtils.copy(input,fos);
 				fos.flush();
 				clientToNodes.close();
@@ -536,7 +536,7 @@ public class Detector {
 				DataOutputStream output = new DataOutputStream(clientToNodes.getOutputStream());
 				output.writeUTF(obj2.toString());
 				DataInputStream input =  new DataInputStream(clientToNodes.getInputStream());
-				FileOutputStream fos = new FileOutputStream(local);
+				FileOutputStream fos = new FileOutputStream(SDFSPath+local);
 				IOUtils.copy(input,fos);
 				fos.flush();
 				clientToNodes.close();
