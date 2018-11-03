@@ -612,7 +612,6 @@ public class Detector {
 					mp.leaveGroup();
 					mp.storeInfo.deleteAllSDFSFilesOnDisk();
 				}
-				System.out.println(cmdInput.toLowerCase().contains("put"));
 
 				if(cmdInput.toLowerCase().equals("show")) {
 					mp.showID();
@@ -620,14 +619,13 @@ public class Detector {
 					mp.showGroupList();
 					mp.showMaster();
 				}
-				System.out.println(cmdInput.toLowerCase().contains("put"));
 
 				if(cmdInput.toLowerCase().equals("master")) {
 					mp.setMaster();
+				}
 				if(cmdInput.toLowerCase().equals("store")) {
 				    storeInfo.showFiles();
 				}
-				System.out.println(cmdInput.toLowerCase().contains("put"));
 				if(cmdInput.toLowerCase().contains("put")){
 					mp.putCommand(cmdInput);
 				}
@@ -643,7 +641,7 @@ public class Detector {
 				if(cmdInput.toLowerCase().contains("ls")){
 						mp.lsCommand(cmdInput);
 				}
-			  }
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
