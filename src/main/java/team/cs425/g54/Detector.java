@@ -600,7 +600,7 @@ public class Detector {
 				if(cmdInput.toLowerCase().equals("quit")) {
 					break;
 				}
-				System.out.println(cmdInput.toLowerCase().contains("put"));
+
 				// Join command
 				if(cmdInput.toLowerCase().equals("join")) {
 					mp.storeInfo.deleteAllSDFSFilesOnDisk();
@@ -612,12 +612,16 @@ public class Detector {
 					mp.leaveGroup();
 					mp.storeInfo.deleteAllSDFSFilesOnDisk();
 				}
+				System.out.println(cmdInput.toLowerCase().contains("put"));
+
 				if(cmdInput.toLowerCase().equals("show")) {
 					mp.showID();
 					mp.showMembershipList();
 					mp.showGroupList();
 					mp.showMaster();
 				}
+				System.out.println(cmdInput.toLowerCase().contains("put"));
+
 				if(cmdInput.toLowerCase().equals("master")) {
 					mp.setMaster();
 				if(cmdInput.toLowerCase().equals("store")) {
