@@ -269,8 +269,7 @@ public class Detector {
 	public ArrayList<Node> getNodeList(String str){
 		ArrayList<Node> nodes = new ArrayList<>();
 		try {
-			JSONObject obj = new JSONObject(str);
-			JSONArray objArray = new JSONArray(obj);
+			JSONArray objArray = new JSONArray(str);
 			for (int i = 0; i < objArray.length(); i++) {
 				Node node = new Node();
 				JSONObject jsonNode = objArray.getJSONObject(i);
