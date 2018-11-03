@@ -26,6 +26,8 @@ public class StoreInfo {
         for(int i=0;i<fileArray.length;i++){
             if(fileArray[i].isFile()){
                 String[] sdfsFile = fileArray[i].getName().split("_");
+                if(sdfsFile.length<2)
+                    continue;
                 String name = sdfsFile[0];
                 String version = sdfsFile[1];
                 if(!fileLists.contains(name)) {
