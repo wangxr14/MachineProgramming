@@ -321,6 +321,7 @@ public class Detector {
 
 	public void putCommand(String cmdInput){
 		String[] command = cmdInput.split(" ");
+		logger.info("Execute put command..");
 		if(command.length<3)
 			return;
 		try {
