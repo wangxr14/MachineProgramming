@@ -410,24 +410,24 @@ public class MsgHandler extends Thread{
                 logger.info("handling ping situation...");
                 String id = String.valueOf(serverNode.nodeID);
                 Random random = new Random();
-                double con = random.nextDouble();
-                logger.info("random number: "+ con);
-                if(con>0.3){
-                    DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
-                
-                    String tmp2 = new String(send_ack.getData());
-                    int num2 = tmp2.getBytes().length;
+//                double con = random.nextDouble();
+//                logger.info("random number: "+ con);
 
-                    // logger.info("Ping message bytes: "+num2);
-                    Listener.cnt++;
-                    
-                    logger.info("cnt for false positive: "+Listener.cnt);
-                    try {
-                        server.send(send_ack);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                DatagramPacket send_ack = new DatagramPacket(id.getBytes(),id.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+
+                String tmp2 = new String(send_ack.getData());
+                int num2 = tmp2.getBytes().length;
+
+                // logger.info("Ping message bytes: "+num2);
+                Listener.cnt++;
+                
+                logger.info("cnt for false positive: "+Listener.cnt);
+                try {
+                    server.send(send_ack);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
                 
             }
             else if(messageType.equals("join")){
