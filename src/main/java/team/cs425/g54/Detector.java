@@ -350,6 +350,7 @@ public class Detector {
 			obj.put("nodeAddr", myNode.nodeAddr);
 			obj.put("nodePort", myNode.nodePort);
 			String msgToMaster = obj.toString();
+//			logger.info("send msg to master request for put" + msgToMaster);
 			InetAddress address = InetAddress.getByName(master.nodeAddr);
 			DatagramPacket dpSent= new DatagramPacket(msgToMaster.getBytes(),msgToMaster.length(),address,master.nodePort);
 			// get nodeList from master
@@ -367,7 +368,7 @@ public class Detector {
 				JSONObject obj2 = new JSONObject();
 				obj2.put("type","put");
 				obj2.put("sdfsName",sdfs);
-				obj.put("timestamp",timestamp);
+				obj2.put("timestamp",timestamp);
 				DataOutputStream outputStream = new DataOutputStream(clientToNodes.getOutputStream());
 				outputStream.writeUTF(obj2.toString()); // send the put command to the node first
 				FileInputStream fis = new FileInputStream(SDFSPath+local);
