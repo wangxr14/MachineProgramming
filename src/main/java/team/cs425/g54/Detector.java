@@ -360,6 +360,7 @@ public class Detector {
 			ds.receive(dpReceived);
 
 			String dpRecivedData = new String(dpReceived.getData());
+			System.out.println("Received "+dpRecivedData);
 			ArrayList<Node> nodes = getNodeList(dpRecivedData);
 
 			for(Node node:nodes){
