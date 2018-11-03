@@ -118,6 +118,7 @@ public class MasterInfo {
          while(index != origin){
              nodeList.add(Detector.groupList.get(index));
              index = (index+1)%len;
+             System.out.print(index);
          }
          return nodeList;
 
