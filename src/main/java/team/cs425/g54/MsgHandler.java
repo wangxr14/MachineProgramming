@@ -395,10 +395,36 @@ public class MsgHandler extends Thread{
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
                     renewMemberList();
-                    if(node.nodeID == Detector.master.nodeID) {
-                    	Detector.master=totalMemberList.get(0);
-                    }
+                    if(serverNode.nodeID == Detector.master.nodeID){  // check whether need to rereplica
+                        CopyOnWriteArrayList<String> deleteFileList = Detector.masterInfo.getNodeFiles(node);
+                        Detector.masterInfo.deleteNodeAllFiles(node);
+                        for(String file:deleteFileList){
+                            ArrayList<Node> rereplicas = Detector.masterInfo.getrereplicaList(file);
+                            ArrayList<Node> hasreplicas = Detector.masterInfo.hasFileNodes(file);
+                            Node sendReplicaRequest = hasreplicas.get(0);
+                            JSONArray jsonArray = new JSONArray();
 
+                            for(Node putReplica:rereplicas){
+                                JSONObject obj = new JSONObject();
+                                obj.put("type","rereplica");
+                                obj.put("nodeID",putReplica.nodeID);  // node that need to add replica
+                                obj.put("nodeAddr",putReplica.nodeAddr);
+                                obj.put("nodePort",putReplica.nodePort);
+                                obj.put("sdfsName",file);
+                                jsonArray.put(obj);
+                            }
+
+                            // send rereplica request can ask one or ask all
+                            InetAddress address = InetAddress.getByName(sendReplicaRequest.nodeAddr);
+                            logger.info("Introducer send join to all bytes: "+jsonArray.toString().getBytes().length);
+                            DatagramPacket send_message = new DatagramPacket(jsonArray.toString().getBytes(), jsonArray.toString().getBytes().length, address, sendReplicaRequest.nodePort);
+                            server.send(send_message);
+
+                        }
+                    }
+                    if(node.nodeID == Detector.master.nodeID) {
+                        Detector.master=totalMemberList.get(0);
+                    }
                     broadcast(messageType,node);
                 }
 

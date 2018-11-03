@@ -138,10 +138,16 @@ public class MasterInfo {
             Node res = entry.getKey();
             if(nodeFiles.get(res).contains(file)){
                 nodeList.add(res);
-
             }
         }
         logger.info("get file for ls done");
         return nodeList;
+    }
+
+    CopyOnWriteArrayList<String> getNodeFiles(Node node){
+        CopyOnWriteArrayList<String> result =  new CopyOnWriteArrayList<>();
+        if(nodeFiles.contains(node))
+            return nodeFiles.get(node);
+        return result;
     }
 }
