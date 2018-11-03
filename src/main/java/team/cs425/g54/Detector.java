@@ -596,6 +596,7 @@ public class Detector {
 				System.out.println("Input Your Command:");
 				String cmdInput = new BufferedReader(is_reader).readLine();
 				System.out.println("Get Input:"+cmdInput);
+				System.out.println(cmdInput.toLowerCase().contains("put"));
 				// Quit this program
 				if(cmdInput.toLowerCase().equals("quit")) {
 					break;
