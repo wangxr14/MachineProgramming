@@ -407,7 +407,7 @@ public class MsgHandler extends Thread{
                 //measure bytes
                 // int num = receivedData.getBytes().length;
                 // logger.info("Ping message bytes: "+num);
-                logger.info("handling ping situation...");
+//                logger.info("handling ping situation...");
                 String id = String.valueOf(serverNode.nodeID);
                 Random random = new Random();
 //                double con = random.nextDouble();
