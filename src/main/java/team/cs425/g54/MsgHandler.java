@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
@@ -122,6 +123,25 @@ public class MsgHandler extends Thread{
     	else {		
     		return false;
     	}
+    }
+
+    String packNodesToJson(ArrayList<Node> nodeList){
+        JSONObject obj = new JSONObject();
+        JSONArray nodeListJson = new JSONArray();
+        try {
+            for (Node member : nodeList) {
+                JSONObject m = new JSONObject();
+                m.put("nodeID", member.nodeID);
+                m.put("nodeAddr", member.nodeAddr);
+                m.put("nodePort", member.nodePort);
+                nodeListJson.put(m);
+            }
+
+
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+        return nodeListJson.toString();
     }
     
     // TODO: Change the input. Use other functions to pack the messages
@@ -392,8 +412,32 @@ public class MsgHandler extends Thread{
             	logger.info("Node "+node.nodeID+" is set as master");
             	Detector.master=node;
             }
+            else if(messageType.equals("toMaster")){
+                String command = jsonData.get("command").toString();
+                if(command.equals("get") || command.equals("delete") || command.equals("get_version") ){
+                    String sdfsFile = jsonData.get("sdfsName").toString();
+                    ArrayList<Node> nodes = Detector.masterInfo.getNodeToGetFile(sdfsFile);
+                    String msg = packNodesToJson(nodes);
+                    DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                    server.send(send_msg);
+                }
+                else if(command.equals("put")){
+                    String sdfsFile = jsonData.get("sdfsName").toString();
+                    Node node = new Node();
+                    node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                    node.nodeAddr = jsonData.get("nodeAddr").toString();
+                    node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+                    ArrayList<Node> nodes = Detector.masterInfo.getListToPut(node);
+                    String msg = packNodesToJson(nodes);
+                    DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                    server.send(send_msg);
+                }
+
+            }
 
         }catch (JSONException e){
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

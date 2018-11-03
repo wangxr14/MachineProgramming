@@ -187,8 +187,6 @@ public class Pinger extends Thread{
 			String pingMsg = packPingMsg();
 			InetAddress address = InetAddress.getByName(node.nodeAddr);
 			
-			
-			
 			DatagramPacket dpSent= new DatagramPacket(pingMsg.getBytes(),pingMsg.length(),address,node.nodePort);	
 			// logger.info("ping send bytes length: "+pingMsg.getBytes().length);
 			byte[] data = new byte[2048];

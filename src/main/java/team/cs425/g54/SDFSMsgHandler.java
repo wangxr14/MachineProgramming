@@ -25,26 +25,7 @@ public class SDFSMsgHandler extends Thread{
     FileInputStream fileInputStream;
     FileOutputStream fileOutputStream;
     Socket socket;
-    public void updateVersion(String sdfsName){
-        File dict = new File(""); // get all local file
-        File[] fileArray = dict.listFiles();
-        if(fileArray==null)
-            return;
-        long min_timestamp = Long.MAX_VALUE;
-        for(int i=0;i<fileArray.length;i++){
-            if(fileArray[i].isFile() && fileArray[i].getName().contains(sdfsName)){
-                String timestamp = fileArray[i].getName().split("_")[1];
-                min_timestamp = Math.min(Long.parseLong(timestamp),min_timestamp);
-            }
-        }
-        String deleteFileName = sdfsName+"_"+String.valueOf(min_timestamp);
-        File deleteFile = new File(deleteFileName);  // delete old version
-        if(deleteFile.delete()){
-            logger.info("delete old version "+deleteFileName+" successfully..");
-        }
-        else
-            logger.info("file delete failed...");
-    }
+
 
 
     public void run(){
@@ -66,60 +47,23 @@ public class SDFSMsgHandler extends Thread{
                 IOUtils.copy(dataInputStream,fileOutputStream); // write file into the disk;
                 fileOutputStream.flush();
                 logger.info("file writtern ...");
-                updateVersion(sdfsName);  // delete the old version
+                Detector.storeInfo.addFileUpdate(sdfsName,timestamp); // update the file list and clean old version on disk
             }
 
             else if(messageType.equals("ls")){
                 String sdfsName = jsonData.get("sdfsName").toString();
-                File dict = new File("."); // get all local file
-                File[] fileArray = dict.listFiles();
-                String result = "";
-                int i;
-                if(fileArray==null){
-                    dataOutputStream.writeUTF("false");
-                    return ;
-                }
-                for(i=0;i<fileArray.length;i++){
-                    if(fileArray[i].isFile() && fileArray[i].getName().contains(sdfsName)){
-                        result = "true";
-                        break;
-                    }
-                }
-                if(i<fileArray.length)
+                String result = "true";
+                if(!Detector.storeInfo.hasFile(sdfsName))
                     result = "false";
                 dataOutputStream.writeUTF(result);
             }
             else if(messageType.equals("get_version")){
                 String sdfsName = jsonData.get("sdfsName").toString();
                 int num = Integer.parseInt(jsonData.get("versionNum").toString());
-                File dict = new File("."); // get all local file
-                File[] fileArray = dict.listFiles();
-                String result = "";
-                ArrayList<Long> versions = new ArrayList<>();
+                ArrayList<String> versions = Detector.storeInfo.getKVersions(sdfsName,num);
 
-                if(fileArray==null){
-                    result = "false";
-                    dataOutputStream.writeUTF("no file existed");
-                    return;
-                }
-
-                for(int i=0;i<fileArray.length;i++){
-                    if(fileArray[i].isFile() && fileArray[i].getName().contains(sdfsName)){
-                        Long timestamp = Long.parseLong(fileArray[i].getName().split("_")[1]);
-                        versions.add(timestamp);
-                    }
-                }
-                Collections.sort(versions, new Comparator<Long>() {
-                    @Override
-                    public int compare(Long o1, Long o2) {
-                        return o1.compareTo(o2);
-                    }
-                });
-                for(int i=0;i<num;i++){
-                    if(i>=versions.size())
-                        break;
-                    String t = String.valueOf(versions.get(i));
-                    String filename = sdfsName+"_"+t;
+                for(String version:versions){
+                    String filename = sdfsName+"_"+version;
                     dataOutputStream.writeUTF(filename);  // get file name
                     fileInputStream = new FileInputStream(filename);
                     IOUtils.copy(fileInputStream,dataOutputStream);
@@ -129,29 +73,13 @@ public class SDFSMsgHandler extends Thread{
             }
             else if(messageType.equals("get")){
                 String sdfsName = jsonData.get("sdfsName").toString();
-                File dict = new File("."); // get all local file
-                File[] fileArray = dict.listFiles();
-                String result = "";
-                int i;
-
-                long max_timestamp = 0;
-                if(fileArray==null){
-                    dataOutputStream.writeUTF("no file existed");
+                String version = Detector.storeInfo.getLatestVersion(sdfsName);
+                if(version.equals("NULL")) {
+                    dataOutputStream.writeUTF("no such file");
+                    logger.info("no such file to get");
                     return;
                 }
-
-                for(i=0;i<fileArray.length;i++){
-                    if(fileArray[i].isFile() && fileArray[i].getName().contains(sdfsName)){
-//                        String timestamp = fileArray[i].getName().split("_")[1];
-//                        max_timestamp = Math.max(Long.parseLong(timestamp),max_timestamp);
-                        break;
-                    }
-                }
-                if(max_timestamp==0){
-                    dataOutputStream.writeUTF("no file existed");
-                    return;
-                }
-                String fileName = sdfsName+"_"+String.valueOf(max_timestamp);
+                String fileName = sdfsName+"_"+version;
                 fileInputStream = new FileInputStream(fileName);
                 IOUtils.copy(fileInputStream,dataOutputStream);
                 dataOutputStream.flush();
@@ -159,38 +87,10 @@ public class SDFSMsgHandler extends Thread{
             }
             else if(messageType.equals("delete")){
                 String sdfsName = jsonData.get("sdfsName").toString();
-                ArrayList<String> files = new ArrayList<>();
-                File dict = new File("."); // get all local file
-                File[] fileArray = dict.listFiles();
-
-                if(fileArray==null)
-                    return;
-                long min_timestamp = Long.MAX_VALUE;
-                for(int i=0;i<fileArray.length;i++){
-                    if(fileArray[i].isFile() && fileArray[i].getName().contains(sdfsName)){
-                        files.add(fileArray[i].getName());
-                    }
-                }
-                for(int i=0;i<files.size();i++){
-                    File d = new File(files.get(i));
-                    if(d.delete())
-                        logger.info(files.get(i)+" delete successfully");
-                    else
-                        logger.info(files.get(i)+" delete failed");
-                }
+                Detector.storeInfo.deleteFileUpdate(sdfsName); // update the list
             }
             else if(messageType.equals("store")){  // checked
-                File dict = new File("testcorrect/."); // get all local file "." is corrunt file dictionary
-                File[] fileArray = dict.listFiles();
-                System.out.println("Current store file");
-                System.out.println(dict.getCanonicalPath());
-//                if(fileArray==null)
-//                    return;
-                for(int i=0;i<fileArray.length;i++){
-                    if(fileArray[i].isFile()){
-                        System.out.println(fileArray[i].getName());
-                    }
-                }
+                Detector.storeInfo.showFiles();
             }
 
 
