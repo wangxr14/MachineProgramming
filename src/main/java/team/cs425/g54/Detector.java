@@ -367,6 +367,7 @@ public class Detector {
 				JSONObject obj2 = new JSONObject();
 				obj2.put("type","put");
 				obj2.put("sdfsName",sdfs);
+				obj.put("timestamp",timestamp);
 				DataOutputStream outputStream = new DataOutputStream(clientToNodes.getOutputStream());
 				outputStream.writeUTF(obj2.toString()); // send the put command to the node first
 				FileInputStream fis = new FileInputStream(SDFSPath+local);
