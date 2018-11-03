@@ -98,7 +98,7 @@ public class MasterInfo {
                 maxx_id = node.nodeID;
             }
         }
-        int id = Detector.groupList.indexOf(max_node);
+        int id = Detector.findNodeInGroupList(max_node);
         while(num>0){
             id = (id+1) % Detector.groupList.size();
             result.add(Detector.groupList.get(id));
@@ -112,13 +112,14 @@ public class MasterInfo {
     public ArrayList<Node> getListToPut(Node node){ // request from node, type for command
          ArrayList<Node> nodeList = new ArrayList<>();
          int len = Detector.groupList.size();
-         int origin = Detector.groupList.indexOf(node);
+
+         int origin = Detector.findNodeInGroupList(node);
+
          int index = (origin+1)%len;
          System.out.println(len+" "+index);
          while(index != origin){
              nodeList.add(Detector.groupList.get(index));
              index = (index+1)%len;
-             System.out.print(index);
          }
          return nodeList;
 
