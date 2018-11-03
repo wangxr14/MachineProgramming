@@ -37,7 +37,7 @@ public class MasterInfo {
         if(nodeFiles==null)
             return;
         CopyOnWriteArrayList<String> files = nodeFiles.get(node);
-        
+
         if(nodeFiles.containsKey(node)){
             nodeFiles.remove(node);
             logger.info("remove a node to master succeed");
@@ -158,6 +158,8 @@ public class MasterInfo {
     }
     public ArrayList<String> getAllFiles(){
         ArrayList<String> fileList = new ArrayList<>();
+        if(fileVersions==null)
+            return fileList;
         for(Map.Entry<String,CopyOnWriteArrayList<String>> entry : fileVersions.entrySet()){
             fileList.add(entry.getKey());
         }
