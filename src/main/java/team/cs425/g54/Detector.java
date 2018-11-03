@@ -31,8 +31,8 @@ public class Detector {
 	public int toNodesPort = 12002;
 	public String configFile="mp.config";
 	public static Node master;
-    public static MasterInfo masterInfo;
-    public static StoreInfo storeInfo;
+    public static MasterInfo masterInfo = new MasterInfo();
+    public static StoreInfo storeInfo = new StoreInfo();
 
 	Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
 
@@ -77,6 +77,7 @@ public class Detector {
 		listener.start();
 		sdfsListener = new SDFSListener(myNode,toNodesPort);
 		sdfsListener.start();
+
 		storeInfo.initFileLists(myNode);
 	}
 
