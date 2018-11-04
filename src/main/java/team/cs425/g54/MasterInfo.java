@@ -45,7 +45,7 @@ public class MasterInfo {
             nodeFiles.put(node,arr);
             logger.info("add to master: node "+node.nodeID+" file "+file);
             logger.info("add a file from list of master succeed");
-            logger.info("res " +nodeFiles.containsKey(node));
+            logger.info("res " +nodeFiles.containsKey(node)+nodeFiles.get(node).get(0));
         }
     }
     public void deleteNodeFile(Node node,String file){
