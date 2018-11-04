@@ -116,7 +116,7 @@ public class SDFSMsgHandler extends Thread{
                 String timestamp = jsonData.get("timestamp").toString();
                 
                 for(String version:Detector.storeInfo.fileVersions.get(sdfsName)){
-                    if(version==timestamp) {
+                    if(version.equals(timestamp)) {
                     	String filename = sdfsName+"_"+version;
                         dataOutputStream.writeUTF(filename);  // get file name
                         fileInputStream = new FileInputStream(Detector.SDFSPath+filename);

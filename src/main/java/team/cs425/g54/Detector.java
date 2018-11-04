@@ -553,6 +553,7 @@ public class Detector {
 			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
 			ds.send(dpSent);
 			ds.receive(dpReceived);
+			//logger.info("Get get version");
 
 			String dpRecivedData = new String(dpReceived.getData());
 			
