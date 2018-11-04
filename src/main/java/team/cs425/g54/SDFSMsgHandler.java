@@ -50,10 +50,9 @@ public class SDFSMsgHandler extends Thread{
                 logger.info("file writtern ...");
                 Detector.storeInfo.addFileUpdate(sdfsName,timestamp); // update the file list and clean old version on disk
                 // update master info
-                if(serverNode.nodeID == Detector.master.nodeID){
-                    Detector.masterInfo.addNodeFile(serverNode,sdfsName);
-                    Detector.masterInfo.updateFileVersion(sdfsName,timestamp);
-                }
+                Detector.masterInfo.addNodeFile(serverNode,sdfsName);
+                Detector.masterInfo.updateFileVersion(sdfsName,timestamp);
+
             }
 
             else if(messageType.equals("ls")){

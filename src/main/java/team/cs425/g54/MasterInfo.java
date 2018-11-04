@@ -17,6 +17,10 @@ public class MasterInfo {
     Hashtable<String,CopyOnWriteArrayList<String>> fileVersions;
     final int max_versions = 5;
     final int replicas = 4;
+    public MasterInfo(){
+        nodeFiles = new Hashtable<>();
+        fileVersions = new Hashtable<>();
+    }
     public void addNodeFile(Node node,String file){
         if(nodeFiles.containsKey(node)){
             if(!nodeFiles.get(node).contains(file)){
@@ -34,8 +38,6 @@ public class MasterInfo {
         }
     }
     public void deleteNodeAllFiles(Node node){
-        if(nodeFiles==null)
-            return;
         CopyOnWriteArrayList<String> files = nodeFiles.get(node);
 
         if(nodeFiles.containsKey(node)){
@@ -128,7 +130,7 @@ public class MasterInfo {
     // get,get version and delete
     public ArrayList<Node> getNodeToGetFile(String file){
         ArrayList<Node> nodeList = new ArrayList<>();
-        if(nodeList==null)
+        if(nodeFiles==null)
             return nodeList;
         for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
             Node res = entry.getKey();
@@ -170,5 +172,7 @@ public class MasterInfo {
         }
         return fileList;
     }
+
+
 
 }
