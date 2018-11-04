@@ -572,7 +572,11 @@ public class MsgHandler extends Thread{
                 else if(command.equals("updateAddfile")){
                     String sdfsName = jsonData.get("sdfsName").toString();
                     String timestamp = jsonData.get("timestamp").toString();
-                    Detector.masterInfo.addNodeFile(serverNode,sdfsName);
+                    Node node = new Node();
+                    node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                    node.nodeAddr = jsonData.get("nodeAddr").toString();
+                    node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+                    Detector.masterInfo.addNodeFile(node,sdfsName);
                     Detector.masterInfo.updateFileVersion(sdfsName,timestamp);
                 }
                 else if(command.equals("updateDeletefile")){
