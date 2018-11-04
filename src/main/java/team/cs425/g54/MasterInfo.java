@@ -32,7 +32,7 @@ public class MasterInfo {
 
 
     public void addNodeFile(Node node,String file){
-        if(NodeFilesContains(node)){
+        if(nodeFiles.containsKey(node)){
             if(!nodeFiles.get(node).contains(file)){
                 nodeFiles.get(node).add(file);
                 logger.info("add a file from list of master succeed");
@@ -45,6 +45,7 @@ public class MasterInfo {
             nodeFiles.put(node,arr);
             logger.info("add to master: node "+node.nodeID+" file "+file);
             logger.info("add a file from list of master succeed");
+            logger.info("res " +nodeFiles.containsKey(node)+nodeFiles.get(node).get(0));
         }
     }
     public void deleteNodeFile(Node node,String file){
@@ -77,7 +78,7 @@ public class MasterInfo {
 
     }
     public void updateFileVersion(String file,String timestamp){
-        if(fileVersions.contains(file)){
+        if(fileVersions.containsKey(file)){
             fileVersions.get(file).add(timestamp);
             while(fileVersions.get(file).size()>max_versions){
                 fileVersions.get(file).remove(0);
@@ -183,7 +184,7 @@ public class MasterInfo {
 
     public CopyOnWriteArrayList<String> getNodeFiles(Node node){
         CopyOnWriteArrayList<String> result =  new CopyOnWriteArrayList<>();
-        if(nodeFiles.contains(node))
+        if(nodeFiles.containsKey(node))
             return nodeFiles.get(node);
         return result;
     }
@@ -201,8 +202,8 @@ public class MasterInfo {
     }
     public void printMasterNode(){
         logger.info("master store node");
-        for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
-            System.out.println(entry.getKey());
+        for(Node file : nodeFiles.keySet()){
+            System.out.println(file.nodeID);
         }
     }
 

@@ -14,7 +14,7 @@ public class Node {
 	public Node() {
 		
 	}
-
+//	@Override
 	public boolean equals(Object obj){
 		if(this == obj){
 			return true;
@@ -34,5 +34,8 @@ public class Node {
 
 	public String nodeInfoToString() {
 		return ""+this.nodeID+";"+this.nodeAddr+";"+this.nodePort;
+
+	public int hashCode() {
+		return 17+31*nodeAddr.hashCode()+31*nodeID+31*nodePort;
 	}
 }
