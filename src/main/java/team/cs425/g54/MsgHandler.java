@@ -429,6 +429,7 @@ public class MsgHandler extends Thread{
         String receivedData = new String(receivedPacket.getData());
         //logger.info("receivedData: "+ receivedData);
         try{
+            logger.info("msgHandler get"+receivedData);
             JSONObject jsonData = new JSONObject(receivedData);
         
             String messageType = jsonData.get("type").toString();
