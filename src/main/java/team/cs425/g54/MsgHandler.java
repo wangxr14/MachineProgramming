@@ -257,7 +257,7 @@ public class MsgHandler extends Thread{
             for(int i=0;i<jsonArray.length();i++){
                 JSONObject jsonNode = jsonArray.getJSONObject(i);
                 String sdfsName = jsonNode.getString("sdfsName");
-                Socket socket = new Socket(jsonNode.getString("nodeAddr"),jsonNode.getInt("nodePort"));
+                Socket socket = new Socket(jsonNode.getString("nodeAddr"),Detector.toNodesPort);
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 for(String version:Detector.storeInfo.fileVersions.get(sdfsName)){
                     // send put command msg

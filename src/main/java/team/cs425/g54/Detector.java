@@ -35,7 +35,7 @@ public class Detector {
 	public Pinger pinger;
 	public final int pingerPort = 12333;
 	public final int nodePort = 12345;
-	public final int toNodesPort = 12002;
+	public static final int toNodesPort = 12002;
 	public final String configFile="mp.config";
 	public static Node master;
     public static MasterInfo masterInfo = new MasterInfo();
