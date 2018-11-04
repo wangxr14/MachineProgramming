@@ -13,8 +13,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONArray;
 import java.util.logging.Logger;
 import java.lang.InterruptedException;
+
 
 
 public class Pinger extends Thread{
@@ -67,6 +69,11 @@ public class Pinger extends Thread{
 			jsonObj.put("nodeID", node.nodeID);
 			jsonObj.put("nodeAddr", node.nodeAddr);
 			jsonObj.put("nodePort", node.nodePort);
+			// Add information of detector, for selecting master of dfs
+			jsonObj.put("detectorID", myNode.nodeID);
+			jsonObj.put("detectorAddr", myNode.nodeAddr);
+			jsonObj.put("detectorPort", myNode.nodePort);
+			
 		} catch (JSONException e){
 			e.printStackTrace();
 		}
@@ -140,6 +147,7 @@ public class Pinger extends Thread{
 				
 				InetAddress address = InetAddress.getByName(member.nodeAddr);
 				
+				// logger.info("delete message send bytes: "+ deleteMsg.getBytes().length);
 				DatagramPacket dpSent= new DatagramPacket(deleteMsg.getBytes(),deleteMsg.length(),address,member.nodePort);	
 				
 				ds.send(dpSent);
@@ -155,6 +163,63 @@ public class Pinger extends Thread{
 		}
 	}
 
+	public void updateMaster(Node node) {
+		if (Detector.master!=null) {
+			if(node.nodeID==Detector.master.nodeID) {
+				Detector.master=groupList.get(0);
+			}
+		}
+	}
+	
+    public void sendReReplicaRequest(){
+        // check all file, see if replicas is enough
+        try {
+            ArrayList<String> files =  Detector.masterInfo.getAllFiles();
+            for(String file:files){
+                ArrayList<Node> replicas = Detector.masterInfo.hasFileNodes(file);
+                ArrayList<Node> needReplicas = Detector.masterInfo.getrereplicaList(file);
+                if(needReplicas.size()==0)
+                    continue;
+                Node replicaNode = replicas.get(0);
+                JSONArray jsonArray = new JSONArray();
+                JSONObject jsonMsg = new JSONObject();
+                jsonMsg.put("type","reReplica");
+                for(Node putReplica:needReplicas){
+                    JSONObject obj = new JSONObject();
+                    obj.put("nodeID",putReplica.nodeID);  // node that need to add replica
+                    obj.put("nodeAddr",putReplica.nodeAddr);
+                    obj.put("nodePort",putReplica.nodePort);
+                    obj.put("sdfsName",file);
+                    jsonArray.put(obj);
+                }
+                // send rereplica request can ask one or ask all
+                jsonMsg.put("NodeArray",jsonArray);
+                InetAddress address = InetAddress.getByName(replicaNode.nodeAddr);
+                logger.info("Introducer send join to all bytes: "+jsonArray.toString().getBytes().length);
+                DatagramPacket send_message = new DatagramPacket(jsonArray.toString().getBytes(), jsonArray.toString().getBytes().length, address, replicaNode.nodePort);
+                DatagramSocket server = new DatagramSocket();
+                server.send(send_message);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // request nodes that have the replica to put replica on new machine
+    }
+	
+	public void checkMasterOperation(Node node) {
+		// If I am master and I detect this failure
+		if(Detector.master!= null) {
+            if(Detector.master.nodeID==myNode.nodeID){ // check if it needs to send rereplica
+                Detector.masterInfo.deleteNodeAllFiles(node);
+                sendReReplicaRequest();
+            }
+        }
+	}
 	
 	public void stopPinger() {
 		stopped = true;
@@ -166,7 +231,7 @@ public class Pinger extends Thread{
 
 	
 	private void ping(Node node) throws IOException {
-		logger.info("Pinging "+node.nodeID+"......");
+//		logger.info("Pinging "+node.nodeID+"......");
 		boolean receivedResponse = false;
 		try {
 			DatagramSocket ds = new DatagramSocket();
@@ -175,10 +240,8 @@ public class Pinger extends Thread{
 			String pingMsg = packPingMsg();
 			InetAddress address = InetAddress.getByName(node.nodeAddr);
 			
-			
-			
 			DatagramPacket dpSent= new DatagramPacket(pingMsg.getBytes(),pingMsg.length(),address,node.nodePort);	
-			
+			// logger.info("ping send bytes length: "+pingMsg.getBytes().length);
 			byte[] data = new byte[2048];
 			
 			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
@@ -189,14 +252,16 @@ public class Pinger extends Thread{
 			receivedResponse = true;
 			
 			if(receivedResponse) {
-				logger.info("Node "+node.nodeID+" is alive!");
+//				logger.info("Node "+node.nodeID+" is alive!");
 			}
 			ds.close();
 			
 		} catch(SocketTimeoutException e){
-			logger.warning("Node "+node.nodeID+" Fails!");
+			logger.warning("Node "+node.nodeID+" Fails!=========================================");
 			receivedResponse = false;
 			removeNode(node);
+			updateMaster(node);
+			checkMasterOperation(node);
 		}catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

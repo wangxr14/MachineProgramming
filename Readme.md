@@ -29,8 +29,8 @@ sudo vi mp.config
 
 We use gradle in this MP to help us build and run the programs.
 
-1.  Run Detector (MP2)
-We define a task named Detector to execute the main program of MP2.
+1.  Run MP3 (& MP2)
+We use the same task name to run the main program of MP3
 
 ```bash
 cd /home/MachineProgramming/
@@ -39,7 +39,7 @@ cd /home/MachineProgramming/
 gradle Detector
 ```
 
-2. Run Logger (MP1)
+2.  Run Logger (MP1)
 For MP1, we can also use the same way to run Server and Client
 
 ```bash
@@ -64,4 +64,25 @@ This node will join into the group(If the introducer is active).
 This node will leave the group.
 4. show
 Show the id of this node, its membership list and all the members in this group.
+5. master
+Set the current machine as master
+6. store
+See what files are stored in this machine
+7. put localFile sdfsFile
+Put files into SDFS
+8. get sdfsFile localFile
+Read a file from SDFS
+9. delete sdfsFile
+Delete a file from SDFS
+10. get_version sdfsFile num_version localFile
+Get k versions of a file into localFile				
+11. ls sdfsFile
+List where a file is stored				
+12. msshow
+Show the file list on master				
+13. msversion				
+Show the file versions on master
+
+
+				
 

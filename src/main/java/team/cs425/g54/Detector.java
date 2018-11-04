@@ -1,20 +1,21 @@
 package team.cs425.g54;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Hashtable;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
+
+import java.util.logging.Logger;
+
 
 
 public class Detector {
@@ -25,13 +26,26 @@ public class Detector {
 	// Make sure they are thread-safe
 	public static CopyOnWriteArrayList<Node> membershipList = new CopyOnWriteArrayList<Node>();
 	public static CopyOnWriteArrayList<Node> groupList = new CopyOnWriteArrayList<Node>();
+	// Store (node id, (node addr, node port)) for quick search
+	public static Hashtable<Integer,Pair<String,Integer>> nodeAddrPortList = new Hashtable<Integer, Pair<String,Integer>>();
+	
 	// Listen & Ping
 	public Listener listener;
+	public SDFSListener sdfsListener;
 	public Pinger pinger;
-	public int pingerPort = 12333;
-	public int nodePort = 12345;
-	public String configFile="mp.config";
-	
+	public final int pingerPort = 12333;
+	public final int nodePort = 12345;
+	public static final int toNodesPort = 12002;
+	public final String configFile="mp.config";
+	public static Node master;
+    public static MasterInfo masterInfo = new MasterInfo();
+    public static StoreInfo storeInfo = new StoreInfo();
+	public static String SDFSPath = "files/";
+	Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
+
+	Socket clientToNodes;
+	final int TIMEOUT = 5000;
+
 	public void setConfig() {
 		// Read From File to Know the ID of this VM
     	try {
@@ -48,10 +62,13 @@ public class Detector {
     			int id= Integer.parseInt(splites[0]);
     			String addr = splites[1];
     			int port = Integer.parseInt(splites[2]);
+    			// Add into nodeList
+    			Pair<String, Integer> pair = new ImmutablePair<>(addr,port);
+    			nodeAddrPortList.put(id, pair);
     			
     			if(id==myID) {
     				myNode=new Node(id,addr,port);
-    				return;
+    				//return;
     			}
     			line=in.readLine();
     		}
@@ -62,13 +79,21 @@ public class Detector {
 	}
 	
 	public void init() {
+		// Read config file, set node information
 		setConfig();
+		
 		pinger = new Pinger(myNode, pingerPort, membershipList, groupList);
 		pinger.start();
 
 		listener = new Listener(myNode, membershipList, groupList, myNode.nodeID==introducer.nodeID);
 		listener.start();
+		sdfsListener = new SDFSListener(myNode,toNodesPort);
+		sdfsListener.start();
+
+		storeInfo.initFileLists(myNode);
 	}
+
+
 	
 	public int findPositionToInsert(Node node, CopyOnWriteArrayList<Node> nodeList) {
 		if (nodeList.size()==0)
@@ -138,6 +163,7 @@ public class Detector {
 	        message.put("nodeAddr", myNode.nodeAddr);
 	        message.put("nodePort", myNode.nodePort);
 	        InetAddress address = InetAddress.getByName(introducer.nodeAddr);
+	        // logger.info("Send join to introducer bytes: "+message.toString().getBytes().length);
 	        DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, introducer.nodePort);
 			ds.send(send_message);
 			ds.close();
@@ -192,6 +218,7 @@ public class Detector {
 	            message.put("nodeAddr", myNode.nodeAddr);
 	            message.put("nodePort", myNode.nodePort);
 	            InetAddress address = InetAddress.getByName(node.nodeAddr);
+	            // logger.info("Send leave message bytes length: "+ message.toString().getBytes().length);
 	            DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, node.nodePort);
 	            ds.send(send_message);
 			}
@@ -241,46 +268,468 @@ public class Detector {
 			System.out.println("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
 		}
 	}
-
 	
+	public void showMaster() {
+        System.out.println("Current master is:");
+        if (master != null) {
+            System.out.println("Node " + master.nodeID);
+        } else {
+            System.out.println("Nobody");
+        }
+    }
+	
+	public void showNodeAddrPortList() {
+		Set<Integer> keys = nodeAddrPortList.keySet();
+		for (Integer key: keys) {
+			System.out.println("Node "+key+" has addr and port:");
+			System.out.println(nodeAddrPortList.get(key).getKey()+" , "+nodeAddrPortList.get(key).getValue());
+		}
+	}
+	
+	public void printNodeList(ArrayList<Node> nodeList) {
+		for(Node node:nodeList) {
+			System.out.println(node.nodeInfoToString());
+		}
+	}
+	
+    // get jsondata into nodelist
+	public ArrayList<Node> getNodeList(String str){
+		logger.info("LSjson "+str);
+		ArrayList<Node> nodes = new ArrayList<>();
+		try {
+			JSONArray objArray = new JSONArray(str);
+			for (int i = 0; i < objArray.length(); i++) {
+				Node node = new Node();
+				JSONObject jsonNode = objArray.getJSONObject(i);
+				node.nodeAddr = jsonNode.get("nodeAddr").toString();
+				node.nodeID = Integer.parseInt(jsonNode.get("nodeID").toString());
+				node.nodePort = Integer.parseInt(jsonNode.get("nodePort").toString());
+				nodes.add(node);
+			}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return nodes;
+	}
+
+	public void broadcastMasterMsgToAll() {
+		String type = "master";
+		try {
+			DatagramSocket ds = new DatagramSocket();
+		
+			for(Node node : groupList) {
+	            JSONObject message = new JSONObject();
+	            message.put("type", type);
+	            message.put("nodeID", master.nodeID);
+	            message.put("nodeAddr", master.nodeAddr);
+	            message.put("nodePort", master.nodePort);
+	            InetAddress address = InetAddress.getByName(node.nodeAddr);
+	            DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, node.nodePort);
+	            ds.send(send_message);
+			}
+			ds.close();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e){
+			e.printStackTrace();
+		}
+	}
+	static public int findNodeInGroupList(Node node){
+		int index = -1;
+		for(int i=0;i<groupList.size();i++){
+			if(node.nodeID==groupList.get(i).nodeID){
+				index = i;
+				break;
+			}
+
+		}
+		return index;
+	}
+	public void setMaster(){
+		master=myNode;
+		//Broadcast this message to all 
+		broadcastMasterMsgToAll();
+	}
+
+	public void putCommand(String cmdInput){
+		String[] command = cmdInput.split(" ");
+		logger.info("Execute put command..");
+		if(command.length<3)
+			return;
+		try {
+			DatagramSocket ds = new DatagramSocket();
+			ds.setSoTimeout(TIMEOUT);
+
+			String local = command[1];
+			String sdfs = command[2];
+			String timestamp = String.valueOf(System.currentTimeMillis());
+			// send msg to master
+			JSONObject obj = new JSONObject();
+			obj.put("type","toMaster");
+			obj.put("command","put");
+			obj.put("sdfsName",sdfs);
+			obj.put("timestamp",timestamp);
+			obj.put("nodeID", myNode.nodeID);
+			obj.put("nodeAddr", myNode.nodeAddr);
+			obj.put("nodePort", myNode.nodePort);
+			String msgToMaster = obj.toString();
+//			logger.info("send msg to master request for put" + msgToMaster);
+			InetAddress address = InetAddress.getByName(master.nodeAddr);
+			DatagramPacket dpSent= new DatagramPacket(msgToMaster.getBytes(),msgToMaster.length(),address,master.nodePort);
+			// get nodeList from master
+			byte[] data = new byte[2048];
+			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
+			ds.send(dpSent);
+			ds.receive(dpReceived);
+
+			String dpRecivedData = new String(dpReceived.getData());
+			System.out.println("Received "+dpRecivedData);
+			ArrayList<Node> nodes = getNodeList(dpRecivedData);
+
+			for(Node node:nodes){
+				clientToNodes = new Socket(node.nodeAddr,toNodesPort);
+				JSONObject obj2 = new JSONObject();
+				obj2.put("type","put");
+				obj2.put("sdfsName",sdfs);
+				obj2.put("timestamp",timestamp);
+				DataOutputStream outputStream = new DataOutputStream(clientToNodes.getOutputStream());
+				outputStream.writeUTF(obj2.toString()); // send the put command to the node first
+				FileInputStream fis = new FileInputStream(SDFSPath+local);
+				IOUtils.copy(fis,outputStream);
+				outputStream.flush();
+				clientToNodes.close();
+			}
+
+			ds.close();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+	}
+	public void getCommand(String cmdInput){
+		String[] command = cmdInput.split(" ");
+		if(command.length<3)
+			return;
+		try {
+			DatagramSocket ds = new DatagramSocket();
+			ds.setSoTimeout(TIMEOUT);
+
+			String local = command[2];
+			String sdfs = command[1];
+
+			// send msg to master
+			JSONObject obj = new JSONObject();
+			obj.put("type","toMaster");
+			obj.put("command","get");
+			obj.put("sdfsName",sdfs);
+
+			String msgToMaster = obj.toString();
+			InetAddress address = InetAddress.getByName(master.nodeAddr);
+			DatagramPacket dpSent= new DatagramPacket(msgToMaster.getBytes(),msgToMaster.length(),address,master.nodePort);
+
+			// get nodeList from master
+			byte[] data = new byte[2048];
+			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
+			ds.send(dpSent);
+			ds.receive(dpReceived);
+
+			String dpRecivedData = new String(dpReceived.getData());
+			ArrayList<Node> nodes = getNodeList(dpRecivedData);
+			
+			if(nodes.isEmpty()) {
+				logger.info("This file doesn't exist");
+			}
+				
+			
+			for(Node node:nodes){
+				JSONObject obj2 = new JSONObject();
+				obj2.put("type","get");
+				obj2.put("sdfsName",sdfs);
+				clientToNodes = new Socket(node.nodeAddr,toNodesPort);
+				DataOutputStream output = new DataOutputStream(clientToNodes.getOutputStream());
+				// send get request to get the data
+				output.writeUTF(obj2.toString());
+				// get the file data
+				DataInputStream input =  new DataInputStream(clientToNodes.getInputStream());
+
+				FileOutputStream fos = new FileOutputStream(SDFSPath+local);
+				IOUtils.copy(input,fos);
+				fos.flush();
+				clientToNodes.close();
+			}
+
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void deleteCommand(String cmdInput){
+		String[] command = cmdInput.split(" ");
+		if(command.length<2)
+			return;
+		try {
+			DatagramSocket ds = new DatagramSocket();
+			ds.setSoTimeout(TIMEOUT);
+
+			String sdfs = command[1];
+
+			// send msg to master
+			JSONObject obj = new JSONObject();
+			obj.put("type","toMaster");
+			obj.put("command","delete");
+			obj.put("sdfsName",sdfs);
+
+			String msgToMaster = obj.toString();
+			InetAddress address = InetAddress.getByName(master.nodeAddr);
+			DatagramPacket dpSent= new DatagramPacket(msgToMaster.getBytes(),msgToMaster.length(),address,master.nodePort);
+
+			// get nodeList from master
+			byte[] data = new byte[2048];
+			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
+			ds.send(dpSent);
+			ds.receive(dpReceived);
+
+			String dpRecivedData = new String(dpReceived.getData());
+			ArrayList<Node> nodes = getNodeList(dpRecivedData);
+
+			for(Node node:nodes){
+				JSONObject obj2 = new JSONObject();
+				obj2.put("type","delete");
+				obj2.put("sdfsName",sdfs);
+				clientToNodes = new Socket(node.nodeAddr,toNodesPort);
+				DataOutputStream output = new DataOutputStream(clientToNodes.getOutputStream());
+				output.writeUTF(obj2.toString());
+				clientToNodes.close();
+			}
+
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void getVersionCommand(String cmdInput){
+		String[] command = cmdInput.split(" ");
+		if(command.length<4)
+			return;
+		String sdfsfile = command[1];
+		String versionNum = command[2];
+		String local = command[3];
+
+
+		try {
+			DatagramSocket ds = new DatagramSocket();
+			ds.setSoTimeout(TIMEOUT);
+			// send msg to master
+			JSONObject obj = new JSONObject();
+			obj.put("type","toMaster");
+			obj.put("command","get_version");
+			obj.put("sdfsName",sdfsfile);
+			obj.put("versionNum",versionNum);
+
+			String msgToMaster = obj.toString();
+			InetAddress address = InetAddress.getByName(master.nodeAddr);
+			DatagramPacket dpSent= new DatagramPacket(msgToMaster.getBytes(),msgToMaster.length(),address,master.nodePort);
+
+			// get nodeList from master
+			byte[] data = new byte[2048];
+			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
+			ds.send(dpSent);
+			ds.receive(dpReceived);
+
+			String dpRecivedData = new String(dpReceived.getData());
+			logger.info("Get get versions node list from master ");
+			
+			JSONArray objArray = new JSONArray(dpRecivedData);
+			for (int i = 0; i < objArray.length(); i++) {
+				Node node = new Node();
+				JSONObject jsonNode = objArray.getJSONObject(i);
+				node.nodeAddr = jsonNode.get("nodeAddr").toString();
+				node.nodeID = Integer.parseInt(jsonNode.get("nodeID").toString());
+				node.nodePort = Integer.parseInt(jsonNode.get("nodePort").toString());
+				
+				System.out.println("Begin to read from node "+node.nodeID);
+				
+				String timestamp=jsonNode.get("timestamp").toString();
+				
+				JSONObject obj2 = new JSONObject();
+				obj2.put("type","get_version");
+				obj2.put("sdfsName",sdfsfile);
+				obj2.put("timestamp",timestamp);
+				clientToNodes = new Socket(node.nodeAddr,toNodesPort);
+				DataOutputStream output = new DataOutputStream(clientToNodes.getOutputStream());
+				output.writeUTF(obj2.toString());
+				DataInputStream input =  new DataInputStream(clientToNodes.getInputStream());
+				FileOutputStream fos = new FileOutputStream(SDFSPath+local,true);
+				System.out.println("copy stream");
+				IOUtils.copy(input,fos);
+				System.out.println("flush stream");
+				fos.flush();
+				clientToNodes.close();
+				System.out.println("Read from node done"+node.nodeID);
+			}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+	public void lsCommand(String cmdInput){
+		String[] command = cmdInput.split(" ");
+		if(command.length<2) {
+			System.out.println("Invalid input, please try again;");
+			return;
+		}
+		String sdfsName = command[1];
+
+		try {
+			DatagramSocket ds  = new DatagramSocket();
+			ds.setSoTimeout(TIMEOUT);
+			// send msg to master
+			JSONObject obj = new JSONObject();
+			obj.put("type","toMaster");
+			obj.put("command","ls");
+			obj.put("sdfsName",sdfsName);
+
+			String msgToMaster = obj.toString();
+			InetAddress address = InetAddress.getByName(master.nodeAddr);
+			DatagramPacket dpSent= new DatagramPacket(msgToMaster.getBytes(),msgToMaster.length(),address,master.nodePort);
+
+			// get nodeList from master
+			byte[] data = new byte[2048];
+			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
+			ds.send(dpSent);
+			ds.receive(dpReceived);
+
+			String dpRecivedData = new String(dpReceived.getData());
+			ArrayList<Node> nodes = getNodeList(dpRecivedData);
+			printNodeList(nodes);
+			
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+	}
+
 	public static void main(String[] args) {  
 		
 		Detector mp = new Detector();
 		mp.init();
 		// User input
+		// Display node list
+		// mp.showNodeAddrPortList();
 		InputStreamReader is_reader = new InputStreamReader(System.in);
 		while(true) {
 			try {
+
 				System.out.println("Input Your Command:");
 				String cmdInput = new BufferedReader(is_reader).readLine();
 				System.out.println("Get Input:"+cmdInput);
+				long startTime=System.currentTimeMillis();
+				System.out.println("*************Current time is : "+startTime);
 				// Quit this program
 				if(cmdInput.toLowerCase().equals("quit")) {
 					break;
 				}
-				
+
 				// Join command
 				if(cmdInput.toLowerCase().equals("join")) {
+					mp.storeInfo.deleteAllSDFSFilesOnDisk();
 					mp.joinGroup();
 					mp.showGroupList();
 				}
 				
 				if(cmdInput.toLowerCase().equals("leave")) {
 					mp.leaveGroup();
+					mp.storeInfo.deleteAllSDFSFilesOnDisk();
 				}
+
 				if(cmdInput.toLowerCase().equals("show")) {
 					mp.showID();
 					mp.showMembershipList();
 					mp.showGroupList();
+					mp.showMaster();
 				}
-				if(cmdInput.toLowerCase().equals("introducer")) {
-					
+
+				if(cmdInput.toLowerCase().equals("master")) {
+					mp.setMaster();
 				}
+				// File operations
+				if(cmdInput.toLowerCase().equals("store")) {
+				    storeInfo.showFiles();
+				}
+				
+				if(cmdInput.toLowerCase().startsWith("put")){
+					mp.putCommand(cmdInput);
+				}
+				
+				if(cmdInput.toLowerCase().startsWith("get ")) {
+					mp.getCommand(cmdInput);
+				}
+				
+				if(cmdInput.toLowerCase().startsWith("delete")) {
+					mp.deleteCommand(cmdInput);
+				}
+				
+				if(cmdInput.toLowerCase().startsWith("get_version")) {
+						mp.getVersionCommand(cmdInput);
+				}
+				
+				if(cmdInput.toLowerCase().startsWith("ls")){
+						mp.lsCommand(cmdInput);
+				}
+				
+				if(cmdInput.toLowerCase().startsWith("msshow")) {
+					Detector.masterInfo.printMasterNode();
+				}
+				if(cmdInput.toLowerCase().startsWith("msversion")) {
+					Detector.masterInfo.printVersions();
+				}
+				
+				long time=System.currentTimeMillis()-startTime;
+				System.out.println("*************Time to finish is : "+time);
+				
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 
 		System.out.println("Program End");
