@@ -26,7 +26,7 @@ public class Node {
 			return false;
 		}
 		final Node node = (Node)obj;
-		if(node.nodeID ==this.nodeID && node.nodeAddr.equals(this.nodeAddr) && node.nodePort==this.nodePort)
+		if(node.nodeID ==this.nodeID)
 			return true;
 		else
 			return false;
@@ -38,6 +38,6 @@ public class Node {
 	}
 
 	public int hashCode() {
-		return 17+31*nodeAddr.hashCode()+31*nodeID+31*nodePort;
+		return 17+31*nodeAddr.hashCode()+31*nodeID;
 	}
 }
