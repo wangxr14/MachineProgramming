@@ -28,6 +28,12 @@ public class MasterInfo {
                 logger.info("add a file from list of master succeed");
             }
         }
+        else{
+            CopyOnWriteArrayList<String> arr = new CopyOnWriteArrayList<>();
+            arr.add(file);
+            nodeFiles.put(node,arr);
+            logger.info("add a file from list of master succeed");
+        }
     }
     public void deleteNodeFile(Node node,String file){
         if(nodeFiles.containsKey(node)){
@@ -64,6 +70,12 @@ public class MasterInfo {
             while(fileVersions.get(file).size()>max_versions){
                 fileVersions.get(file).remove(0);
             }
+            logger.info("update file version from master succeed");
+        }
+        else{
+            CopyOnWriteArrayList<String> arr = new CopyOnWriteArrayList<>();
+            arr.add(timestamp);
+            fileVersions.put(file,arr);
             logger.info("update file version from master succeed");
         }
     }
