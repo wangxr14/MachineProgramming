@@ -237,7 +237,7 @@ public class MsgHandler extends Thread{
                 jsonMsg.put("NodeArray",jsonArray);
                 logger.info("send msg"+jsonMsg.toString());
                 InetAddress address = InetAddress.getByName(replicaNode.nodeAddr);
-                DatagramPacket send_message = new DatagramPacket(jsonArray.toString().getBytes(), jsonArray.toString().getBytes().length, address, replicaNode.nodePort);
+                DatagramPacket send_message = new DatagramPacket(jsonMsg.toString().getBytes(), jsonMsg.toString().getBytes().length, address, replicaNode.nodePort);
                 server.send(send_message);
 
             }
@@ -429,7 +429,7 @@ public class MsgHandler extends Thread{
         String receivedData = new String(receivedPacket.getData());
         //logger.info("receivedData: "+ receivedData);
         try{
-            logger.info("msgHandler get"+receivedData);
+//            logger.info("msgHandler get"+receivedData);
             JSONObject jsonData = new JSONObject(receivedData);
         
             String messageType = jsonData.get("type").toString();
