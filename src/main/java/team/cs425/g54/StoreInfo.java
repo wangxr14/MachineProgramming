@@ -18,7 +18,7 @@ public class StoreInfo {
         mynode = node;
         fileLists = new CopyOnWriteArrayList<>();
         fileVersions = new Hashtable<>();
-        File dict = new File("files/."); // get all sdfs file
+        File dict = new File(Detector.SDFSPath); // get all sdfs file
         File[] fileArray = dict.listFiles();
         if(fileArray==null)
             return;
@@ -69,6 +69,7 @@ public class StoreInfo {
             logger.info("no such file to delete");
             return ;
         }
+        deleteFileAllVersionsOnDisk(name);
         fileLists.remove(name);
         fileVersions.remove(name);
     }
@@ -105,13 +106,21 @@ public class StoreInfo {
     public void deleteAllSDFSFilesOnDisk(){
         for(String file:fileLists){
             for(String version:fileVersions.get(file)){
-                File deletefile = new File(file+"_"+version);
+                File deletefile = new File(Detector.SDFSPath+file+"_"+version);
                 if(deletefile.delete())
                     logger.info("delete file "+file+"_"+version+"success");
             }
         }
         fileLists.clear();
         fileVersions.clear();
+    }
+
+    public void deleteFileAllVersionsOnDisk(String name){
+        for(String version:fileVersions.get(name)){
+            String deletefile = name+"_"+version;
+            File file = new File(Detector.SDFSPath+deletefile);
+            file.delete();
+        }
     }
     public CopyOnWriteArrayList<String> getAllFiles(){
         return fileLists;

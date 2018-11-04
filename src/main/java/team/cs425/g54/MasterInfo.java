@@ -128,6 +128,8 @@ public class MasterInfo {
     // get,get version and delete
     public ArrayList<Node> getNodeToGetFile(String file){
         ArrayList<Node> nodeList = new ArrayList<>();
+        if(nodeList==null)
+            return nodeList;
         for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
             Node res = entry.getKey();
             if(nodeFiles.get(res).contains(file)){

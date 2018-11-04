@@ -44,7 +44,7 @@ public class SDFSMsgHandler extends Thread{
             if(messageType.equals("put")){
                 String sdfsName = jsonData.get("sdfsName").toString();
                 String timestamp = jsonData.get("timestamp").toString();
-                fileOutputStream = new FileOutputStream(sdfsName+"_"+timestamp);
+                fileOutputStream = new FileOutputStream(Detector.SDFSPath+sdfsName+"_"+timestamp);
                 IOUtils.copy(dataInputStream,fileOutputStream); // write file into the disk;
                 fileOutputStream.flush();
                 logger.info("file writtern ...");
@@ -71,7 +71,7 @@ public class SDFSMsgHandler extends Thread{
                 for(String version:versions){
                     String filename = sdfsName+"_"+version;
                     dataOutputStream.writeUTF(filename);  // get file name
-                    fileInputStream = new FileInputStream(filename);
+                    fileInputStream = new FileInputStream(Detector.SDFSPath+filename);
                     IOUtils.copy(fileInputStream,dataOutputStream);
                     dataOutputStream.flush();
                 }
@@ -86,7 +86,7 @@ public class SDFSMsgHandler extends Thread{
                     return;
                 }
                 String fileName = sdfsName+"_"+version;
-                fileInputStream = new FileInputStream(fileName);
+                fileInputStream = new FileInputStream(Detector.SDFSPath+fileName);
                 IOUtils.copy(fileInputStream,dataOutputStream);
                 dataOutputStream.flush();
 
