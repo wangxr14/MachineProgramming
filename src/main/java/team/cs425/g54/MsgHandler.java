@@ -233,7 +233,6 @@ public class MsgHandler extends Thread{
                 // send rereplica request can ask one or ask all
                 jsonMsg.put("NodeArray",jsonArray);
                 InetAddress address = InetAddress.getByName(replicaNode.nodeAddr);
-                logger.info("Introducer send join to all bytes: "+jsonArray.toString().getBytes().length);
                 DatagramPacket send_message = new DatagramPacket(jsonArray.toString().getBytes(), jsonArray.toString().getBytes().length, address, replicaNode.nodePort);
                 server.send(send_message);
 
@@ -265,7 +264,7 @@ public class MsgHandler extends Thread{
                     dos.writeUTF(obj.toString());
                     // then send file
                     String name = sdfsName+"_"+version;
-                    FileInputStream fis = new FileInputStream(name);
+                    FileInputStream fis = new FileInputStream(Detector.SDFSPath+name);
                     IOUtils.copy(fis,dos);
                     dos.flush();
                 }
