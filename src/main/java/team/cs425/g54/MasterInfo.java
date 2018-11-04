@@ -95,10 +95,9 @@ public class MasterInfo {
     // get all the nodes that have the file
     public ArrayList<Node> hasFileNodes(String file){
         ArrayList<Node> nodeList = new ArrayList<>();
-        for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
-            Node res = entry.getKey();
-            if(nodeFiles.get(res).contains(file)){
-                nodeList.add(res);
+        for(Node node : nodeFiles.keySet()){
+            if(nodeFiles.get(node).contains(file)){
+                nodeList.add(node);
             }
         }
         return nodeList;
@@ -157,10 +156,9 @@ public class MasterInfo {
         ArrayList<Node> nodeList = new ArrayList<>();
         if(nodeFiles==null)
             return nodeList;
-        for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
-            Node res = entry.getKey();
-            if(nodeFiles.get(res).contains(file)){
-                nodeList.add(res);
+        for(Node node : nodeFiles.keySet()){
+            if(nodeFiles.get(node).contains(file)){
+                nodeList.add(node);
                 return nodeList;
             }
         }
@@ -170,12 +168,10 @@ public class MasterInfo {
     public ArrayList<Node> getNodesForLs(String file){
         ArrayList<Node> nodeList = new ArrayList<>();
 
-        for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
-            logger.info("master store node"+entry.getKey());
-            Node res = entry.getKey();
-            if(nodeFiles.get(res).contains(file)){
-                nodeList.add(res);
-                logger.info("node "+res.nodeID);
+        for(Node node : nodeFiles.keySet()){
+            if(nodeFiles.get(node).contains(file)){
+                nodeList.add(node);
+                logger.info("node "+node.nodeID);
             }
         }
         logger.info("get file for ls done");
@@ -195,17 +191,16 @@ public class MasterInfo {
         ArrayList<String> fileList = new ArrayList<>();
         if(fileVersions==null)
             return fileList;
-        for(Map.Entry<String,CopyOnWriteArrayList<String>> entry : fileVersions.entrySet()){
-            fileList.add(entry.getKey());
+        for(String file : fileVersions.keySet()){
+            fileList.add(file);
         }
         return fileList;
     }
     public void printMasterNode(){
         logger.info("master store node");
         for(Node file : nodeFiles.keySet()){
-            System.out.println(file.nodeID);
+            System.out.println("Node "+file.nodeID);
         }
     }
-
 
 }
