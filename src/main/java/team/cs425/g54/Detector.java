@@ -555,18 +555,27 @@ public class Detector {
 			ds.receive(dpReceived);
 
 			String dpRecivedData = new String(dpReceived.getData());
-			ArrayList<Node> nodes = getNodeList(dpRecivedData);
-
-			for(Node node:nodes){
+			
+			JSONArray objArray = new JSONArray(dpRecivedData);
+			for (int i = 0; i < objArray.length(); i++) {
+				Node node = new Node();
+				JSONObject jsonNode = objArray.getJSONObject(i);
+				node.nodeAddr = jsonNode.get("nodeAddr").toString();
+				node.nodeID = Integer.parseInt(jsonNode.get("nodeID").toString());
+				node.nodePort = Integer.parseInt(jsonNode.get("nodePort").toString());
+				
+				String sdfsfile=jsonNode.get("sdfsName").toString();
+				String timestamp=jsonNode.get("timestamp").toString();
+				
 				JSONObject obj2 = new JSONObject();
 				obj2.put("type","get_version");
 				obj2.put("sdfsName",sdfsfile);
-				obj2.put("versionNum",versionNum);
+				obj2.put("timestamp",timestamp);
 				clientToNodes = new Socket(node.nodeAddr,toNodesPort);
 				DataOutputStream output = new DataOutputStream(clientToNodes.getOutputStream());
 				output.writeUTF(obj2.toString());
 				DataInputStream input =  new DataInputStream(clientToNodes.getInputStream());
-				FileOutputStream fos = new FileOutputStream(SDFSPath+local);
+				FileOutputStream fos = new FileOutputStream(SDFSPath+local,true);
 				IOUtils.copy(input,fos);
 				fos.flush();
 				clientToNodes.close();

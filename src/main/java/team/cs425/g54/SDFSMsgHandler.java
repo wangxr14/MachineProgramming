@@ -113,15 +113,16 @@ public class SDFSMsgHandler extends Thread{
 //            }
             else if(messageType.equals("get_version")){
                 String sdfsName = jsonData.get("sdfsName").toString();
-                int num = Integer.parseInt(jsonData.get("versionNum").toString());
-                ArrayList<String> versions = Detector.storeInfo.getKVersions(sdfsName,num);
-
-                for(String version:versions){
-                    String filename = sdfsName+"_"+version;
-                    dataOutputStream.writeUTF(filename);  // get file name
-                    fileInputStream = new FileInputStream(Detector.SDFSPath+filename);
-                    IOUtils.copy(fileInputStream,dataOutputStream);
-                    dataOutputStream.flush();
+                String timestamp = jsonData.get("timestamp").toString();
+                
+                for(String version:Detector.storeInfo.fileVersions.get(sdfsName)){
+                    if(version==timestamp) {
+                    	String filename = sdfsName+"_"+version;
+                        dataOutputStream.writeUTF(filename);  // get file name
+                        fileInputStream = new FileInputStream(Detector.SDFSPath+filename);
+                        IOUtils.copy(fileInputStream,dataOutputStream);
+                        dataOutputStream.flush();
+                    }
                 }
 
             }
