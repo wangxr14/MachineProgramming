@@ -26,6 +26,7 @@ public class MasterInfo {
             if(!nodeFiles.get(node).contains(file)){
                 nodeFiles.get(node).add(file);
                 logger.info("add a file from list of master succeed");
+                logger.info("add to master: node "+node.nodeID+" file "+file);
             }
         }
         else{
