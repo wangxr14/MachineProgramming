@@ -19,7 +19,7 @@ public class MasterInfo {
     Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
     Hashtable<Node, CopyOnWriteArrayList<String>> nodeFiles;
     Hashtable<String,CopyOnWriteArrayList<Pair<Integer,String>>> fileVersions;
-    final int max_versions = 5;
+    final int max_versions = 20;
     final int replicas = 4;
     public MasterInfo(){
         nodeFiles = new Hashtable<>();
@@ -235,8 +235,8 @@ public class MasterInfo {
             System.out.println("Node "+file.nodeID);
         }
     }
-    public ArrayList<Node> getKVersionsNode(String sdfsName,int k){
-        ArrayList<Node> nodeList = new ArrayList<>();
+    public ArrayList<Pair<Node,String>> getKVersionsNode(String sdfsName,int k){
+        ArrayList<Pair<Node,String>> nodeList = new ArrayList<>();
         for(int i=fileVersions.get(sdfsName).size()-1;i>=0;i--){
             if(k==0)
                 break;
@@ -246,7 +246,8 @@ public class MasterInfo {
             node.nodeID = fileVersions.get(sdfsName).get(i).getKey();
             node.nodeAddr = Detector.nodeAddrPortList.get(node.nodeID).getKey();
             node.nodePort  = Detector.nodeAddrPortList.get(node.nodeID).getValue();
-            nodeList.add(node);
+            Pair<Node,String> p = new ImmutablePair<>(node,fileVersions.get(sdfsName).get(i).getValue());
+            nodeList.add(p);
             k--;
         }
         return nodeList;

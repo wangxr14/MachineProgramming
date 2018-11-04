@@ -12,7 +12,7 @@ public class StoreInfo {
     public CopyOnWriteArrayList<String> fileLists;
     public Hashtable<String,CopyOnWriteArrayList<String>> fileVersions;
     Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
-    final int max_versions = 5;
+    final int max_versions = 20;
     Node mynode;
     public void initFileLists(Node node){
         mynode = node;

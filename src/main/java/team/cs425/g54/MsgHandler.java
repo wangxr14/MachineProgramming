@@ -2,6 +2,7 @@ package team.cs425.g54;
 
 //import main.java.team.cs425.g54.Node;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -166,7 +167,23 @@ public class MsgHandler extends Thread{
         }
         return nodeListJson.toString();
     }
-
+    public String packPairToJson(ArrayList<Pair<Node,String>> plist,String sdfsFile){
+        JSONArray jsonArray = new JSONArray();
+        try {
+            for(Pair<Node,String> p:plist){
+                JSONObject obj = new JSONObject();
+                obj.put("nodeID",p.getKey().nodeID);
+                obj.put("nodeAddr",p.getKey().nodeAddr);
+                obj.put("nodePort",p.getKey().nodePort);
+                obj.put("sdfsName",sdfsFile);
+                obj.put("timestamp",p.getValue());
+                jsonArray.put(obj);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonArray.toString();
+    }
     public void updateNodeInfo(JSONObject jsonData ){
         try {
             Node node = new Node();
@@ -572,6 +589,11 @@ public class MsgHandler extends Thread{
                 }
                 else if(command.equals("get_version")){
                     String sdfsFile = jsonData.get("sdfsName").toString();
+                    int num = jsonData.getInt("versionNum");
+                    ArrayList<Pair<Node,String>> plist = Detector.masterInfo.getKVersionsNode(sdfsFile,num);
+                    String msg = packPairToJson(plist,sdfsFile);
+                    DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                    server.send(send_msg);
                 }
                 else if(command.equals("delete")){
                     String sdfsFile = jsonData.get("sdfsName").toString();
