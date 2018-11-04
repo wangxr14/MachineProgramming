@@ -163,8 +163,10 @@ public class Pinger extends Thread{
 	}
 
 	public void updateMaster(Node node) {
-		if(node.nodeID==Detector.master.nodeID) {
-			Detector.master=groupList.get(0);
+		if (Detector.master!=null) {
+			if(node.nodeID==Detector.master.nodeID) {
+				Detector.master=groupList.get(0);
+			}
 		}
 	}
 	
