@@ -51,7 +51,11 @@ public class MasterInfo {
                 nodeFiles.get(node).remove(file);
                 logger.info("remove a file from list of master succeed");
             }
+
         }
+        if(fileVersions.containsKey(file))
+            fileVersions.remove(file);
+
     }
     public void deleteNodeAllFiles(Node node){
     	logger.info("Now begins");
