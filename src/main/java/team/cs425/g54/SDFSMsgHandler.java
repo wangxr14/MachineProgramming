@@ -94,7 +94,7 @@ public class SDFSMsgHandler extends Thread{
                 // update master info
                 if(serverNode.nodeID == Detector.master.nodeID){
                     Detector.masterInfo.addNodeFile(serverNode,sdfsName);
-                    Detector.masterInfo.updateFileVersion(sdfsName,timestamp);
+                    Detector.masterInfo.updateFileVersion(serverNode,sdfsName,timestamp);
 
                 }
                 else{

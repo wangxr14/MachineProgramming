@@ -52,16 +52,16 @@ public class StoreInfo {
         }
         if (!fileVersions.get(name).contains(timestamp))
             fileVersions.get(name).add(timestamp);
-        while(fileVersions.get(name).size()>max_versions) {
-            String deleteName = name+"_"+fileVersions.get(name).get(0);
-            File deleteFile = new File(deleteName);  // delete old version
-            if(deleteFile.delete()){
-                logger.info("delete old version "+deleteName+" successfully..");
-            }
-            else
-                logger.info("file delete failed...");
-            fileVersions.remove(0);
-        }
+//        while(fileVersions.get(name).size()>max_versions) {
+//            String deleteName = name+"_"+fileVersions.get(name).get(0);
+//            File deleteFile = new File(deleteName);  // delete old version
+//            if(deleteFile.delete()){
+//                logger.info("delete old version "+deleteName+" successfully..");
+//            }
+//            else
+//                logger.info("file delete failed...");
+//            fileVersions.remove(0);
+//        }
 
     }
     public void deleteFileUpdate(String name){
@@ -99,7 +99,8 @@ public class StoreInfo {
         return result;
     }
     public String getLatestVersion(String name){
-        if(fileVersions.contains(name))
+        logger.info("Getting sdfsfile "+name);
+        if(fileVersions.containsKey(name))
             return fileVersions.get(name).get(fileVersions.get(name).size()-1);
         return "NULL";
     }
