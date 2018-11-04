@@ -160,6 +160,7 @@ public class MasterInfo {
             Node res = entry.getKey();
             if(nodeFiles.get(res).contains(file)){
                 nodeList.add(res);
+                logger.info("node "+res.nodeID);
             }
         }
         logger.info("get file for ls done");
