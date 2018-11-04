@@ -95,6 +95,7 @@ public class SDFSMsgHandler extends Thread{
                 if(serverNode.nodeID == Detector.master.nodeID){
                     Detector.masterInfo.addNodeFile(serverNode,sdfsName);
                     Detector.masterInfo.updateFileVersion(sdfsName,timestamp);
+
                 }
                 else{
                     String msg = packSendAddMsg(sdfsName,timestamp);

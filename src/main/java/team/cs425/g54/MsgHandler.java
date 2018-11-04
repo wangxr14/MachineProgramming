@@ -586,7 +586,11 @@ public class MsgHandler extends Thread{
                 }
                 else if(command.equals("updateDeletefile")){
                     String sdfsName = jsonData.get("sdfsName").toString();
-                    Detector.masterInfo.deleteNodeFile(serverNode, sdfsName);
+                    Node node = new Node();
+                    node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                    node.nodeAddr = jsonData.get("nodeAddr").toString();
+                    node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
+                    Detector.masterInfo.deleteNodeFile(node, sdfsName);
                 }
             }
             else if(messageType.equals("requset")){ // send node info to new master
