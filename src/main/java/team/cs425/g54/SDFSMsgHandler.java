@@ -26,8 +26,50 @@ public class SDFSMsgHandler extends Thread{
     FileOutputStream fileOutputStream;
     Socket socket;
 
+    String packSendAddMsg(String file,String timestamp){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("sdfsName",file);
+            obj.put("timestamp",timestamp);
+            obj.put("command","updateAddfile");
+            obj.put("type","toMaster");
+            obj.put("nodeID",serverNode.nodeID);
+            obj.put("nodeAddr",serverNode.nodeAddr);
+            obj.put("nodePort",serverNode.nodePort);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj.toString();
+    }
+    String packSendDeleteMsg(String file){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("sdfsName",file);
+            obj.put("type","toMaster");
+            obj.put("command","updateDeletefile");
+            obj.put("nodeID",serverNode.nodeID);
+            obj.put("nodeAddr",serverNode.nodeAddr);
+            obj.put("nodePort",serverNode.nodePort);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj.toString();
+    }
+    public void sendPackageToMaster(String msg){
+        try {
+            InetAddress address = InetAddress.getByName(Detector.master.nodeAddr);
+            DatagramPacket send_message = new DatagramPacket(msg.getBytes(), msg.getBytes().length, address, Detector.master.nodePort);
+            DatagramSocket ds = new DatagramSocket();
+            ds.send(send_message);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-
+    }
     public void run(){
 
         try{
@@ -50,8 +92,14 @@ public class SDFSMsgHandler extends Thread{
                 logger.info("file writtern ...");
                 Detector.storeInfo.addFileUpdate(sdfsName,timestamp); // update the file list and clean old version on disk
                 // update master info
-                Detector.masterInfo.addNodeFile(serverNode,sdfsName);
-                Detector.masterInfo.updateFileVersion(sdfsName,timestamp);
+                if(serverNode.nodeID == Detector.master.nodeID){
+                    Detector.masterInfo.addNodeFile(serverNode,sdfsName);
+                    Detector.masterInfo.updateFileVersion(sdfsName,timestamp);
+                }
+                else{
+                    String msg = packSendAddMsg(sdfsName,timestamp);
+                    sendPackageToMaster(msg);
+                }
 
             }
 
@@ -93,7 +141,13 @@ public class SDFSMsgHandler extends Thread{
             else if(messageType.equals("delete")){
                 String sdfsName = jsonData.get("sdfsName").toString();
                 Detector.storeInfo.deleteFileUpdate(sdfsName); // update the list
-                Detector.masterInfo.deleteNodeFile(serverNode,sdfsName);
+                if(serverNode.nodeID == Detector.master.nodeID) {
+                    Detector.masterInfo.deleteNodeFile(serverNode, sdfsName);
+                }
+                else{
+                    String msg = packSendDeleteMsg(sdfsName);
+                    sendPackageToMaster(msg);
+                }
             }
             else if(messageType.equals("store")){  // checked
                 Detector.storeInfo.showFiles();
