@@ -446,7 +446,12 @@ public class Detector {
 
 			String dpRecivedData = new String(dpReceived.getData());
 			ArrayList<Node> nodes = getNodeList(dpRecivedData);
-
+			
+			if(nodes.isEmpty()) {
+				logger.info("This file doesn't exist");
+			}
+				
+			
 			for(Node node:nodes){
 				JSONObject obj2 = new JSONObject();
 				obj2.put("type","get");
@@ -553,9 +558,9 @@ public class Detector {
 			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
 			ds.send(dpSent);
 			ds.receive(dpReceived);
-			//logger.info("Get get version");
 
 			String dpRecivedData = new String(dpReceived.getData());
+			logger.info("Get get versions node list from master "+dpReceived);
 			
 			JSONArray objArray = new JSONArray(dpRecivedData);
 			for (int i = 0; i < objArray.length(); i++) {
@@ -687,7 +692,7 @@ public class Detector {
 					mp.putCommand(cmdInput);
 				}
 				
-				if(cmdInput.toLowerCase().startsWith("get")) {
+				if(cmdInput.toLowerCase().startsWith("get ")) {
 					mp.getCommand(cmdInput);
 				}
 				
