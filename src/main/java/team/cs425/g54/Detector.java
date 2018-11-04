@@ -564,7 +564,7 @@ public class Detector {
 				node.nodeID = Integer.parseInt(jsonNode.get("nodeID").toString());
 				node.nodePort = Integer.parseInt(jsonNode.get("nodePort").toString());
 				
-				String sdfsfile=jsonNode.get("sdfsName").toString();
+				//String sdfsfile=jsonNode.get("sdfsName").toString();
 				String timestamp=jsonNode.get("timestamp").toString();
 				
 				JSONObject obj2 = new JSONObject();
