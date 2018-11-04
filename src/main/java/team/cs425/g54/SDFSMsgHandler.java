@@ -129,6 +129,7 @@ public class SDFSMsgHandler extends Thread{
                         dataOutputStream.flush();
                     }
                 }
+                dataOutputStream.close();
                 System.out.println("get_version done");
 
             }
