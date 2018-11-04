@@ -26,7 +26,7 @@ public class MasterInfo {
             if(!nodeFiles.get(node).contains(file)){
                 nodeFiles.get(node).add(file);
                 logger.info("add a file from list of master succeed");
-                logger.info("add to master: node "+node.nodeID+" file "+file);
+                logger.info("existed add to master: node "+node.nodeID+" file "+file);
             }
         }
         else{
@@ -160,6 +160,7 @@ public class MasterInfo {
         ArrayList<Node> nodeList = new ArrayList<>();
 
         for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
+            logger.info("master store node"+entry.getKey());
             Node res = entry.getKey();
             if(nodeFiles.get(res).contains(file)){
                 nodeList.add(res);
@@ -188,7 +189,12 @@ public class MasterInfo {
         }
         return fileList;
     }
-
+    public void printMasterNode(){
+        logger.info("master store node");
+        for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
+            System.out.println(entry.getKey());
+        }
+    }
 
 
 }

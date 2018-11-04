@@ -55,13 +55,13 @@ public class SDFSMsgHandler extends Thread{
 
             }
 
-            else if(messageType.equals("ls")){
-                String sdfsName = jsonData.get("sdfsName").toString();
-                String result = "true";
-                if(!Detector.storeInfo.hasFile(sdfsName))
-                    result = "false";
-                dataOutputStream.writeUTF(result);
-            }
+//            else if(messageType.equals("ls")){
+//                String sdfsName = jsonData.get("sdfsName").toString();
+//                String result = "true";
+//                if(!Detector.storeInfo.hasFile(sdfsName))
+//                    result = "false";
+//                dataOutputStream.writeUTF(result);
+//            }
             else if(messageType.equals("get_version")){
                 String sdfsName = jsonData.get("sdfsName").toString();
                 int num = Integer.parseInt(jsonData.get("versionNum").toString());

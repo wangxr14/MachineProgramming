@@ -583,6 +583,7 @@ public class Detector {
 
 			String dpRecivedData = new String(dpReceived.getData());
 			ArrayList<Node> nodes = getNodeList(dpRecivedData);
+
 		} catch (SocketException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
@@ -653,6 +654,9 @@ public class Detector {
 				}
 				if(cmdInput.toLowerCase().contains("ls")){
 						mp.lsCommand(cmdInput);
+				}
+				if(cmdInput.toLowerCase().equals("msshow")) {
+					Detector.masterInfo.printMasterNode();
 				}
 
 			} catch (IOException e) {
