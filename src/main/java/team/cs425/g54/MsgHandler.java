@@ -494,12 +494,14 @@ public class MsgHandler extends Thread{
                     totalMemberList.remove(nodeIndex);
                     renewMemberList();
                   //update master
-                    if(failNode.nodeID == Detector.master.nodeID) {
-                    	Detector.master=totalMemberList.get(0);
-                    }
-                    if(Detector.master.nodeID==serverNode.nodeID){ // check if it needs to send rereplica
-                        Detector.masterInfo.deleteNodeAllFiles(failNode);
-                        sendReReplicaRequest();
+                    if(Detector.master!= null) {
+	                    if(failNode.nodeID == Detector.master.nodeID) {
+	                    	Detector.master=totalMemberList.get(0);
+	                    }
+	                    if(Detector.master.nodeID==serverNode.nodeID){ // check if it needs to send rereplica
+	                        Detector.masterInfo.deleteNodeAllFiles(failNode);
+	                        sendReReplicaRequest();
+	                    }
                     }
                     broadcast(messageType,failNode);
                 
@@ -519,14 +521,17 @@ public class MsgHandler extends Thread{
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
                     renewMemberList();
-                    if(node.nodeID == Detector.master.nodeID) {
-                        Detector.master=totalMemberList.get(0);
-                    }
-                    if(Detector.master.nodeID==serverNode.nodeID){ // check if it needs to send rereplica
-                        Detector.masterInfo.deleteNodeAllFiles(node);
-                        sendReReplicaRequest();
+                    if(Detector.master!= null) {
+	                    if(node.nodeID == Detector.master.nodeID) {
+	                        Detector.master=totalMemberList.get(0);
+	                    }
+	                    if(Detector.master.nodeID==serverNode.nodeID){ // check if it needs to send rereplica
+	                        Detector.masterInfo.deleteNodeAllFiles(node);
+	                        sendReReplicaRequest();
+	                    }
                     }
                     broadcast(messageType,node);
+                    
                 }
 
             }
