@@ -66,13 +66,12 @@ public class MasterInfo {
         }
         for(String file:files){
             int flag = 0;
-            for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
-                if(entry.getValue().contains(file)){
-                    flag = 1;
-                    break;
+            for(Pair<Integer,String> p:fileVersions.get(file)){
+                if(p.getKey()==node.nodeID){
+                    fileVersions.get(file).remove(p);
                 }
             }
-            if(flag==0){
+            if(fileVersions.get(file).size()==0){
                 fileVersions.remove(file);
             }
         }
