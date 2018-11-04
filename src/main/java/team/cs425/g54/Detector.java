@@ -660,6 +660,8 @@ public class Detector {
 				System.out.println("Input Your Command:");
 				String cmdInput = new BufferedReader(is_reader).readLine();
 				System.out.println("Get Input:"+cmdInput);
+				long startTime=System.currentTimeMillis()
+				System.out.println("*************Current time is : "+startTime);
 				// Quit this program
 				if(cmdInput.toLowerCase().equals("quit")) {
 					break;
@@ -718,7 +720,11 @@ public class Detector {
 				if(cmdInput.toLowerCase().startsWith("msversion")) {
 					Detector.masterInfo.printVersions();
 				}
-
+				
+				long time=System.currentTimeMillis()-startTime;
+				System.out.println("*************Time to finish is : "+time);
+				
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
