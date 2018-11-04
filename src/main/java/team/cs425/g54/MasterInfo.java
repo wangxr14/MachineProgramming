@@ -196,7 +196,7 @@ public class MasterInfo {
             return nodeList;
         }
         logger.info("no node for file to get...");
-        return null;
+        return nodeList;
     }
     public ArrayList<Node> getNodesForLs(String file){
         ArrayList<Node> nodeList = new ArrayList<>();
