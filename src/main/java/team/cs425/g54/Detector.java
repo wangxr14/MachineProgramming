@@ -33,7 +33,7 @@ public class Detector {
 	public static Node master;
     public static MasterInfo masterInfo = new MasterInfo();
     public static StoreInfo storeInfo = new StoreInfo();
-	public static String SDFSPath = "files/.";
+	public static String SDFSPath = "files/";
 	Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
 
 	Socket clientToNodes;
