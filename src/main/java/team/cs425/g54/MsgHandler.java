@@ -211,6 +211,7 @@ public class MsgHandler extends Thread{
 
     public void sendReReplicaRequest(){
         // check all file, see if replicas is enough
+        logger.info("check replicas status");
         try {
             ArrayList<String> files =  Detector.masterInfo.getAllFiles();
             for(String file:files){
@@ -218,6 +219,7 @@ public class MsgHandler extends Thread{
                 ArrayList<Node> needReplicas = Detector.masterInfo.getrereplicaList(file);
                 if(needReplicas.size()==0)
                     continue;
+                logger.info("file" + file + "need replica");
                 Node replicaNode = replicas.get(0);
                 JSONArray jsonArray = new JSONArray();
                 JSONObject jsonMsg = new JSONObject();

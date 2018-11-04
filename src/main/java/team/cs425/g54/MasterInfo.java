@@ -127,6 +127,7 @@ public class MasterInfo {
     }
     // get all the nodes that have the file
     public ArrayList<Node> hasFileNodes(String file){
+        logger.info("begin hasFileNode");
         ArrayList<Node> nodeList = new ArrayList<>();
         for(Node node : nodeFiles.keySet()){
             if(nodeFiles.get(node).contains(file)){
@@ -137,9 +138,11 @@ public class MasterInfo {
     }
     // return rereplicatList
     public ArrayList<Node> getrereplicaList(String file){
+        logger.info("Begin get reReplicalist");
         ArrayList<Node> curNodes = hasFileNodes(file);
         ArrayList<Node> needRereplica = new ArrayList<>();
         // need to get more replicas;
+        logger.info("cur num of node that have file " + file +": "+curNodes.size());
         if(curNodes.size()<replicas){
             int needs = replicas - curNodes.size();
             needRereplica = reReplicaList(curNodes,needs);
@@ -148,6 +151,7 @@ public class MasterInfo {
     }
     // get nodes that needs for more replicas
     public ArrayList<Node> reReplicaList(ArrayList<Node> cur, int num){
+        logger.info("Begin get reReplicalist");
         ArrayList<Node> result = new ArrayList<>();
         int maxx_id = 0;
         Node max_node = new Node();
@@ -157,11 +161,13 @@ public class MasterInfo {
                 maxx_id = node.nodeID;
             }
         }
-        int id = Detector.findNodeInGroupList(max_node);
-        while(num>0){
-            id = (id+1) % Detector.groupList.size();
+        int origin = Detector.findNodeInGroupList(max_node);
+        int id = (origin+1) % Detector.groupList.size();
+        while(num>0 && id!=origin){
             result.add(Detector.groupList.get(id));
+            id = (id+1) % Detector.groupList.size();
             num--;
+            logger.info("need put replica "+Detector.groupList.get(id).nodeID);
         }
         return result;
     }
