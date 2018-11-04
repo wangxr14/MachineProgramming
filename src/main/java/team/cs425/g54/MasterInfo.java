@@ -237,18 +237,20 @@ public class MasterInfo {
     }
     public ArrayList<Pair<Node,String>> getKVersionsNode(String sdfsName,int k){
         ArrayList<Pair<Node,String>> nodeList = new ArrayList<>();
-        for(int i=fileVersions.get(sdfsName).size()-1;i>=0;i--){
-            if(k==0)
-                break;
-            if(i<fileVersions.get(sdfsName).size()-1 && fileVersions.get(sdfsName).get(i).getValue().equals(fileVersions.get(sdfsName).get(i+1).getValue()))
-                continue;
-            Node node = new Node();
-            node.nodeID = fileVersions.get(sdfsName).get(i).getKey();
-            node.nodeAddr = Detector.nodeAddrPortList.get(node.nodeID).getKey();
-            node.nodePort  = Detector.nodeAddrPortList.get(node.nodeID).getValue();
-            Pair<Node,String> p = new ImmutablePair<>(node,fileVersions.get(sdfsName).get(i).getValue());
-            nodeList.add(p);
-            k--;
+        if(fileVersions.containsKey(sdfsName)) {
+	        for(int i=fileVersions.get(sdfsName).size()-1;i>=0;i--){
+	            if(k==0)
+	                break;
+	            if(i<fileVersions.get(sdfsName).size()-1 && fileVersions.get(sdfsName).get(i).getValue().equals(fileVersions.get(sdfsName).get(i+1).getValue()))
+	                continue;
+	            Node node = new Node();
+	            node.nodeID = fileVersions.get(sdfsName).get(i).getKey();
+	            node.nodeAddr = Detector.nodeAddrPortList.get(node.nodeID).getKey();
+	            node.nodePort  = Detector.nodeAddrPortList.get(node.nodeID).getValue();
+	            Pair<Node,String> p = new ImmutablePair<>(node,fileVersions.get(sdfsName).get(i).getValue());
+	            nodeList.add(p);
+	            k--;
+	        }
         }
         return nodeList;
     }

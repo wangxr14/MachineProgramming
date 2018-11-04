@@ -560,7 +560,7 @@ public class Detector {
 			ds.receive(dpReceived);
 
 			String dpRecivedData = new String(dpReceived.getData());
-			logger.info("Get get versions node list from master "+dpReceived);
+			logger.info("Get get versions node list from master ");
 			
 			JSONArray objArray = new JSONArray(dpRecivedData);
 			for (int i = 0; i < objArray.length(); i++) {
@@ -570,7 +570,8 @@ public class Detector {
 				node.nodeID = Integer.parseInt(jsonNode.get("nodeID").toString());
 				node.nodePort = Integer.parseInt(jsonNode.get("nodePort").toString());
 				
-				//String sdfsfile=jsonNode.get("sdfsName").toString();
+				System.out.println("Begin to read from node "+node.nodeID);
+				
 				String timestamp=jsonNode.get("timestamp").toString();
 				
 				JSONObject obj2 = new JSONObject();
@@ -582,9 +583,12 @@ public class Detector {
 				output.writeUTF(obj2.toString());
 				DataInputStream input =  new DataInputStream(clientToNodes.getInputStream());
 				FileOutputStream fos = new FileOutputStream(SDFSPath+local,true);
+				System.out.println("copy stream");
 				IOUtils.copy(input,fos);
+				System.out.println("flush stream");
 				fos.flush();
 				clientToNodes.close();
+				System.out.println("Read from node done"+node.nodeID);
 			}
 
 		} catch (JSONException e) {
