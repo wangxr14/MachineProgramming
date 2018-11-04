@@ -286,6 +286,12 @@ public class Detector {
 		}
 	}
 	
+	public void printNodeList(ArrayList<Node> nodeList) {
+		for(Node node:nodeList) {
+			System.out.println(node.nodeInfoToString());
+		}
+	}
+	
     // get jsondata into nodelist
 	public ArrayList<Node> getNodeList(String str){
 		logger.info("LSjson "+str);
@@ -606,7 +612,8 @@ public class Detector {
 
 			String dpRecivedData = new String(dpReceived.getData());
 			ArrayList<Node> nodes = getNodeList(dpRecivedData);
-
+			printNodeList(nodes);
+			
 		} catch (SocketException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
@@ -626,7 +633,7 @@ public class Detector {
 		mp.init();
 		// User input
 		// Display node list
-		mp.showNodeAddrPortList();
+		// mp.showNodeAddrPortList();
 		InputStreamReader is_reader = new InputStreamReader(System.in);
 		while(true) {
 			try {

@@ -265,6 +265,23 @@ public class MsgHandler extends Thread{
 
     }
 
+    public void deleteVersion(String sdfsName, String timestamp) {
+    	// Remove the file from local file system
+    	String filepath=Detector.SDFSPath+sdfsName+"_"+timestamp;
+    	File deleteFile = new File(filepath);  
+        if(deleteFile.delete()){
+        	// Remove it from the list
+        	for(int i=0; i<Detector.storeInfo.fileVersions.get(sdfsName).size();i++) {
+        		if(Detector.storeInfo.fileVersions.get(sdfsName).get(i)==timestamp) {
+        			Detector.storeInfo.fileVersions.get(sdfsName).remove(i);
+        		}
+        	}
+        	logger.info("delete old version "+filepath+" successfully..");
+        }
+        else
+            logger.info("file delete failed...");
+    }
+    
     // TODO: Change the input. Use other functions to pack the messages
     public void broadcast(String messageType, Node node){
         // introducer broadcast join message to all nodes
@@ -601,7 +618,11 @@ public class MsgHandler extends Thread{
             else if(messageType.equals("reReplica")){
                 dealReReplicaRequest(jsonData);
             }
-
+            else if(messageType.equals("deleteVersion")) {
+            	String timestamp = jsonData.get("timestamp").toString();
+            	String sdfsName = jsonData.get("sdfsName").toString();
+            	deleteVersion(sdfsName, timestamp);
+            }
 
 
         }catch (JSONException e){
