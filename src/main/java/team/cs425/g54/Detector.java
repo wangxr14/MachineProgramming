@@ -446,7 +446,12 @@ public class Detector {
 
 			String dpRecivedData = new String(dpReceived.getData());
 			ArrayList<Node> nodes = getNodeList(dpRecivedData);
-
+			
+			if(nodes.isEmpty()) {
+				logger.info("This file doesn't exist");
+			}
+				
+			
 			for(Node node:nodes){
 				JSONObject obj2 = new JSONObject();
 				obj2.put("type","get");
