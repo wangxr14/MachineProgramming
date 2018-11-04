@@ -553,9 +553,9 @@ public class Detector {
 			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
 			ds.send(dpSent);
 			ds.receive(dpReceived);
-			//logger.info("Get get version");
 
 			String dpRecivedData = new String(dpReceived.getData());
+			logger.info("Get get versions node list from master "+dpReceived);
 			
 			JSONArray objArray = new JSONArray(dpRecivedData);
 			for (int i = 0; i < objArray.length(); i++) {
