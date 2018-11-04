@@ -546,9 +546,16 @@ public class MsgHandler extends Thread{
             }
             else if(messageType.equals("toMaster") && serverNode.nodeID==Detector.master.nodeID){   // master receiving msg, and I am master
                 String command = jsonData.get("command").toString();
-                if(command.equals("get") || command.equals("delete") || command.equals("get_version") ){
+                if(command.equals("get") || command.equals("get_version") ){
                     String sdfsFile = jsonData.get("sdfsName").toString();
                     ArrayList<Node> nodes = Detector.masterInfo.getNodeToGetFile(sdfsFile);
+                    String msg = packNodesToJson(nodes);
+                    DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                    server.send(send_msg);
+                }
+                else if(command.equals("delete")){
+                    String sdfsFile = jsonData.get("sdfsName").toString();
+                    ArrayList<Node> nodes = Detector.masterInfo.getNodesForLs(sdfsFile);
                     String msg = packNodesToJson(nodes);
                     DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                     server.send(send_msg);
