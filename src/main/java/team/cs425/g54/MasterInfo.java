@@ -32,7 +32,7 @@ public class MasterInfo {
 
 
     public void addNodeFile(Node node,String file){
-        if(NodeFilesContains(node)){
+        if(nodeFiles.containsKey(node)){
             if(!nodeFiles.get(node).contains(file)){
                 nodeFiles.get(node).add(file);
                 logger.info("add a file from list of master succeed");
@@ -77,7 +77,7 @@ public class MasterInfo {
 
     }
     public void updateFileVersion(String file,String timestamp){
-        if(fileVersions.contains(file)){
+        if(fileVersions.containsKey(file)){
             fileVersions.get(file).add(timestamp);
             while(fileVersions.get(file).size()>max_versions){
                 fileVersions.get(file).remove(0);
@@ -183,7 +183,7 @@ public class MasterInfo {
 
     public CopyOnWriteArrayList<String> getNodeFiles(Node node){
         CopyOnWriteArrayList<String> result =  new CopyOnWriteArrayList<>();
-        if(nodeFiles.contains(node))
+        if(nodeFiles.containsKey(node))
             return nodeFiles.get(node);
         return result;
     }
