@@ -579,8 +579,10 @@ public class Detector {
 	}
 	public void lsCommand(String cmdInput){
 		String[] command = cmdInput.split(" ");
-		if(command.length<2)
+		if(command.length<2) {
+			System.out.println("Invalid input, please try again;");
 			return;
+		}
 		String sdfsName = command[1];
 
 		try {
@@ -659,25 +661,32 @@ public class Detector {
 				if(cmdInput.toLowerCase().equals("master")) {
 					mp.setMaster();
 				}
+				// File operations
 				if(cmdInput.toLowerCase().equals("store")) {
 				    storeInfo.showFiles();
 				}
-				if(cmdInput.toLowerCase().contains("put")){
+				
+				if(cmdInput.toLowerCase().startsWith("put")){
 					mp.putCommand(cmdInput);
 				}
-				if(cmdInput.toLowerCase().contains("get")) {
+				
+				if(cmdInput.toLowerCase().startsWith("get")) {
 					mp.getCommand(cmdInput);
 				}
-					if(cmdInput.toLowerCase().contains("delete")) {
-						mp.deleteCommand(cmdInput);
-					}
-				if(cmdInput.toLowerCase().contains("get_version")) {
+				
+				if(cmdInput.toLowerCase().startsWith("delete")) {
+					mp.deleteCommand(cmdInput);
+				}
+				
+				if(cmdInput.toLowerCase().startsWith("get_version")) {
 						mp.getVersionCommand(cmdInput);
 				}
-				if(cmdInput.toLowerCase().contains("ls")){
+				
+				if(cmdInput.toLowerCase().startsWith("ls")){
 						mp.lsCommand(cmdInput);
 				}
-				if(cmdInput.toLowerCase().equals("msshow")) {
+				
+				if(cmdInput.toLowerCase().startsWith("msshow")) {
 					Detector.masterInfo.printMasterNode();
 				}
 

@@ -539,7 +539,7 @@ public class MsgHandler extends Thread{
             	logger.info("Node "+node.nodeID+" is set as master");
             	Detector.master=node;
             }
-            else if(messageType.equals("toMaster")){   // master receiving msg
+            else if(messageType.equals("toMaster") && serverNode.nodeID==Detector.master.nodeID){   // master receiving msg, and I am master
                 String command = jsonData.get("command").toString();
                 if(command.equals("get") || command.equals("delete") || command.equals("get_version") ){
                     String sdfsFile = jsonData.get("sdfsName").toString();
