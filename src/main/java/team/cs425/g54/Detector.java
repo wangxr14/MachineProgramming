@@ -3,9 +3,13 @@ package team.cs425.g54;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -22,6 +26,9 @@ public class Detector {
 	// Make sure they are thread-safe
 	public static CopyOnWriteArrayList<Node> membershipList = new CopyOnWriteArrayList<Node>();
 	public static CopyOnWriteArrayList<Node> groupList = new CopyOnWriteArrayList<Node>();
+	// Store (node id, (node addr, node port)) for quick search
+	public static Hashtable<Integer,Pair<String,Integer>> nodeAddrPortList = new Hashtable<Integer, Pair<String,Integer>>();
+	
 	// Listen & Ping
 	public Listener listener;
 	public SDFSListener sdfsListener;
@@ -55,10 +62,13 @@ public class Detector {
     			int id= Integer.parseInt(splites[0]);
     			String addr = splites[1];
     			int port = Integer.parseInt(splites[2]);
+    			// Add into nodeList
+    			Pair<String, Integer> pair = new ImmutablePair<>(addr,port);
+    			nodeAddrPortList.put(id, pair);
     			
     			if(id==myID) {
     				myNode=new Node(id,addr,port);
-    				return;
+    				//return;
     			}
     			line=in.readLine();
     		}
@@ -67,9 +77,11 @@ public class Detector {
     		e.printStackTrace();
     	}
 	}
-
+	
 	public void init() {
+		// Read config file, set node information
 		setConfig();
+		
 		pinger = new Pinger(myNode, pingerPort, membershipList, groupList);
 		pinger.start();
 
@@ -265,6 +277,15 @@ public class Detector {
             System.out.println("Nobody");
         }
     }
+	
+	public void showNodeAddrPortList() {
+		Set<Integer> keys = nodeAddrPortList.keySet();
+		for (Integer key: keys) {
+			System.out.println("Node "+key+" has addr and port:");
+			System.out.println(nodeAddrPortList.get(key).getKey()+" , "+nodeAddrPortList.get(key).getValue());
+		}
+	}
+	
     // get jsondata into nodelist
 	public ArrayList<Node> getNodeList(String str){
 		logger.info("LSjson "+str);
@@ -602,7 +623,8 @@ public class Detector {
 		Detector mp = new Detector();
 		mp.init();
 		// User input
-
+		// Display node list
+		mp.showNodeAddrPortList();
 		InputStreamReader is_reader = new InputStreamReader(System.in);
 		while(true) {
 			try {
