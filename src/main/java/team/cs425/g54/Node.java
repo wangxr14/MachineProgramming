@@ -33,7 +33,8 @@ public class Node {
 	}
 
 	public String nodeInfoToString() {
-		return ""+this.nodeID+";"+this.nodeAddr+";"+this.nodePort;
+
+		return "" + this.nodeID + ";" + this.nodeAddr + ";" + this.nodePort;
 	}
 
 	public int hashCode() {

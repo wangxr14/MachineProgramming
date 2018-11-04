@@ -183,7 +183,7 @@ public class MsgHandler extends Thread{
                 }
             }
             if(Detector.masterInfo.getNodeFilesSize()==Detector.groupList.size()){
-
+                sendReReplicaRequest();
             }
 
         } catch (JSONException e) {
@@ -569,6 +569,16 @@ public class MsgHandler extends Thread{
                 else if(command.equals("updateNodeInfo")){
                     updateNodeInfo(jsonData);
                 }
+                else if(command.equals("updateAddfile")){
+                    String sdfsName = jsonData.get("sdfsName").toString();
+                    String timestamp = jsonData.get("timestamp").toString();
+                    Detector.masterInfo.addNodeFile(serverNode,sdfsName);
+                    Detector.masterInfo.updateFileVersion(sdfsName,timestamp);
+                }
+                else if(command.equals("updateDeletefile")){
+                    String sdfsName = jsonData.get("sdfsName").toString();
+                    Detector.masterInfo.deleteNodeFile(serverNode, sdfsName);
+                }
             }
             else if(messageType.equals("requset")){ // send node info to new master
                 String msg = packNodeInfo().toString();
@@ -576,7 +586,7 @@ public class MsgHandler extends Thread{
                 server.send(send_msg);
             }
             else if(messageType.equals("reReplica")){
-
+                dealReReplicaRequest(jsonData);
             }
 
 
