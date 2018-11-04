@@ -4,6 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.jcraft.jsch.Logger;
+
 import java.io.*;
 import java.lang.reflect.Array;
 import java.net.*;
@@ -124,6 +126,7 @@ public class SDFSMsgHandler extends Thread{
                         dataOutputStream.flush();
                     }
                 }
+                System.out.println("get_version done");
 
             }
             else if(messageType.equals("get")){

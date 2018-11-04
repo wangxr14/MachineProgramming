@@ -583,7 +583,9 @@ public class Detector {
 				output.writeUTF(obj2.toString());
 				DataInputStream input =  new DataInputStream(clientToNodes.getInputStream());
 				FileOutputStream fos = new FileOutputStream(SDFSPath+local,true);
+				System.out.println("copy stream");
 				IOUtils.copy(input,fos);
+				System.out.println("flush stream");
 				fos.flush();
 				clientToNodes.close();
 				System.out.println("Read from node done"+node.nodeID);
