@@ -54,8 +54,9 @@ public class MasterInfo {
         }
     }
     public void deleteNodeAllFiles(Node node){
+    	logger.info("Now begins");
         CopyOnWriteArrayList<String> files = nodeFiles.get(node);
-
+        logger.info("contains node? "+nodeFiles.containsKey(node));
         if(nodeFiles.containsKey(node)){
             nodeFiles.remove(node);
             logger.info("remove a node to master succeed");

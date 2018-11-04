@@ -559,7 +559,8 @@ public class MsgHandler extends Thread{
 	                        Detector.master=totalMemberList.get(0);
 	                    }
 	                    if(Detector.master.nodeID==serverNode.nodeID){ // check if it needs to send rereplica
-	                        Detector.masterInfo.deleteNodeAllFiles(node);
+	                        logger.info("I am master and now I'm going to delete node "+node.nodeID);
+	                    	Detector.masterInfo.deleteNodeAllFiles(node);
 	                        sendReReplicaRequest();
 	                    }
                     }
