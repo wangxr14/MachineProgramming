@@ -687,7 +687,7 @@ public class Detector {
 					mp.putCommand(cmdInput);
 				}
 				
-				if(cmdInput.toLowerCase().startsWith("get")) {
+				if(cmdInput.toLowerCase().startsWith("get ")) {
 					mp.getCommand(cmdInput);
 				}
 				
