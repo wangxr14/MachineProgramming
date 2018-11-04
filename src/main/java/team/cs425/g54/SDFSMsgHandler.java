@@ -17,11 +17,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static team.cs425.g54.MsgHandler.logger;
 
 public class SDFSMsgHandler extends Thread{
-    SDFSMsgHandler(Socket socket,Node node){
+    SDFSMsgHandler(Socket socket,Node node,Node udpNode){
         this.socket = socket;
         this.serverNode = node;
+        this.udpNode = node;
+        this.udpNode = udpNode;
     }
     Node serverNode;
+    Node udpNode;
     DataInputStream dataInputStream;
     DataOutputStream dataOutputStream;
     FileInputStream fileInputStream;
@@ -37,7 +40,7 @@ public class SDFSMsgHandler extends Thread{
             obj.put("type","toMaster");
             obj.put("nodeID",serverNode.nodeID);
             obj.put("nodeAddr",serverNode.nodeAddr);
-            obj.put("nodePort",serverNode.nodePort);
+            obj.put("nodePort",udpNode.nodePort); // for udp msg
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -51,7 +54,7 @@ public class SDFSMsgHandler extends Thread{
             obj.put("command","updateDeletefile");
             obj.put("nodeID",serverNode.nodeID);
             obj.put("nodeAddr",serverNode.nodeAddr);
-            obj.put("nodePort",serverNode.nodePort);
+            obj.put("nodePort",udpNode.nodePort);  // for udp msg
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -95,8 +98,8 @@ public class SDFSMsgHandler extends Thread{
                 Detector.storeInfo.addFileUpdate(sdfsName,timestamp); // update the file list and clean old version on disk
                 // update master info
                 if(serverNode.nodeID == Detector.master.nodeID){
-                    Detector.masterInfo.addNodeFile(serverNode,sdfsName);
-                    Detector.masterInfo.updateFileVersion(serverNode,sdfsName,timestamp);
+                    Detector.masterInfo.addNodeFile(udpNode,sdfsName);
+                    Detector.masterInfo.updateFileVersion(udpNode,sdfsName,timestamp);
 
                 }
                 else{
@@ -147,7 +150,7 @@ public class SDFSMsgHandler extends Thread{
                 String sdfsName = jsonData.get("sdfsName").toString();
                 Detector.storeInfo.deleteFileUpdate(sdfsName); // update the list
                 if(serverNode.nodeID == Detector.master.nodeID) {
-                    Detector.masterInfo.deleteNodeFile(serverNode, sdfsName);
+                    Detector.masterInfo.deleteNodeFile(udpNode, sdfsName);
                 }
                 else{
                     String msg = packSendDeleteMsg(sdfsName);

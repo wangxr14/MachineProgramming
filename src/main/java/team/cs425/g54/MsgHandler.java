@@ -561,6 +561,12 @@ public class MsgHandler extends Thread{
                     if(Detector.master!= null) {
 	                    if(node.nodeID == Detector.master.nodeID) {
 	                        Detector.master=totalMemberList.get(0);
+	                        if(serverNode.nodeID!=Detector.master.nodeID){
+	                            String msg = packNodeInfo().toString();
+                                InetAddress address = InetAddress.getByName(Detector.master.nodeAddr);
+                                DatagramPacket send_message = new DatagramPacket(msg.getBytes(), msg.getBytes().length, address, Detector.master.nodePort);
+                                server.send(send_message);
+                            }
 	                    }
 	                    if(Detector.master.nodeID==serverNode.nodeID){ // check if it needs to send rereplica
 	                        logger.info("I am master and now I'm going to delete node "+node.nodeID);

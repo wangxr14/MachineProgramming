@@ -165,9 +165,9 @@ public class MasterInfo {
         int id = (origin+1) % Detector.groupList.size();
         while(num>0 && id!=origin){
             result.add(Detector.groupList.get(id));
+            logger.info("need put replica "+Detector.groupList.get(id).nodeID);
             id = (id+1) % Detector.groupList.size();
             num--;
-            logger.info("need put replica "+Detector.groupList.get(id).nodeID);
         }
         return result;
     }

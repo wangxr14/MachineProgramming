@@ -11,10 +11,13 @@ public class SDFSListener extends Thread{
     boolean isFinished = false;  // whether stop instruction is received
     ServerSocket serverSocket;
     Node serverNode;
+    Node udpNode;
     SDFSListener(Node node,int testNode){
         this.serverNode = new Node(node.nodeID,node.nodeAddr,testNode);
+        this.udpNode = node;
         try {
             serverSocket = new ServerSocket(serverNode.nodePort);
+            this.udpNode = udpNode;
         } catch (IOException e) {
             e.printStackTrace();
             logger.info("sdfs listener not connected");
@@ -34,7 +37,7 @@ public class SDFSListener extends Thread{
             while(!Thread.currentThread().isInterrupted() ) { // running
 //                System.out.println("listerning");
                 Socket receivedSocket = serverSocket.accept(); // build tcp connection receivedSocket is a new socket
-                SDFSMsgHandler sdfsMsgHandler = new SDFSMsgHandler(receivedSocket,serverNode);
+                SDFSMsgHandler sdfsMsgHandler = new SDFSMsgHandler(receivedSocket,serverNode,udpNode);
                 sdfsMsgHandler.start();
             }
         } catch (IOException e) {
