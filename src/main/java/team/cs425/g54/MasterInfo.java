@@ -51,7 +51,11 @@ public class MasterInfo {
                 nodeFiles.get(node).remove(file);
                 logger.info("remove a file from list of master succeed");
             }
+
         }
+        if(fileVersions.containsKey(file))
+            fileVersions.remove(file);
+
     }
     public void deleteNodeAllFiles(Node node){
     	logger.info("Now begins");
@@ -262,5 +266,15 @@ public class MasterInfo {
 	        }
         }
         return nodeList;
+    }
+    public void printVersions(){
+        logger.info("print all versions");
+        for(String file:fileVersions.keySet()){
+            System.out.println("File " +file);
+            for(Pair<Integer,String> p:fileVersions.get(file)){
+                System.out.println("Node "+p.getKey()+" "+p.getValue());
+            }
+            System.out.println();
+        }
     }
 }

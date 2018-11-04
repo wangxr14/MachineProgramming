@@ -194,7 +194,7 @@ public class MsgHandler extends Thread{
             for(int i=0;i<jsonfiles.length();i++){
                 String file = jsonfiles.getString(i);
                 Detector.masterInfo.addNodeFile(node,file);
-                JSONArray jsonVersions = (JSONArray) jsonData.get(file);
+                JSONArray jsonVersions = new JSONArray(jsonData.get(file).toString());
                 for(int j=0;j<jsonVersions.length();j++){
                     Detector.masterInfo.updateFileVersion(node,file,jsonVersions.getString(i));
                 }
