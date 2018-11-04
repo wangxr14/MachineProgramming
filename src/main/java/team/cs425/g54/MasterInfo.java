@@ -21,14 +21,7 @@ public class MasterInfo {
         nodeFiles = new Hashtable<>();
         fileVersions = new Hashtable<>();
     }
-    public boolean NodeFilesContains(Node node){
-        for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
-            Node res = entry.getKey();
-            if(node.nodeID == res.nodeID && node.nodeAddr.equals(res.nodeAddr) && node.nodePort==res.nodePort)
-                return true;
-        }
-        return false;
-    }
+
 
 
     public void addNodeFile(Node node,String file){

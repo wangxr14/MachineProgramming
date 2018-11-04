@@ -99,7 +99,8 @@ public class StoreInfo {
         return result;
     }
     public String getLatestVersion(String name){
-        if(fileVersions.contains(name))
+        logger.info("Getting sdfsfile "+name);
+        if(fileVersions.containsKey(name))
             return fileVersions.get(name).get(fileVersions.get(name).size()-1);
         return "NULL";
     }
