@@ -179,7 +179,7 @@ public class MsgHandler extends Thread{
                 Detector.masterInfo.addNodeFile(node,file);
                 JSONArray jsonVersions = (JSONArray) jsonData.get(file);
                 for(int j=0;j<jsonVersions.length();j++){
-                    Detector.masterInfo.updateFileVersion(file,jsonVersions.getString(i));
+                    Detector.masterInfo.updateFileVersion(node,file,jsonVersions.getString(i));
                 }
             }
             if(Detector.masterInfo.getNodeFilesSize()==Detector.groupList.size()){
@@ -546,12 +546,15 @@ public class MsgHandler extends Thread{
             }
             else if(messageType.equals("toMaster") && serverNode.nodeID==Detector.master.nodeID){   // master receiving msg, and I am master
                 String command = jsonData.get("command").toString();
-                if(command.equals("get") || command.equals("get_version") ){
+                if(command.equals("get")){
                     String sdfsFile = jsonData.get("sdfsName").toString();
                     ArrayList<Node> nodes = Detector.masterInfo.getNodeToGetFile(sdfsFile);
                     String msg = packNodesToJson(nodes);
                     DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
                     server.send(send_msg);
+                }
+                else if(command.equals("get_version")){
+                    String sdfsFile = jsonData.get("sdfsName").toString();
                 }
                 else if(command.equals("delete")){
                     String sdfsFile = jsonData.get("sdfsName").toString();
@@ -589,7 +592,7 @@ public class MsgHandler extends Thread{
                     node.nodeAddr = jsonData.get("nodeAddr").toString();
                     node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
                     Detector.masterInfo.addNodeFile(node,sdfsName);
-                    Detector.masterInfo.updateFileVersion(sdfsName,timestamp);
+                    Detector.masterInfo.updateFileVersion(node,sdfsName,timestamp);
                 }
                 else if(command.equals("updateDeletefile")){
                     String sdfsName = jsonData.get("sdfsName").toString();

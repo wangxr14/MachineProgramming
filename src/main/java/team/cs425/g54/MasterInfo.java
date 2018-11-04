@@ -1,10 +1,14 @@
 package team.cs425.g54;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.net.*;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
@@ -14,7 +18,7 @@ import java.util.Hashtable;
 public class MasterInfo {
     Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
     Hashtable<Node, CopyOnWriteArrayList<String>> nodeFiles;
-    Hashtable<String,CopyOnWriteArrayList<String>> fileVersions;
+    Hashtable<String,CopyOnWriteArrayList<Pair<Integer,String>>> fileVersions;
     final int max_versions = 5;
     final int replicas = 4;
     public MasterInfo(){
@@ -70,17 +74,50 @@ public class MasterInfo {
         }
 
     }
-    public void updateFileVersion(String file,String timestamp){
+    public void sendDeleteVersionMsg(Node node,String file, String timestamp){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("type","deleteVersion");
+            obj.put("timestamp",timestamp);
+            obj.put("sdfsName",file);
+            String msg = obj.toString();
+            DatagramSocket dp = new DatagramSocket();
+            InetAddress address = InetAddress.getByName(node.nodeAddr);
+            DatagramPacket send_message = new DatagramPacket(msg.getBytes(), msg.getBytes().length, address, node.nodePort);
+            dp.send(send_message);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void updateFileVersion(Node node,String file,String timestamp){
         if(fileVersions.containsKey(file)){
-            fileVersions.get(file).add(timestamp);
-            while(fileVersions.get(file).size()>max_versions){
-                fileVersions.get(file).remove(0);
+            if(fileVersions.get(file).size()==max_versions){
+                int num = replicas;
+                while(num>0){
+                    Node tmp = new Node();
+                    tmp.nodeID = fileVersions.get(file).get(0).getKey();
+                    tmp.nodeAddr = Detector.nodeAddrPortList.get(tmp.nodeID).getKey();
+                    tmp.nodePort  = Detector.nodeAddrPortList.get(tmp.nodeID).getValue();
+                    sendDeleteVersionMsg(tmp,file,fileVersions.get(file).get(0).getValue());
+                    fileVersions.get(file).remove(0);
+                    num--;
+                }
             }
+            Pair<Integer,String> p = new ImmutablePair<>(node.nodeID,timestamp);
+            fileVersions.get(file).add(p);
             logger.info("update file version from master succeed");
         }
         else{
-            CopyOnWriteArrayList<String> arr = new CopyOnWriteArrayList<>();
-            arr.add(timestamp);
+            CopyOnWriteArrayList<Pair<Integer,String>> arr = new CopyOnWriteArrayList<>();
+            Pair<Integer,String> p = new ImmutablePair<>(node.nodeID,timestamp);
+            arr.add(p);
             fileVersions.put(file,arr);
             logger.info("update file version from master succeed");
         }
@@ -149,13 +186,14 @@ public class MasterInfo {
     // get,get version and delete
     public ArrayList<Node> getNodeToGetFile(String file){
         ArrayList<Node> nodeList = new ArrayList<>();
-        if(nodeFiles==null)
+        if(fileVersions.containsKey(file)){
+            int index = fileVersions.get(file).size()-1;
+            Node node = new Node();
+            node.nodeID = fileVersions.get(file).get(index).getKey();
+            node.nodeAddr = Detector.nodeAddrPortList.get(node.nodeID).getKey();
+            node.nodePort  = Detector.nodeAddrPortList.get(node.nodeID).getValue();
+            nodeList.add(node);
             return nodeList;
-        for(Node node : nodeFiles.keySet()){
-            if(nodeFiles.get(node).contains(file)){
-                nodeList.add(node);
-                return nodeList;
-            }
         }
         logger.info("no node for file to get...");
         return null;
@@ -197,5 +235,20 @@ public class MasterInfo {
             System.out.println("Node "+file.nodeID);
         }
     }
-
+    public ArrayList<Node> getKVersionsNode(String sdfsName,int k){
+        ArrayList<Node> nodeList = new ArrayList<>();
+        for(int i=fileVersions.get(sdfsName).size()-1;i>=0;i--){
+            if(k==0)
+                break;
+            if(i<fileVersions.get(sdfsName).size()-1 && fileVersions.get(sdfsName).get(i).getValue().equals(fileVersions.get(sdfsName).get(i+1).getValue()))
+                continue;
+            Node node = new Node();
+            node.nodeID = fileVersions.get(sdfsName).get(i).getKey();
+            node.nodeAddr = Detector.nodeAddrPortList.get(node.nodeID).getKey();
+            node.nodePort  = Detector.nodeAddrPortList.get(node.nodeID).getValue();
+            nodeList.add(node);
+            k--;
+        }
+        return nodeList;
+    }
 }
