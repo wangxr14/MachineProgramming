@@ -32,6 +32,7 @@ public class MasterInfo {
             CopyOnWriteArrayList<String> arr = new CopyOnWriteArrayList<>();
             arr.add(file);
             nodeFiles.put(node,arr);
+            logger.info("add to master: node "+node.nodeID+" file "+file);
             logger.info("add a file from list of master succeed");
         }
     }
@@ -156,6 +157,7 @@ public class MasterInfo {
     }
     public ArrayList<Node> getNodesForLs(String file){
         ArrayList<Node> nodeList = new ArrayList<>();
+
         for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
             Node res = entry.getKey();
             if(nodeFiles.get(res).contains(file)){
