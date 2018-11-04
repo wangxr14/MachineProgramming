@@ -14,4 +14,24 @@ public class Node {
 	public Node() {
 		
 	}
+
+	public boolean equals(Object obj){
+		if(this == obj){
+			return true;
+		}
+		if(obj == null){
+			return false;
+		}
+		if(!(obj instanceof Node)){
+			return false;
+		}
+		final Node node = (Node)obj;
+		if(node.nodeID ==this.nodeID && node.nodeAddr.equals(this.nodeAddr) && node.nodePort==this.nodePort)
+			return true;
+		else
+			return false;
+	}
+//	public int hashCode() {
+//		return 17+31*nodeAddr.hashCode()+31*nodeID+31*nodePort;
+//	}
 }
