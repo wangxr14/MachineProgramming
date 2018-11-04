@@ -715,6 +715,9 @@ public class Detector {
 				if(cmdInput.toLowerCase().startsWith("msshow")) {
 					Detector.masterInfo.printMasterNode();
 				}
+				if(cmdInput.toLowerCase().startsWith("msversion")) {
+					Detector.masterInfo.printVersions();
+				}
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

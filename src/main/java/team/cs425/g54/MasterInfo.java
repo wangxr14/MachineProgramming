@@ -263,4 +263,14 @@ public class MasterInfo {
         }
         return nodeList;
     }
+    public void printVersions(){
+        logger.info("print all versions");
+        for(String file:fileVersions.keySet()){
+            System.out.println("File " +file);
+            for(Pair<Integer,String> p:fileVersions.get(file)){
+                System.out.println("Node "+p.getKey()+" "+p.getValue());
+            }
+            System.out.println();
+        }
+    }
 }
