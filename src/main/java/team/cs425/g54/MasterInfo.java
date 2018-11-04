@@ -60,6 +60,9 @@ public class MasterInfo {
             nodeFiles.remove(node);
             logger.info("remove a node to master succeed");
         }
+        if(files==null) {
+        	return;
+        }
         for(String file:files){
             int flag = 0;
             for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){

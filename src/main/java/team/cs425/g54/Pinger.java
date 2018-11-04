@@ -170,6 +170,56 @@ public class Pinger extends Thread{
 		}
 	}
 	
+    public void sendReReplicaRequest(){
+        // check all file, see if replicas is enough
+        try {
+            ArrayList<String> files =  Detector.masterInfo.getAllFiles();
+            for(String file:files){
+                ArrayList<Node> replicas = Detector.masterInfo.hasFileNodes(file);
+                ArrayList<Node> needReplicas = Detector.masterInfo.getrereplicaList(file);
+                if(needReplicas.size()==0)
+                    continue;
+                Node replicaNode = replicas.get(0);
+                JSONArray jsonArray = new JSONArray();
+                JSONObject jsonMsg = new JSONObject();
+                jsonMsg.put("type","reReplica");
+                for(Node putReplica:needReplicas){
+                    JSONObject obj = new JSONObject();
+                    obj.put("nodeID",putReplica.nodeID);  // node that need to add replica
+                    obj.put("nodeAddr",putReplica.nodeAddr);
+                    obj.put("nodePort",putReplica.nodePort);
+                    obj.put("sdfsName",file);
+                    jsonArray.put(obj);
+                }
+                // send rereplica request can ask one or ask all
+                jsonMsg.put("NodeArray",jsonArray);
+                InetAddress address = InetAddress.getByName(replicaNode.nodeAddr);
+                logger.info("Introducer send join to all bytes: "+jsonArray.toString().getBytes().length);
+                DatagramPacket send_message = new DatagramPacket(jsonArray.toString().getBytes(), jsonArray.toString().getBytes().length, address, replicaNode.nodePort);
+                DatagramSocket server = new DatagramSocket();
+                server.send(send_message);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // request nodes that have the replica to put replica on new machine
+    }
+	
+	public void checkMasterOperation(Node node) {
+		// If I am master and I detect this failure
+		if(Detector.master!= null) {
+            if(Detector.master.nodeID==myNode.nodeID){ // check if it needs to send rereplica
+                Detector.masterInfo.deleteNodeAllFiles(node);
+                sendReReplicaRequest();
+            }
+        }
+	}
+	
 	public void stopPinger() {
 		stopped = true;
 	}
@@ -210,6 +260,7 @@ public class Pinger extends Thread{
 			receivedResponse = false;
 			removeNode(node);
 			updateMaster(node);
+			checkMasterOperation(node);
 		}catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
