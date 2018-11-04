@@ -145,7 +145,7 @@ public class SDFSMsgHandler extends Thread{
                 fileInputStream = new FileInputStream(Detector.SDFSPath+fileName);
                 IOUtils.copy(fileInputStream,dataOutputStream);
                 dataOutputStream.flush();
-
+                dataOutputStream.close();
             }
             else if(messageType.equals("delete")){
                 String sdfsName = jsonData.get("sdfsName").toString();
