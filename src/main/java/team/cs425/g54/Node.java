@@ -31,7 +31,8 @@ public class Node {
 		else
 			return false;
 	}
-//	public int hashCode() {
-//		return 17+31*nodeAddr.hashCode()+31*nodeID+31*nodePort;
-//	}
+
+	public String nodeInfoToString() {
+		return ""+this.nodeID+";"+this.nodeAddr+";"+this.nodePort;
+	}
 }

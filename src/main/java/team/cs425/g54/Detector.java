@@ -33,10 +33,10 @@ public class Detector {
 	public Listener listener;
 	public SDFSListener sdfsListener;
 	public Pinger pinger;
-	public int pingerPort = 12333;
-	public int nodePort = 12345;
-	public int toNodesPort = 12002;
-	public String configFile="mp.config";
+	public final int pingerPort = 12333;
+	public final int nodePort = 12345;
+	public final int toNodesPort = 12002;
+	public final String configFile="mp.config";
 	public static Node master;
     public static MasterInfo masterInfo = new MasterInfo();
     public static StoreInfo storeInfo = new StoreInfo();
