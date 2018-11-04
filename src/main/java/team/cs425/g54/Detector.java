@@ -342,7 +342,7 @@ public class Detector {
 	static public int findNodeInGroupList(Node node){
 		int index = -1;
 		for(int i=0;i<groupList.size();i++){
-			if(node.nodeID==groupList.get(i).nodeID && node.nodePort==groupList.get(i).nodePort && node.nodeAddr.equals(groupList.get(i).nodeAddr)){
+			if(node.nodeID==groupList.get(i).nodeID){
 				index = i;
 				break;
 			}

@@ -221,6 +221,7 @@ public class MsgHandler extends Thread{
                     continue;
                 logger.info("file" + file + "need replica");
                 Node replicaNode = replicas.get(0);
+                logger.info("ask"+ replicaNode.nodeID+" for file");
                 JSONArray jsonArray = new JSONArray();
                 JSONObject jsonMsg = new JSONObject();
                 jsonMsg.put("type","reReplica");
@@ -234,6 +235,7 @@ public class MsgHandler extends Thread{
                 }
                 // send rereplica request can ask one or ask all
                 jsonMsg.put("NodeArray",jsonArray);
+                logger.info("send msg"+jsonMsg.toString());
                 InetAddress address = InetAddress.getByName(replicaNode.nodeAddr);
                 DatagramPacket send_message = new DatagramPacket(jsonArray.toString().getBytes(), jsonArray.toString().getBytes().length, address, replicaNode.nodePort);
                 server.send(send_message);
