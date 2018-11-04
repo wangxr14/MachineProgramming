@@ -202,8 +202,8 @@ public class MasterInfo {
     }
     public void printMasterNode(){
         logger.info("master store node");
-        for(Map.Entry<Node, CopyOnWriteArrayList<String>> entry : nodeFiles.entrySet()){
-            System.out.println(entry.getKey());
+        for(Node file : nodeFiles.keySet()){
+            System.out.println(file.nodeID);
         }
     }
 
