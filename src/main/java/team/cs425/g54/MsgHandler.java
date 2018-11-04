@@ -593,6 +593,7 @@ public class MsgHandler extends Thread{
                     ArrayList<Pair<Node,String>> plist = Detector.masterInfo.getKVersionsNode(sdfsFile,num);
                     String msg = packPairToJson(plist,sdfsFile);
                     DatagramPacket send_msg = new DatagramPacket(msg.getBytes(),msg.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                    logger.info("get_version from master "+ msg);
                     server.send(send_msg);
                 }
                 else if(command.equals("delete")){
