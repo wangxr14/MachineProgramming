@@ -149,8 +149,7 @@ public class MsgHandler extends Thread{
 
     String packNodesToJson(ArrayList<Node> nodeList){
         JSONObject obj = new JSONObject();
-        if(nodeList.size()==0)
-            return "";
+
         JSONArray nodeListJson = new JSONArray();
         try {
             for (Node member : nodeList) {

@@ -267,6 +267,7 @@ public class Detector {
     }
     // get jsondata into nodelist
 	public ArrayList<Node> getNodeList(String str){
+		logger.info("LSjson "+str);
 		ArrayList<Node> nodes = new ArrayList<>();
 		try {
 			JSONArray objArray = new JSONArray(str);
