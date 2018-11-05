@@ -259,9 +259,11 @@ public class Pinger extends Thread{
 		} catch(SocketTimeoutException e){
 			logger.warning("Node "+node.nodeID+" Fails!=========================================");
 			receivedResponse = false;
-			removeNode(node);
-			updateMaster(node);
-			checkMasterOperation(node);
+			if(containsInstance(groupList,node)>=0){
+				removeNode(node);
+				updateMaster(node);
+				checkMasterOperation(node);
+			}
 		}catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
