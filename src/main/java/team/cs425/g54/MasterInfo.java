@@ -163,6 +163,7 @@ public class MasterInfo {
     // get nodes that needs for more replicas
     public ArrayList<Node> reReplicaList(ArrayList<Node> cur, int num){
         logger.info("Begin get reReplicalist");
+        logger.info("num of need replica"+num);
         ArrayList<Node> result = new ArrayList<>();
         int maxx_id = 0;
         Node max_node = new Node();
@@ -174,7 +175,9 @@ public class MasterInfo {
         }
         int origin = Detector.findNodeInGroupList(max_node);
         int id = (origin+1) % Detector.groupList.size();
+        logger.info("origin id"+origin + "initial id"+ id);
         while(num>0){
+            logger.info("inRelist(cur,id) "+inRelist(cur,id) + "cur "+ id);
             if(inRelist(cur,id)) {
                 id=(id+1) % Detector.groupList.size();
                 continue;
