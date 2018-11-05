@@ -196,7 +196,7 @@ public class Pinger extends Thread{
                 jsonMsg.put("NodeArray",jsonArray);
                 InetAddress address = InetAddress.getByName(replicaNode.nodeAddr);
                 logger.info("Introducer send join to all bytes: "+jsonArray.toString().getBytes().length);
-                DatagramPacket send_message = new DatagramPacket(jsonArray.toString().getBytes(), jsonArray.toString().getBytes().length, address, replicaNode.nodePort);
+                DatagramPacket send_message = new DatagramPacket(jsonMsg.toString().getBytes(), jsonMsg.toString().getBytes().length, address, replicaNode.nodePort);
                 DatagramSocket server = new DatagramSocket();
                 server.send(send_message);
 
