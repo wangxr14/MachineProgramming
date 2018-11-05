@@ -258,8 +258,8 @@ public class MsgHandler extends Thread{
                 JSONObject jsonNode = jsonArray.getJSONObject(i);
                 String sdfsName = jsonNode.getString("sdfsName");
                 Socket socket = new Socket(jsonNode.getString("nodeAddr"),Detector.toNodesPort);
+                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 for(String version:Detector.storeInfo.fileVersions.get(sdfsName)){
-                    DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                     // send put command msg
                     JSONObject obj = new JSONObject();
                     obj.put("sdfsName",sdfsName);
@@ -271,8 +271,9 @@ public class MsgHandler extends Thread{
                     FileInputStream fis = new FileInputStream(Detector.SDFSPath+name);
                     IOUtils.copy(fis,dos);
                     dos.flush();
-                    dos.close();
+                    fis.close();
                 }
+                dos.close();
                 socket.close();
             }
         } catch (JSONException e) {
