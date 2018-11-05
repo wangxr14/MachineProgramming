@@ -178,7 +178,7 @@ public class MasterInfo {
         logger.info("origin id"+origin + "initial id"+ id);
         while(num>0){
             logger.info("inRelist(cur,id) "+inRelist(cur,id) + "cur "+ id);
-            if(inRelist(cur,id)) {
+            if(inRelist(cur,Detector.groupList.get(id).nodeID)) {
                 id=(id+1) % Detector.groupList.size();
                 continue;
             }
