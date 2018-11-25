@@ -1,7 +1,7 @@
 apply plugin: 'application'
 
 apply plugin: 'java'
-mainClassName = 'team.cs425.g54.Detector'
+mainClassName = 'team.cs425.g54.SparkStreaming'
 
 repositories {
 	 mavenCentral()
@@ -11,6 +11,9 @@ dependencies {
     compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
     compile group: 'com.googlecode.grep4j', name: 'grep4j', version: '1.8.7'
     compile group: 'org.json', name: 'json', version: '20090211'
+    compile group: 'org.apache.spark', name: 'spark-core_2.10', version: '1.2.0'
+    compile group: 'org.apache.spark', name: 'spark-streaming-kafka_2.10', version: '0.9.0-incubating'
+    compile group: 'org.apache.spark', name: 'spark-streaming_2.10', version: '2.1.0'
 
 }
 task Server(type: JavaExec) {
@@ -25,6 +28,12 @@ task Client(type: JavaExec) {
 }
 task Detector(type: JavaExec) {
     main = "team.cs425.g54.Detector"
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+}
+
+task SparkStreaming(type: JavaExec) {
+    main = "team.cs425.g54.SparkStreaming"
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
 }
