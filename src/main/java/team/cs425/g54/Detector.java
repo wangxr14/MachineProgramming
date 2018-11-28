@@ -677,10 +677,9 @@ public class Detector {
 
 		// assumpt client is cranemaster
 		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,command[2],nodesList.get(0));
-		craneMasterCmd.constructTopology(command[1]);
+		craneMasterCmd.constructTopology();
 		craneMasterCmd.backUpStandByMaster();
 		craneMasterCmd.sendTask();
-
 
 	}
 	public static void main(String[] args) {

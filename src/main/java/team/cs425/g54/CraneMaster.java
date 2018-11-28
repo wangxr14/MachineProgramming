@@ -3,7 +3,9 @@ package team.cs425.g54;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import team.cs425.g54.topology.Bolt;
 import team.cs425.g54.topology.Record;
+import team.cs425.g54.topology.Spout;
 import team.cs425.g54.topology.Topology;
 
 import java.io.IOException;
@@ -13,7 +15,6 @@ import java.util.logging.Logger;
 
 public class CraneMaster {
     Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
-    public Task task; // current
     public Topology curTopology;
     int myID;
     String myAddr;
@@ -44,18 +45,27 @@ public class CraneMaster {
     }
 
     // constructTopology according to application type
-    void constructTopology(String type){
+    void constructTopology(){
         // initialize spout
-        Record spout = new Record(spoutNode.nodeID,spoutNode.nodeAddr,type,"spout",firstLevelWorkers);
-        curTopology.addRecode(spout);
-        for(Node worker:firstLevelWorkers){
-            Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,type,"bolt1",secondLevelWorker);
-            curTopology.addRecode(bolt1);
+        for(Spout spout:curTopology.spoutList){
+            Record spoutRecord = new Record(spoutNode.nodeID,spoutNode.nodeAddr,spout.appType,"spout",firstLevelWorkers);
+            curTopology.addRecode(spoutRecord);
         }
-        ArrayList<Node> tmp = new ArrayList<>();// null arraylist
-        Record bolt2 = new Record(secondLevelWorker.get(0).nodeID,secondLevelWorker.get(0).nodeAddr,
-                type,"bolt2",tmp);
-        curTopology.addRecode(bolt2);
+        int i = 0;
+        for(Bolt bolt:curTopology.boltList){
+            if(i==curTopology.boltList.size()-1){
+                ArrayList<Node> tmp = new ArrayList<>();// null arraylist
+                Record bolt2 = new Record(secondLevelWorker.get(0).nodeID,secondLevelWorker.get(0).nodeAddr,
+                        bolt.functionType,"bolt2",tmp);
+                curTopology.addRecode(bolt2);
+            }
+            else{
+                for(Node worker:firstLevelWorkers){
+                    Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.functionType,"bolt1",secondLevelWorker);
+                    curTopology.addRecode(bolt1);
+                }
+            }
+        }
     }
 
     // distribute task to each node in topology

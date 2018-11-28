@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
+import team.cs425.g54.topology.Record;
 
 
 import java.io.*;
@@ -466,9 +467,31 @@ public class MsgHandler extends Thread{
             logger.info("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
         }
     }
-    //TODO
+    // Set up standbyMaster
     public void cloneCraneMaster(JSONObject msg){
+        try {
+            JSONArray arr = msg.getJSONArray("clone");
+            for(int i=0;i<arr.length();i++){
+                JSONObject recordObj = arr.getJSONObject(i);
+                ArrayList<Node> children = new ArrayList<>();
+                JSONArray childrenArr = recordObj.getJSONArray("children");
+                for(int j=0;j<childrenArr.length();j++){
+                    JSONObject obj = childrenArr.getJSONObject(j);
+                    Node node = new Node(obj.getInt("nodeID"),obj.getString("nodeAddr"),Detector.sendTaskPort);
+                    children.add(node);
+                }
+                String workerType = recordObj.getString("workerType");
+                String appType = recordObj.getString("appType");
+                String spoutfile = recordObj.getString("fileSpout");
+                int id = recordObj.getInt("nodeID");
+                String addr = recordObj.getString("nodeAddr");
+                Record record = new Record(id,addr,appType,workerType,children);
+                Detector.craneMasterCmd.curTopology.addRecode(record);
+            }
 
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
     public void run(){
         //logger.info("messageHandle start...");
@@ -616,6 +639,7 @@ public class MsgHandler extends Thread{
                             Node newStandBy = Detector.membershipList.get(0);
                             Detector.standByMaster.nodeID = newStandBy.nodeID;
                             Detector.standByMaster.nodeAddr = newStandBy.nodeAddr;
+                            Detector.craneMasterCmd.backUpStandByMaster();
                             broadcast("renewStandByMaster",Detector.standByMaster);
                             //broadcast to all nodes;
                         }
