@@ -105,6 +105,8 @@ public class CraneMaster {
         }
 
     }
+
+    // send backup msg to standby master
     public void backUpStandByMaster(){
         try {
             server = new DatagramSocket();
