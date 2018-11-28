@@ -184,6 +184,17 @@ public class MsgHandler extends Thread{
         }
         return jsonArray.toString();
     }
+    public String packMasterInfo(String type,Node master){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("type",type);
+            obj.put("nodeID",master.nodeID);
+            obj.put("nodeAddr",master.nodeAddr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj.toString();
+    }
     public void updateNodeInfo(JSONObject jsonData ){
         try {
             Node node = new Node();
@@ -348,6 +359,35 @@ public class MsgHandler extends Thread{
                 }
             
             }
+            else if (messageType.equals("renewCraneMaster")) {
+
+                logger.info("broadcasting renew crane master from new crane master...");
+                JSONArray totalListJson = packTotalList();
+                for (Node member : totalMemberList) {
+                    if(compareNode(member,serverNode))
+                        continue;
+                    String message = packMasterInfo("renewCraneMaster",Detector.craneMaster);
+                    InetAddress address = InetAddress.getByName(member.nodeAddr);
+                    logger.info("Introducer send join to all bytes: "+message.getBytes().length);
+                    send_message = new DatagramPacket(message.getBytes(), message.getBytes().length, address, member.nodePort);
+                    server.send(send_message);
+                }
+            }
+            else if (messageType.equals("renewStandByMaster")) {
+
+                logger.info("broadcasting renew standBy master from new crane master...");
+                JSONArray totalListJson = packTotalList();
+                for (Node member : totalMemberList) {
+                    if(compareNode(member,serverNode))
+                        continue;
+                    String message = packMasterInfo("renewStandByMaster",Detector.standByMaster);
+                    InetAddress address = InetAddress.getByName(member.nodeAddr);
+                    logger.info("Introducer send join to all bytes: "+message.getBytes().length);
+                    send_message = new DatagramPacket(message.getBytes(), message.getBytes().length, address, member.nodePort);
+                    server.send(send_message);
+                }
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         } 
@@ -426,7 +466,10 @@ public class MsgHandler extends Thread{
             logger.info("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
         }
     }
+    //TODO
+    public void cloneCraneMaster(JSONObject msg){
 
+    }
     public void run(){
         //logger.info("messageHandle start...");
         String receivedData = new String(receivedPacket.getData());
@@ -562,6 +605,23 @@ public class MsgHandler extends Thread{
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
                     renewMemberList();
+                    // check if the node is a craneMaster
+                    if(node.nodeID==Detector.craneMaster.nodeID){
+                        Detector.craneMaster.nodeID = Detector.standByMaster.nodeID;
+                        Detector.craneMaster.nodeAddr = Detector.standByMaster.nodeAddr;
+                        broadcast("renewCraneMaster",Detector.craneMaster);
+
+                        //find a new standbymaster, and clone the CraneMasterinfo to it
+                        if(Detector.membershipList.size()>0){
+                            Node newStandBy = Detector.membershipList.get(0);
+                            Detector.standByMaster.nodeID = newStandBy.nodeID;
+                            Detector.standByMaster.nodeAddr = newStandBy.nodeAddr;
+                            broadcast("renewStandByMaster",Detector.standByMaster);
+                            //broadcast to all nodes;
+                        }
+                    }
+
+                    // tell master to update
                     if(Detector.master!= null) {
 	                    if(node.nodeID == Detector.master.nodeID) {
 	                        Detector.master=totalMemberList.get(0);
@@ -669,6 +729,20 @@ public class MsgHandler extends Thread{
             	String timestamp = jsonData.get("timestamp").toString();
             	String sdfsName = jsonData.get("sdfsName").toString();
             	deleteVersion(sdfsName, timestamp);
+            }
+            else if(messageType.equals("renewCraneMaster")){
+                Detector.craneMaster.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                Detector.craneMaster.nodeAddr = jsonData.get("nodeAddr").toString();
+                Detector.craneMasterCmd.backUpStandByMaster();
+            }
+            else if(messageType.equals("renewStandByMaster")){
+                Detector.standByMaster.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                Detector.standByMaster.nodeAddr = jsonData.get("nodeAddr").toString();
+
+            }
+            else if (messageType.equals("clone")){
+                //TODO backup crane master
+
             }
 
 

@@ -15,7 +15,8 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import java.util.logging.Logger;
-
+import org.apache.spark.SparkContext;
+import org.apache.spark.SparkConf;
 
 
 public class Detector {
@@ -29,20 +30,25 @@ public class Detector {
 	// Store (node id, (node addr, node port)) for quick search
 	public static Hashtable<Integer,Pair<String,Integer>> nodeAddrPortList = new Hashtable<Integer, Pair<String,Integer>>();
 	
-	// Listen & Ping
+	// Listen & Ping mp2
 	public Listener listener;
 	public SDFSListener sdfsListener;
 	public Pinger pinger;
 	public final int pingerPort = 12333;
 	public final int nodePort = 12345;
 	public static final int toNodesPort = 12002;
+	public static final int sendTaskPort = 12346;
 	public final String configFile="mp.config";
+	//mp3
 	public static Node master;
     public static MasterInfo masterInfo = new MasterInfo();
     public static StoreInfo storeInfo = new StoreInfo();
 	public static String SDFSPath = "files/";
+	//mp4
+	public static CraneMaster craneMasterCmd;
 	Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
-
+	public static Node craneMaster;
+	public static Node standByMaster;
 	Socket clientToNodes;
 	final int TIMEOUT = 5000;
 
@@ -313,8 +319,7 @@ public class Detector {
 		return nodes;
 	}
 
-	public void broadcastMasterMsgToAll() {
-		String type = "master";
+	public void broadcastMasterMsgToAll(String type) {
 		try {
 			DatagramSocket ds = new DatagramSocket();
 		
@@ -353,7 +358,17 @@ public class Detector {
 	public void setMaster(){
 		master=myNode;
 		//Broadcast this message to all 
-		broadcastMasterMsgToAll();
+		broadcastMasterMsgToAll("master");
+	}
+
+	public void setCraneMaster(){
+		craneMaster = myNode;
+		broadcastMasterMsgToAll("craneMaster");
+	}
+
+	public void setStandByMaster(){
+		standByMaster = myNode;
+		broadcastMasterMsgToAll("standByMaster");
 	}
 
 	public void putCommand(String cmdInput){
@@ -602,11 +617,11 @@ public class Detector {
 		}
 
 	}
-	public void lsCommand(String cmdInput){
+	public ArrayList<Node> lsCommand(String cmdInput){
 		String[] command = cmdInput.split(" ");
 		if(command.length<2) {
 			System.out.println("Invalid input, please try again;");
-			return;
+			return null;
 		}
 		String sdfsName = command[1];
 
@@ -632,6 +647,7 @@ public class Detector {
 			String dpRecivedData = new String(dpReceived.getData());
 			ArrayList<Node> nodes = getNodeList(dpRecivedData);
 			printNodeList(nodes);
+			return nodes;
 			
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -642,12 +658,33 @@ public class Detector {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		return null;
 
 	}
 
-	public static void main(String[] args) {  
-		
+	public void doApplication(String cmdInput){
+		String[] command = cmdInput.split(" "); // crane application_type filename
+		logger.info("Execute crane command..");
+		if(command.length<3)
+			return;
+		logger.info("Execute "+command[1]+", "+"getting "+command[2]);
+		// get the nodes that contains the file
+		ArrayList<Node> nodesList = lsCommand("ls "+command[2]);
+		if(nodesList==null || nodesList.size()==0){
+			logger.info("no such file");
+			return ;
+		}
+
+		// assumpt client is cranemaster
+		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,command[2],nodesList.get(0));
+		craneMasterCmd.constructTopology(command[1]);
+		craneMasterCmd.backUpStandByMaster();
+		craneMasterCmd.sendTask();
+
+
+	}
+	public static void main(String[] args) {
+
 		Detector mp = new Detector();
 		mp.init();
 		// User input
@@ -673,7 +710,7 @@ public class Detector {
 					mp.joinGroup();
 					mp.showGroupList();
 				}
-				
+
 				if(cmdInput.toLowerCase().equals("leave")) {
 					mp.leaveGroup();
 					mp.storeInfo.deleteAllSDFSFilesOnDisk();
@@ -693,38 +730,50 @@ public class Detector {
 				if(cmdInput.toLowerCase().equals("store")) {
 				    storeInfo.showFiles();
 				}
-				
+
 				if(cmdInput.toLowerCase().startsWith("put")){
 					mp.putCommand(cmdInput);
 				}
-				
+
 				if(cmdInput.toLowerCase().startsWith("get ")) {
 					mp.getCommand(cmdInput);
 				}
-				
+
 				if(cmdInput.toLowerCase().startsWith("delete")) {
 					mp.deleteCommand(cmdInput);
 				}
-				
+
 				if(cmdInput.toLowerCase().startsWith("get_version")) {
 						mp.getVersionCommand(cmdInput);
 				}
-				
+
 				if(cmdInput.toLowerCase().startsWith("ls")){
 						mp.lsCommand(cmdInput);
 				}
-				
+
 				if(cmdInput.toLowerCase().startsWith("msshow")) {
 					Detector.masterInfo.printMasterNode();
 				}
 				if(cmdInput.toLowerCase().startsWith("msversion")) {
 					Detector.masterInfo.printVersions();
 				}
-				
+
+				if(cmdInput.equals("cranemaster")){
+					mp.setCraneMaster();
+				}
+				if(cmdInput.equals("standbymaster")){
+					mp.setStandByMaster();
+				}
+				if(cmdInput.startsWith("crane ")){
+
+				}
+
 				long time=System.currentTimeMillis()-startTime;
 				System.out.println("*************Time to finish is : "+time);
-				
-				
+
+
+
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
