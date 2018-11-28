@@ -66,6 +66,7 @@ public class CraneMaster {
                 }
             }
         }
+        backUpStandByMaster();
     }
 
     // distribute task to each node in topology

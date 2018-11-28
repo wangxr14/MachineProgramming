@@ -17,6 +17,7 @@ import org.json.JSONException;
 import java.util.logging.Logger;
 import org.apache.spark.SparkContext;
 import org.apache.spark.SparkConf;
+import team.cs425.g54.topology.Topology;
 
 
 public class Detector {
@@ -678,7 +679,29 @@ public class Detector {
 		// assumpt client is cranemaster
 		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,command[2],nodesList.get(0));
 		craneMasterCmd.constructTopology();
-		craneMasterCmd.backUpStandByMaster();
+		craneMasterCmd.sendTask();
+
+	}
+	public void filterApp(String cmdInput){
+		String[] command = cmdInput.split(" "); // crane application_type filename
+		logger.info("Execute crane command..");
+		if(command.length<3){
+			return;
+		}
+		String functionType = command[1],file = command[2];
+		logger.info("Execute "+functionType+", "+"getting file"+file);
+		// get the nodes that contains the file
+		ArrayList<Node> nodesList = lsCommand("ls "+file);
+		if(nodesList==null || nodesList.size()==0){
+			logger.info("no such file");
+			return ;
+		}
+		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,file,nodesList.get(0));
+
+		craneMasterCmd.curTopology.addSpout(functionType,file);
+		craneMasterCmd.curTopology.addBolt("filter");
+		craneMasterCmd.curTopology.addBolt("combine");
+		craneMasterCmd.constructTopology();
 		craneMasterCmd.sendTask();
 
 	}
@@ -763,7 +786,7 @@ public class Detector {
 				if(cmdInput.equals("standbymaster")){
 					mp.setStandByMaster();
 				}
-				if(cmdInput.startsWith("crane ")){
+				if(cmdInput.startsWith("crane filter")){
 
 				}
 
