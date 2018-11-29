@@ -48,7 +48,7 @@ public class CraneMaster {
     void constructTopology(){
         // initialize spout
         for(Spout spout:curTopology.spoutList){
-            Record spoutRecord = new Record(spoutNode.nodeID,spoutNode.nodeAddr,spout.appType,"spout",firstLevelWorkers);
+            Record spoutRecord = new Record(spoutNode.nodeID,spoutNode.nodeAddr,spout.appType,"","spout",firstLevelWorkers);
             curTopology.addRecode(spoutRecord);
         }
         int i = 0;
@@ -56,12 +56,12 @@ public class CraneMaster {
             if(i==curTopology.boltList.size()-1){
                 ArrayList<Node> tmp = new ArrayList<>();// null arraylist
                 Record bolt2 = new Record(secondLevelWorker.get(0).nodeID,secondLevelWorker.get(0).nodeAddr,
-                        bolt.functionType,"bolt2",tmp);
+                        bolt.functionType,bolt.info,"bolt2",tmp);
                 curTopology.addRecode(bolt2);
             }
             else{
                 for(Node worker:firstLevelWorkers){
-                    Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.functionType,"bolt1",secondLevelWorker);
+                    Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.functionType,bolt.info,"bolt1",secondLevelWorker);
                     curTopology.addRecode(bolt1);
                 }
             }
@@ -118,6 +118,7 @@ public class CraneMaster {
                 jsonMsg.put("workerType", record.getWorkerType());
                 jsonMsg.put("appType", record.getAppType());
                 jsonMsg.put("filename", fileSpout);
+                jsonMsg.put("info",record.getInfo());
                 JSONArray arr = new JSONArray();
                 ArrayList<Node> children = record.getChildren();
                 for (Node child : children) {

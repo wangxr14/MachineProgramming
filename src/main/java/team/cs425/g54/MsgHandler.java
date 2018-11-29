@@ -485,7 +485,8 @@ public class MsgHandler extends Thread{
                 String spoutfile = recordObj.getString("fileSpout");
                 int id = recordObj.getInt("nodeID");
                 String addr = recordObj.getString("nodeAddr");
-                Record record = new Record(id,addr,appType,workerType,children);
+                String info = recordObj.getString("info");
+                Record record = new Record(id,addr,appType,info,workerType,children);
                 Detector.craneMasterCmd.curTopology.addRecode(record);
             }
 
@@ -613,7 +614,7 @@ public class MsgHandler extends Thread{
                     broadcast(messageType,failNode);
                 
                 }
-                
+
 
             }
             else if(messageType.equals("delete")){

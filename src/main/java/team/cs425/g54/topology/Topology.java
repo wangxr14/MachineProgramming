@@ -16,8 +16,8 @@ public class Topology {
         Spout spout = new Spout(file,functionType);
         spoutList.add(spout);
     }
-    public void addBolt(String functiontype){
-        Bolt bolt = new Bolt(functiontype);
+    public void addBolt(String functiontype,String info){
+        Bolt bolt = new Bolt(functiontype,info);
         boltList.add(bolt);
     }
 }

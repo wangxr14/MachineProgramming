@@ -688,10 +688,10 @@ public class Detector {
 	public void filterApp(String cmdInput){
 		String[] command = cmdInput.split(" "); // crane application_type filename
 		logger.info("Execute crane command..");
-		if(command.length<3){
+		if(command.length<4){
 			return;
 		}
-		String functionType = command[1],file = command[2];
+		String functionType = command[1],file = command[2],filterWord = command[3];
 		logger.info("Execute "+functionType+", "+"getting file"+file);
 		// get the nodes that contains the file
 		ArrayList<Node> nodesList = lsCommand("ls "+file);
@@ -702,8 +702,8 @@ public class Detector {
 		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,file,nodesList.get(0));
 
 		craneMasterCmd.curTopology.addSpout("filter",file);
-		craneMasterCmd.curTopology.addBolt("filter");
-		craneMasterCmd.curTopology.addBolt("combine");
+		craneMasterCmd.curTopology.addBolt("filter",filterWord);
+		craneMasterCmd.curTopology.addBolt("combine","");
 		craneMasterCmd.constructTopology();
 		craneMasterCmd.sendTask();
 
@@ -724,8 +724,8 @@ public class Detector {
 		}
 		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,file,nodesList.get(0));
 		craneMasterCmd.curTopology.addSpout("wordCount",file);
-		craneMasterCmd.curTopology.addBolt("mapKey");
-		craneMasterCmd.curTopology.addBolt("sum");
+		craneMasterCmd.curTopology.addBolt("mapKey","");
+		craneMasterCmd.curTopology.addBolt("sum","");
 		craneMasterCmd.constructTopology();
 		craneMasterCmd.sendTask();
 	}
