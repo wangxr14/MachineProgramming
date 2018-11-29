@@ -23,6 +23,7 @@ public class CraneMaster {
     Node spoutNode;
     ArrayList<Node> firstLevelWorkers;  // all workers
     ArrayList<Node> secondLevelWorker;  // all workers
+
     DatagramSocket server;
     public CraneMaster(String ipAddr,int id,String file,Node spoutNode){
         this.myID=id;
@@ -33,19 +34,19 @@ public class CraneMaster {
         this.spoutNode.nodeID = spoutNode.nodeID;
         this.spoutNode.nodeAddr = spoutNode.nodeAddr;
         this.spoutNode.nodePort = spoutNode.nodePort;
-        for(Node node:Detector.groupList){
-            if(node.nodeID==spoutNode.nodeID || node.nodeID==myID)
-                continue;
-            firstLevelWorkers.add(node);
-        }
-        secondLevelWorker.add(firstLevelWorkers.get(0));
-        firstLevelWorkers.remove(0);
         curTopology = new Topology();
 
     }
 
     // constructTopology according to application type
     void constructTopology(){
+        for(Node node:Detector.groupList){
+            if(node.nodeID==spoutNode.nodeID || node.nodeID==myID || node.nodeID == Detector.standByMaster.nodeID)
+                continue;
+            firstLevelWorkers.add(node);
+        }
+        secondLevelWorker.add(firstLevelWorkers.get(0));
+        firstLevelWorkers.remove(0);
         // initialize spout
         for(Spout spout:curTopology.spoutList){
             Record spoutRecord = new Record(spoutNode.nodeID,spoutNode.nodeAddr,spout.appType,"","spout",firstLevelWorkers);
@@ -131,6 +132,25 @@ public class CraneMaster {
                 jsonMsg.put("children", arr);
                 arr.put(jsonMsg);
             }
+            JSONArray spoutArr = new JSONArray();
+            for(Spout spout:curTopology.spoutList){
+                JSONObject obj = new JSONObject();
+                obj.put("functionType",spout.appType);
+                obj.put("spoutFile",spout.spoutFile);
+                spoutArr.put(obj);
+            }
+            JSONArray boltArr = new JSONArray();
+            for(Bolt bolt:curTopology.boltList){
+                JSONObject obj = new JSONObject();
+                obj.put("functionType",bolt.functionType);
+                obj.put("spoutFile",bolt.info);
+                boltArr.put(obj);
+            }
+            jsonAllMsgs.put("fileSpout",fileSpout); // for input file stream
+            jsonAllMsgs.put("spoutID",spoutNode.nodeID);
+            jsonAllMsgs.put("spoutAddr",spoutNode.nodeAddr);
+            jsonAllMsgs.put("spoutArr",spoutArr);
+            jsonAllMsgs.put("boltArr",boltArr);
             jsonAllMsgs.put("clone",arrRecord);
             InetAddress address = InetAddress.getByName(Detector.standByMaster.nodeAddr);
             DatagramPacket send_message = new DatagramPacket(jsonAllMsgs.toString().getBytes(), jsonAllMsgs.toString().getBytes().length, address,Detector.sendTaskPort);
