@@ -645,6 +645,16 @@ public class MsgHandler extends Thread{
                             //broadcast to all nodes;
                         }
                     }
+                    else if(Detector.craneMaster.nodeID == serverNode.nodeID){// worker down
+                        // find available node for spout
+                        ArrayList<Node> newSpout = Detector.masterInfo.hasFileNodes(Detector.craneMasterCmd.fileSpout);
+                        if(newSpout.size()!=0) {
+                            Detector.craneMasterCmd.spoutNode.nodeID = newSpout.get(0).nodeID;
+                            Detector.craneMasterCmd.spoutNode.nodeAddr = newSpout.get(0).nodeAddr;
+                            Detector.craneMasterCmd.constructTopology();
+                            Detector.craneMasterCmd.sendTask();
+                        }
+                    }
 
                     // tell master to update
                     if(Detector.master!= null) {
@@ -763,7 +773,9 @@ public class MsgHandler extends Thread{
             else if(messageType.equals("renewStandByMaster")){
                 Detector.standByMaster.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
                 Detector.standByMaster.nodeAddr = jsonData.get("nodeAddr").toString();
-
+                if(serverNode.nodeID==Detector.standByMaster.nodeID){
+                    cloneCraneMaster(jsonData);
+                }
             }
             else if (messageType.equals("clone")){
                 //TODO backup crane master
