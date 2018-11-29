@@ -38,19 +38,22 @@ public class Detector {
 	public final int pingerPort = 12333;
 	public final int nodePort = 12345;
 	public static final int toNodesPort = 12002;
+	// For MP4, master - worker communication
 	public static final int sendTaskPort = 12346;
+	// For MP4, worker - worker communication
+	public static final int workerPort = 12347;
 	public final String configFile="mp.config";
 	//mp3
 	public static Node master;
     public static MasterInfo masterInfo = new MasterInfo();
     public static StoreInfo storeInfo = new StoreInfo();
 	public static String SDFSPath = "files/";
+	Socket clientToNodes;
 	//mp4
 	public static CraneMaster craneMasterCmd;
 	Logger logger = Logger.getLogger("main.java.team.cs425.g54.Detector");
 	public static Node craneMaster;
 	public static Node standByMaster;
-	Socket clientToNodes;
 	final int TIMEOUT = 5000;
 
 	public void setConfig() {
@@ -320,16 +323,16 @@ public class Detector {
 		return nodes;
 	}
 
-	public void broadcastMasterMsgToAll(String type) {
+	public void broadcastMasterMsgToAll(String type, Node toSend) {
 		try {
 			DatagramSocket ds = new DatagramSocket();
 		
 			for(Node node : groupList) {
 	            JSONObject message = new JSONObject();
 	            message.put("type", type);
-	            message.put("nodeID", master.nodeID);
-	            message.put("nodeAddr", master.nodeAddr);
-	            message.put("nodePort", master.nodePort);
+	            message.put("nodeID", toSend.nodeID);
+	            message.put("nodeAddr", toSend.nodeAddr);
+	            message.put("nodePort", toSend.nodePort);
 	            InetAddress address = InetAddress.getByName(node.nodeAddr);
 	            DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, node.nodePort);
 	            ds.send(send_message);
@@ -359,17 +362,17 @@ public class Detector {
 	public void setMaster(){
 		master=myNode;
 		//Broadcast this message to all 
-		broadcastMasterMsgToAll("master");
+		broadcastMasterMsgToAll("master", master);
 	}
 
 	public void setCraneMaster(){
 		craneMaster = myNode;
-		broadcastMasterMsgToAll("craneMaster");
+		broadcastMasterMsgToAll("craneMaster", craneMaster);
 	}
 
 	public void setStandByMaster(){
 		standByMaster = myNode;
-		broadcastMasterMsgToAll("standByMaster");
+		broadcastMasterMsgToAll("standByMaster", standByMaster);
 	}
 
 	public void putCommand(String cmdInput){
