@@ -10,6 +10,7 @@ public class Record {
     String workerType; // bolt or spout
     String appType;
     String ipAddr;
+    String spoutfile;
     ArrayList<Node> children;// next bolt
     public Record(int ID,String ipAddr, String appType, String workerType, ArrayList<Node> children){
         this.ID = ID;

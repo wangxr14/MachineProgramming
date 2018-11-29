@@ -17,6 +17,7 @@ import org.json.JSONException;
 import java.util.logging.Logger;
 import org.apache.spark.SparkContext;
 import org.apache.spark.SparkConf;
+import team.cs425.g54.topology.Topology;
 
 
 public class Detector {
@@ -680,11 +681,53 @@ public class Detector {
 
 		// assumpt client is cranemaster
 		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,command[2],nodesList.get(0));
-		craneMasterCmd.constructTopology(command[1]);
-		craneMasterCmd.backUpStandByMaster();
+		craneMasterCmd.constructTopology();
 		craneMasterCmd.sendTask();
 
+	}
+	public void filterApp(String cmdInput){
+		String[] command = cmdInput.split(" "); // crane application_type filename
+		logger.info("Execute crane command..");
+		if(command.length<3){
+			return;
+		}
+		String functionType = command[1],file = command[2];
+		logger.info("Execute "+functionType+", "+"getting file"+file);
+		// get the nodes that contains the file
+		ArrayList<Node> nodesList = lsCommand("ls "+file);
+		if(nodesList==null || nodesList.size()==0){
+			logger.info("no such file");
+			return ;
+		}
+		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,file,nodesList.get(0));
 
+		craneMasterCmd.curTopology.addSpout("filter",file);
+		craneMasterCmd.curTopology.addBolt("filter");
+		craneMasterCmd.curTopology.addBolt("combine");
+		craneMasterCmd.constructTopology();
+		craneMasterCmd.sendTask();
+
+	}
+	public void wordCountApp(String cmdInput){
+		String[] command = cmdInput.split(" "); // crane application_type filename
+		logger.info("Execute crane command..");
+		if(command.length<3){
+			return;
+		}
+		String functionType = command[1],file = command[2];
+		logger.info("Execute "+functionType+", "+"getting file"+file);
+		// get the nodes that contains the file
+		ArrayList<Node> nodesList = lsCommand("ls "+file);
+		if(nodesList==null || nodesList.size()==0){
+			logger.info("no such file");
+			return ;
+		}
+		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,file,nodesList.get(0));
+		craneMasterCmd.curTopology.addSpout("wordCount",file);
+		craneMasterCmd.curTopology.addBolt("mapKey");
+		craneMasterCmd.curTopology.addBolt("sum");
+		craneMasterCmd.constructTopology();
+		craneMasterCmd.sendTask();
 	}
 	public static void main(String[] args) {
 
@@ -767,8 +810,11 @@ public class Detector {
 				if(cmdInput.equals("standbymaster")){
 					mp.setStandByMaster();
 				}
-				if(cmdInput.startsWith("crane ")){
-
+				if(cmdInput.startsWith("crane filter")){
+					mp.filterApp(cmdInput);
+				}
+				if(cmdInput.startsWith("crane wordcount")){
+					mp.wordCountApp(cmdInput);
 				}
 
 				long time=System.currentTimeMillis()-startTime;
