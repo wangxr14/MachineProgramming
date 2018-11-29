@@ -11,12 +11,14 @@ public class Record {
     String appType;
     String ipAddr;
     String spoutfile;
+    String info;
     ArrayList<Node> children;// next bolt
-    public Record(int ID,String ipAddr, String appType, String workerType, ArrayList<Node> children){
+    public Record(int ID,String ipAddr, String appType, String info, String workerType, ArrayList<Node> children){
         this.ID = ID;
         this.ipAddr = ipAddr;
         this.workerType = workerType;
         this.appType = appType;
+        this.info = info;
         this.children = new ArrayList<>();
         for(Node node:children){
             this.children.add(node);
@@ -38,5 +40,5 @@ public class Record {
     public ArrayList<Node> getChildren(){
         return (ArrayList<Node>) children.clone();
     }
-
+    public String getInfo(){return info;}
 }
