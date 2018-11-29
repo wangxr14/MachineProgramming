@@ -79,6 +79,7 @@ public class CraneMaster {
                 jsonMsg.put("workerType", record.getWorkerType());
                 jsonMsg.put("appType", record.getAppType());
                 jsonMsg.put("filename", fileSpout);
+                jsonMsg.put("info",record.getInfo());
                 JSONArray arr = new JSONArray();
                 ArrayList<Node> children = record.getChildren();
                 for (Node child : children) {
