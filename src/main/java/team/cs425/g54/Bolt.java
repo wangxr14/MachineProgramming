@@ -10,6 +10,7 @@ public class Bolt {
     int pointer;
     int port;
     private DatagramSocket socket;
+    String filterWord="";
     WorkerTaskListener taskListener;
 
     public Bolt(String appType,CopyOnWriteArrayList<Node> children){
@@ -24,6 +25,7 @@ public class Bolt {
 			e.printStackTrace();
 		}
         taskListener = new WorkerTaskListener(appType, children);
+        taskListener.filterWord=this.filterWord;
     }
     
     public void open() {

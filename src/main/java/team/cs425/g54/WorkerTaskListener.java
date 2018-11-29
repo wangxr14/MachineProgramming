@@ -10,6 +10,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class WorkerTaskListener extends Thread{
@@ -19,6 +20,7 @@ public class WorkerTaskListener extends Thread{
     int pointer;
     int port;
     private final int BYTE_LEN=10000;
+    public String filterWord = "";
     
 	public WorkerTaskListener(String appType,CopyOnWriteArrayList<Node> children){
         this.appType = appType;
@@ -46,8 +48,7 @@ public class WorkerTaskListener extends Thread{
                 is.close();
 
 //              // Deal
-                
-                // Send
+                dealWithData(in);
                 
                 
             } catch (IOException e) {
@@ -58,11 +59,24 @@ public class WorkerTaskListener extends Thread{
         }
     }
 	
-	public HashMap<String,String> dealWithData(HashMap<String,String> inData){
-		
-		
+	public void dealWithData(HashMap<String,String> inData){
 		HashMap<String,String> outData = new HashMap<String,String>();
-		return outData;
+		
+		if(appType.equals("filter")) {
+			for (Entry<String, String> entry : inData.entrySet()) {
+				if(entry.getValue().equals(filterWord)) {
+					outData.put(entry.getKey(), entry.getValue());
+				}
+				
+			}
+			// Send
+            sendTuple(outData);
+    	}
+		if(appType.equals("combine")) {
+			
+		}
+    	
+		
 	}
 
 	public void sendTuple(HashMap<String,String> tuple) {

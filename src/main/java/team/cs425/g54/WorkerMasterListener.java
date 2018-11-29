@@ -57,7 +57,21 @@ public class WorkerMasterListener extends Thread {
         		spout.open();
         	}
         	if(workerType.equals("bolt")) {
-        		
+        		String appType = jsonData.get("appType").toString();
+        		JSONArray arr = jsonData.getJSONArray("children");
+        		CopyOnWriteArrayList<Node> childrenList = new CopyOnWriteArrayList<Node>();
+        		for(int i=0;i<arr.length();i++){
+                    Node tmp_node = new Node(0,"",0);
+                    tmp_node.nodeID = Integer.parseInt(arr.getJSONObject(i).get("nodeID").toString());
+                    tmp_node.nodeAddr = arr.getJSONObject(i).get("nodeAddr").toString();
+                    tmp_node.nodePort = Detector.workerPort;
+ 
+                    childrenList.add(tmp_node);
+                }
+        		Bolt bolt = new Bolt(appType, childrenList);
+        		if(appType.equals("filter")) {
+        			bolt.filterWord=jsonData.get("filterWord").toString();
+        		}
         	}
         	
         } catch (IOException e) {
