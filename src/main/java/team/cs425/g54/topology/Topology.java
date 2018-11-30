@@ -9,8 +9,9 @@ public class Topology {
     public Topology(){
         spoutList = new ArrayList<>();
         boltList = new ArrayList<>();
+        recordList = new ArrayList<>();
     }
-    public void addRecode(Record record){
+    public void addRecord(Record record){
         recordList.add(record);
     }
     public ArrayList<Record> getRecordList(){

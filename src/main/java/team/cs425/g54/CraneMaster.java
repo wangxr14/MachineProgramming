@@ -31,15 +31,15 @@ public class CraneMaster {
         this.fileSpout = file;
         totalWorker = Detector.groupList.size()-1;
         firstLevelWorkers = new ArrayList<>();
-        this.spoutNode.nodeID = spoutNode.nodeID;
-        this.spoutNode.nodeAddr = spoutNode.nodeAddr;
-        this.spoutNode.nodePort = spoutNode.nodePort;
+        this.spoutNode = spoutNode;
         curTopology = new Topology();
         setStandByMaster();
     }
 
     // constructTopology according to application type
     void constructTopology(){
+        firstLevelWorkers = new ArrayList<>();
+        secondLevelWorker = new ArrayList<>();
         for(Node node:Detector.groupList){
             if(node.nodeID==spoutNode.nodeID || node.nodeID==myID || node.nodeID == Detector.standByMaster.nodeID)
                 continue;
@@ -50,7 +50,7 @@ public class CraneMaster {
         // initialize spout
         for(Spout spout:curTopology.spoutList){
             Record spoutRecord = new Record(spoutNode.nodeID,spoutNode.nodeAddr,spout.appType,"","spout",firstLevelWorkers);
-            curTopology.addRecode(spoutRecord);
+            curTopology.addRecord(spoutRecord);
             logger.info("spout NodeID "+spoutNode.nodeID);
         }
         int i = 0;
@@ -58,15 +58,15 @@ public class CraneMaster {
             if(i==curTopology.boltList.size()-1){
                 ArrayList<Node> tmp = new ArrayList<>();// null arraylist
                 Record bolt2 = new Record(secondLevelWorker.get(0).nodeID,secondLevelWorker.get(0).nodeAddr,
-                        bolt.functionType,bolt.info,"bolt2",tmp);
-                curTopology.addRecode(bolt2);
-                logger.info("bolt2 NodeID "+secondLevelWorker.get(0).nodeID+" function "+bolt.functionType);
+                        bolt.functionType,bolt.info,"bolt",tmp);
+                curTopology.addRecord(bolt2);
+                logger.info("bolt NodeID "+secondLevelWorker.get(0).nodeID+" function "+bolt.functionType);
             }
             else{
                 for(Node worker:firstLevelWorkers){
-                    Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.functionType,bolt.info,"bolt1",secondLevelWorker);
-                    curTopology.addRecode(bolt1);
-                    logger.info("bolt1 NodeID "+worker.nodeID+" function "+bolt.functionType+" info "+bolt.info);
+                    Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.functionType,bolt.info,"bolt",secondLevelWorker);
+                    curTopology.addRecord(bolt1);
+                    logger.info("bolt NodeID "+worker.nodeID+" function "+bolt.functionType+" info "+bolt.info);
                 }
             }
             i++;

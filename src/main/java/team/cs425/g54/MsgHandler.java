@@ -491,7 +491,7 @@ public class MsgHandler extends Thread{
                 String addr = recordObj.getString("nodeAddr");
                 String info = recordObj.getString("info");
                 Record record = new Record(id,addr,appType,info,workerType,children);
-                Detector.craneMasterCmd.curTopology.addRecode(record);
+                Detector.craneMasterCmd.curTopology.addRecord(record);
             }
             String fileSpout = msg.getString("fileSpout");
             Detector.craneMasterCmd.fileSpout = fileSpout;
@@ -800,6 +800,16 @@ public class MsgHandler extends Thread{
                 if(serverNode.nodeID==Detector.standByMaster.nodeID){
                     cloneCraneMaster(jsonData);
                 }
+            }
+            else if(messageType.equals("craneMaster")){
+                int nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                String nodeAddr = jsonData.get("nodeAddr").toString();
+                Detector.craneMaster = new Node(nodeID,nodeAddr,Detector.sendTaskPort);
+            }
+            else if(messageType.equals("standByMaster")){
+                int nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                String nodeAddr = jsonData.get("nodeAddr").toString();
+                Detector.standByMaster = new Node(nodeID,nodeAddr,Detector.sendTaskPort);
             }
             else if (messageType.equals("clone")){
                 //TODO backup crane master
