@@ -37,7 +37,7 @@ public class SpoutThread extends Thread {
     @Override
     public void run() {
     	System.out.println("Spout started");
-    	while(!Thread.currentThread().isInterrupted() && isFinished) {
+    	while(!Thread.currentThread().isInterrupted() && !isFinished) {
 	    	//
 	    	BufferedReader bufferedReader;
 	    	int linenumber=0;
