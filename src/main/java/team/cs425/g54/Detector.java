@@ -37,7 +37,7 @@ public class Detector {
 	public Pinger pinger;
 	public WorkerMasterListener craneMasterListener;
 	public final int pingerPort = 12333;
-	public final int nodePort = 12345;
+	public static final int nodePort = 12345;
 	public static final int toNodesPort = 12002;
 	// For MP4, master - worker communication
 	public static final int sendTaskPort = 12346;

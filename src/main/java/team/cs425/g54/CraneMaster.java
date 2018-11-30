@@ -167,7 +167,7 @@ public class CraneMaster {
             jsonAllMsgs.put("boltArr",boltArr);
             jsonAllMsgs.put("clone",arrRecord);
             InetAddress address = InetAddress.getByName(Detector.standByMaster.nodeAddr);
-            DatagramPacket send_message = new DatagramPacket(jsonAllMsgs.toString().getBytes(), jsonAllMsgs.toString().getBytes().length, address,Detector.sendTaskPort);
+            DatagramPacket send_message = new DatagramPacket(jsonAllMsgs.toString().getBytes(), jsonAllMsgs.toString().getBytes().length, address,Detector.nodePort);
             server.send(send_message);
             logger.info("sending backup standbymaster msg..");
 
