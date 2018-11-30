@@ -502,7 +502,7 @@ public class MsgHandler extends Thread{
             JSONArray spoutArr = msg.getJSONArray("spoutArr");
             for(int i=0;i<spoutArr.length();i++){
                 String spoutFile = spoutArr.getJSONObject(i).getString("spoutFile");
-                String appType = spoutArr.getJSONObject(i).getString("appType");
+                String appType = spoutArr.getJSONObject(i).getString("functionType");
                 Spout s = new Spout(spoutFile,appType);
                 Detector.craneMasterCmd.curTopology.spoutList.add(s);
             }
