@@ -380,10 +380,17 @@ public class Detector {
 		craneMaster = myNode;
 		broadcastMasterMsgToAll("craneMaster", craneMaster);
 		logger.info("set crane master node "+craneMaster.nodeID);
+		setStandByMaster();
+
 	}
 
 	public void setStandByMaster(){
-		standByMaster = myNode;
+		for(Node node:groupList){
+			if(node.nodeID!=craneMaster.nodeID){
+				standByMaster = node;
+				break;
+			}
+		}
 		broadcastMasterMsgToAll("standByMaster", standByMaster);
 	}
 
@@ -711,24 +718,39 @@ public class Detector {
 			logger.info("no such file");
 			return;
 		}
-		for(Node node:groupList){
-			if(node.nodeID!=Detector.craneMaster.nodeID){
-				Detector.standByMaster = node;
-				logger.info("standbymaster node "+node.nodeID+" set");
-				break;
-			}
-		}
+		Node spoutNode = new Node();
 		for(Node node:nodesList){
 			if(node.nodeID!=craneMaster.nodeID && node.nodeID!=standByMaster.nodeID) {
-				craneMasterCmd = new CraneMaster(myNode.nodeAddr, myNode.nodeID, file, node);
+				spoutNode = node;
 				break;
 			}
 		}
-		craneMasterCmd.curTopology.addSpout("filter",file);
-		craneMasterCmd.curTopology.addBolt("filter",filterWord);
-		craneMasterCmd.curTopology.addBolt("combine","");
-		craneMasterCmd.constructTopology();
-		craneMasterCmd.sendTask();
+		try {
+			DatagramSocket ds = new DatagramSocket();
+			ds.setSoTimeout(TIMEOUT);
+			// send msg to master
+			JSONObject obj = new JSONObject();
+			obj.put("type", "toCraneMaster");
+			obj.put("functionType", "filter");
+			obj.put("file",file);
+			obj.put("filterWord",filterWord);
+			obj.put("spoutID",spoutNode.nodeID);
+			obj.put("spoutAddr",spoutNode.nodeAddr);
+
+			String msgToCraneMaster = obj.toString();
+			InetAddress address = InetAddress.getByName(craneMaster.nodeAddr);
+			DatagramPacket dpSent= new DatagramPacket(msgToCraneMaster.getBytes(),msgToCraneMaster.length(),address,Detector.nodePort);
+			ds.send(dpSent);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 	public void wordCountApp(String cmdInput){
@@ -745,25 +767,39 @@ public class Detector {
 			logger.info("no such file");
 			return ;
 		}
-		for(Node node:groupList){
-			if(node.nodeID!=Detector.craneMaster.nodeID){
-				Detector.standByMaster = node;
-				logger.info("standbymaster node "+node.nodeID+" set");
+		Node spoutNode = new Node();
+		for(Node node:nodesList){
+			if(node.nodeID!=craneMaster.nodeID && node.nodeID!=standByMaster.nodeID) {
+				spoutNode = node;
 				break;
 			}
 		}
-		for(Node node:nodesList){
-			if(node.nodeID!=craneMaster.nodeID && node.nodeID==standByMaster.nodeID) {
-				craneMasterCmd = new CraneMaster(myNode.nodeAddr, myNode.nodeID, file, node);
-				break;
-			}
+		try {
+			DatagramSocket ds = new DatagramSocket();
+			ds.setSoTimeout(TIMEOUT);
+			// send msg to master
+			JSONObject obj = new JSONObject();
+			obj.put("type", "toCraneMaster");
+			obj.put("functionType", "wordCount");
+			obj.put("file",file);
+			obj.put("spoutID",spoutNode.nodeID);
+			obj.put("spoutAddr",spoutNode.nodeAddr);
+
+			String msgToCraneMaster = obj.toString();
+			InetAddress address = InetAddress.getByName(craneMaster.nodeAddr);
+			DatagramPacket dpSent= new DatagramPacket(msgToCraneMaster.getBytes(),msgToCraneMaster.length(),address,Detector.nodePort);
+			ds.send(dpSent);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
-		craneMasterCmd.curTopology.addSpout("wordCount",file);
-		craneMasterCmd.curTopology.addBolt("mapKey","");
-		craneMasterCmd.curTopology.addBolt("sum","");
-		craneMasterCmd.constructTopology();
-		craneMasterCmd.sendTask();
 	}
 	public static void main(String[] args) {
 
