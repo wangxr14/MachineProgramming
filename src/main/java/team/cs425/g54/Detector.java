@@ -102,9 +102,12 @@ public class Detector {
 		sdfsListener.start();
 
 		storeInfo.initFileLists(myNode);
-		
-		craneMasterListener = new WorkerMasterListener(sendTaskPort);
-		craneMasterListener.start();
+		try {
+			craneMasterListener = new WorkerMasterListener(sendTaskPort);
+			craneMasterListener.start();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 
