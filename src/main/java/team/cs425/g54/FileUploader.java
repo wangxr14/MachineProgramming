@@ -40,7 +40,11 @@ public class FileUploader extends Thread{
     public void run() {
     	while(true) {
     		checkWriteDownTime();
-    		sleep(1000);
+    		try {
+    			sleep(1000);
+    		} catch(InterruptedException e) {
+    			e.printStackTrace();
+    		}
     	}
     }
     
