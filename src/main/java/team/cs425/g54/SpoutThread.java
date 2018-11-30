@@ -43,19 +43,22 @@ public class SpoutThread extends Thread {
 	    	int linenumber=0;
 	    	try {
 	    		bufferedReader = new BufferedReader(new FileReader(spoutFile));
+	    		System.out.println("Read file "+spoutFile);
 				String line = bufferedReader.readLine();
-				if(line!=null){
+				System.out.println("Line is:"+line);
+				while(line!=null) {
 					System.out.println("Line is:"+line);
 					linenumber++;
 					HashMap<String,String> emit=new HashMap<String, String>();
 					emit.put("linenumber", Integer.toString(linenumber));
 					emit.put("line", line);
 					sendTuple(emit);
+					line = bufferedReader.readLine();
 				}
-				else{
-					System.err.println("####################### FILE END ############################");
-					isFinished = true;
-				}
+				
+				System.err.println("####################### FILE END ############################");
+				isFinished = true;
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			} 
