@@ -109,7 +109,7 @@ public class BoltThread extends Thread {
 					for (Entry<String, String> entry : inData.entrySet()) {
 						System.out.println("entry "+entry.getValue());
 						bufferedWriter.write(entry.getValue());
-						
+						bufferedWriter.flush();
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -149,7 +149,7 @@ public class BoltThread extends Thread {
 					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath));
 					for (Entry<String, Integer> entry : wordCounter.entrySet()) {
 						bufferedWriter.write(entry.getKey()+" "+entry.getValue());
-	
+						bufferedWriter.flush();
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
