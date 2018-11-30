@@ -38,6 +38,8 @@ public class CraneMaster {
 
     // constructTopology according to application type
     void constructTopology(){
+        firstLevelWorkers = new ArrayList<>();
+        secondLevelWorker = new ArrayList<>();
         for(Node node:Detector.groupList){
             if(node.nodeID==spoutNode.nodeID || node.nodeID==myID || node.nodeID == Detector.standByMaster.nodeID)
                 continue;
