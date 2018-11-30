@@ -1,4 +1,4 @@
-package main.java.team.cs425.g54;
+package team.cs425.g54;
 
 import java.awt.List;
 import java.io.IOException;
@@ -7,6 +7,9 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class WorkerMasterListener extends Thread {
 	private DatagramSocket socket;
@@ -85,9 +88,7 @@ public class WorkerMasterListener extends Thread {
         		bolt.start();
         	}
         	
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        }  catch (JSONException e) {
             e.printStackTrace();
         } 
     }
