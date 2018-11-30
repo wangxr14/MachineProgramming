@@ -221,6 +221,7 @@ public class BoltThread extends Thread {
 	
 	public void checkWriteDownTime(boolean forced) {
 		// If filter, this bolt will put the file into sdfs every time unit
+		System.out.println("Time is "+(System.currentTimeMillis() - lastWriteTime));
 		if ((System.currentTimeMillis() - lastWriteTime) > timeToSend || forced) {
 			try {
 				DatagramSocket ds = new DatagramSocket();
@@ -265,6 +266,7 @@ public class BoltThread extends Thread {
 				}
 
 				ds.close();
+				lastWriteTime=System.currentTimeMillis();
 			} catch (SocketException e) {
 				e.printStackTrace();
 			} catch (UnknownHostException e) {
