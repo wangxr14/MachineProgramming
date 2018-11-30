@@ -2,6 +2,7 @@ package main.java.team.cs425.g54;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -11,45 +12,50 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Spout {
+public class SpoutThread extends Thread {
     public String spoutFile;
     public String appType;
     public CopyOnWriteArrayList<Node> children;
     int pointer;
     int port;
+    boolean isFinished = false;
     
     private final int BYTE_LEN=10000;
     
-    public Spout(String spoutFile,String appType,CopyOnWriteArrayList<Node> children){
+    public SpoutThread(String spoutFile,String appType,CopyOnWriteArrayList<Node> children){
         this.spoutFile = spoutFile;
         this.appType = appType;
         this.children = children;
         pointer=0;
         port=Detector.workerPort;
+        
     }
     
-    public void open() {
-    	//
-    	BufferedReader bufferedReader = new BufferedReader(new FileReader(spoutFile));
-    	int linenumber=0;
-    	try {
-			String line = bufferedReader.readLine();
-			if(line!=null){
-				linenumber++;
-				HashMap<String,String> emit=new HashMap<String, String>();
-				emit.put("linenumber", Integer.toString(linenumber));
-				emit.put("line", line);
-				sendTuple(emit);
-			}
-			else{
-				System.err.println("####################### FILE END ############################");
-				
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch(InterruptedException e){
-			e.printStackTrace();
-		}	
+    @Override
+    public void run() {
+    	System.out.println("Spout started");
+    	while(!Thread.currentThread().isInterrupted() && isFinished) {
+	    	//
+	    	BufferedReader bufferedReader;
+	    	int linenumber=0;
+	    	try {
+	    		bufferedReader = new BufferedReader(new FileReader(spoutFile));
+				String line = bufferedReader.readLine();
+				if(line!=null){
+					linenumber++;
+					HashMap<String,String> emit=new HashMap<String, String>();
+					emit.put("linenumber", Integer.toString(linenumber));
+					emit.put("line", line);
+					sendTuple(emit);
+				}
+				else{
+					System.err.println("####################### FILE END ############################");
+					isFinished = true;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+    	}
     }
     
     public void sendTuple(HashMap<String,String> tuple) {
