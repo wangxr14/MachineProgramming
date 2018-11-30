@@ -35,6 +35,7 @@ public class Detector {
 	public Listener listener;
 	public SDFSListener sdfsListener;
 	public Pinger pinger;
+	public WorkerMasterListener craneMasterListener;
 	public final int pingerPort = 12333;
 	public final int nodePort = 12345;
 	public static final int toNodesPort = 12002;
@@ -101,6 +102,9 @@ public class Detector {
 		sdfsListener.start();
 
 		storeInfo.initFileLists(myNode);
+		
+		craneMasterListener = new WorkerMasterListener(sendTaskPort);
+		craneMasterListener.start();
 	}
 
 

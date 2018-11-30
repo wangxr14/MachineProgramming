@@ -10,10 +10,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class WorkerMasterListener extends Thread {
 	private DatagramSocket socket;
+	public Thread workingThread = null; 
     
 
-    public WorkerMasterListener() throws IOException {
-        socket=new DatagramSocket(Detector.sendTaskPort);
+    public WorkerMasterListener(int port) throws IOException {
+        socket=new DatagramSocket(port);
         
     }
 
@@ -40,6 +41,13 @@ public class WorkerMasterListener extends Thread {
         try {
         	JSONObject jsonData = new JSONObject(receivedData);
         	String workerType = jsonData.get("workerType").toString();
+        	System.out.println("WorkerType received is "+workerType);
+        	// Stop the current worker if there is any
+        	if (workingThread != null) {
+        		workingThread.interrupt();
+        		workingThread = null;
+        	}
+        	
         	if(workerType.equals("spout")) {
         		String appType = jsonData.get("appType").toString();
         		String filename = jsonData.get("filename").toString();
@@ -53,8 +61,9 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
-        		Spout spout = new Spout(appType, filename, childrenList);
-        		spout.open();
+        		SpoutThread spout = new SpoutThread(appType, filename, childrenList);
+        		workingThread = spout;
+        		spout.start();
         	}
         	if(workerType.equals("bolt")) {
         		String appType = jsonData.get("appType").toString();
@@ -68,10 +77,12 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
-        		Bolt bolt = new Bolt(appType, childrenList);
+        		BoltThread bolt = new BoltThread(appType, childrenList);
         		if(appType.equals("filter")) {
         			bolt.filterWord=jsonData.get("filterWord").toString();
         		}
+        		workingThread = bolt;
+        		bolt.start();
         	}
         	
         } catch (IOException e) {
