@@ -852,7 +852,7 @@ public class Detector {
 				if(cmdInput.startsWith("crane wordcount")){
 					mp.wordCountApp(cmdInput);
 				}
-				if(cmdInput.startsWith("showcmaster")){
+				if(cmdInput.equals("showcmaster")){
 					mp.showCraneMaster();
 				}
 				long time=System.currentTimeMillis()-startTime;
