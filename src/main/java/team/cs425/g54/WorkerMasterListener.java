@@ -65,7 +65,7 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
-        		SpoutThread spout = new SpoutThread(appType, filename, childrenList);
+        		SpoutThread spout = new SpoutThread(filename, appType, childrenList);
         		workingThread = spout;
         		spout.start();
         	}
