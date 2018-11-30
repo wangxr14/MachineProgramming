@@ -17,6 +17,7 @@ import org.json.JSONException;
 import java.util.logging.Logger;
 import org.apache.spark.SparkContext;
 import org.apache.spark.SparkConf;
+import org.mortbay.util.ajax.JSON;
 import team.cs425.g54.topology.Topology;
 
 
@@ -704,20 +705,56 @@ public class Detector {
 		craneMasterCmd.sendTask();
 
 	}
+	public String getLatestFileVersions(String file){
+		try{
+			DatagramSocket ds = new DatagramSocket();
+			ds.setSoTimeout(TIMEOUT);
+			JSONObject obj = new JSONObject();
+			obj.put("type","toMaster");
+			obj.put("command","getLatestVersion");
+			obj.put("sdfsName",file);
+			String msgToMaster = obj.toString();
+			InetAddress address = InetAddress.getByName(craneMaster.nodeAddr);
+			DatagramPacket dpSent= new DatagramPacket(msgToMaster.getBytes(),msgToMaster.length(),address,Detector.nodePort);
+
+			// get latest version
+			byte[] data = new byte[2048];
+			DatagramPacket dpReceived = new DatagramPacket(data, 2048);
+			ds.send(dpSent);
+			ds.receive(dpReceived);
+
+
+			String dpRecivedData = new String(dpReceived.getData());
+			JSONObject obj2 = new JSONObject(dpRecivedData);
+			return obj2.getString("latestVersion");
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
 	public void filterApp(String cmdInput){
 		String[] command = cmdInput.split(" "); // crane application_type filename
 		logger.info("Execute crane command..");
 		if(command.length<4){
 			return;
 		}
-		String functionType = command[1],file = command[2],filterWord = command[3];
-		logger.info("Execute "+functionType+", "+"getting file"+file);
+		String appType = command[1],file = command[2],filterWord = command[3];
+		logger.info("Execute "+appType+", "+"getting file "+file);
 		// get the nodes that contains the file
 		ArrayList<Node> nodesList = lsCommand("ls "+file);
 		if(nodesList==null || nodesList.size()==0) {
 			logger.info("no such file");
 			return;
 		}
+		String version = getLatestFileVersions(file);
+		logger.info("get file version "+SDFSPath+file+"_"+version);
 		Node spoutNode = new Node();
 		for(Node node:nodesList){
 			if(node.nodeID!=craneMaster.nodeID && node.nodeID!=standByMaster.nodeID) {
@@ -726,13 +763,14 @@ public class Detector {
 			}
 		}
 		try {
+			logger.info("send task to cranemaster...");
 			DatagramSocket ds = new DatagramSocket();
 			ds.setSoTimeout(TIMEOUT);
 			// send msg to master
 			JSONObject obj = new JSONObject();
 			obj.put("type", "toCraneMaster");
-			obj.put("functionType", "filter");
-			obj.put("file",file);
+			obj.put("appType", "filter");
+			obj.put("file",SDFSPath+file+"_"+version);
 			obj.put("filterWord",filterWord);
 			obj.put("spoutID",spoutNode.nodeID);
 			obj.put("spoutAddr",spoutNode.nodeAddr);
@@ -759,8 +797,8 @@ public class Detector {
 		if(command.length<3){
 			return;
 		}
-		String functionType = command[1],file = command[2];
-		logger.info("Execute "+functionType+", "+"getting file"+file);
+		String appType = command[1],file = command[2];
+		logger.info("Execute "+appType+", "+"getting file"+file);
 		// get the nodes that contains the file
 		ArrayList<Node> nodesList = lsCommand("ls "+file);
 		if(nodesList==null || nodesList.size()==0){
@@ -780,7 +818,7 @@ public class Detector {
 			// send msg to master
 			JSONObject obj = new JSONObject();
 			obj.put("type", "toCraneMaster");
-			obj.put("functionType", "wordCount");
+			obj.put("appType", "wordCount");
 			obj.put("file",file);
 			obj.put("spoutID",spoutNode.nodeID);
 			obj.put("spoutAddr",spoutNode.nodeAddr);

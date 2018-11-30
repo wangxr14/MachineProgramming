@@ -9,17 +9,19 @@ public class Record {
     int ID;
     String workerType; // bolt or spout
     String appType;
+    String functionType;
     String ipAddr;
     String spoutfile;
     String info;
     ArrayList<Node> children;// next bolt
-    public Record(int ID,String ipAddr, String appType, String info, String workerType, ArrayList<Node> children){
+    public Record(int ID,String ipAddr, String appType, String functionType,String info, String workerType, ArrayList<Node> children){
         this.ID = ID;
         this.ipAddr = ipAddr;
         this.workerType = workerType;
         this.appType = appType;
         this.info = info;
         this.children = new ArrayList<>();
+        this.functionType = functionType;
         for(Node node:children){
             this.children.add(node);
         }
@@ -41,4 +43,5 @@ public class Record {
         return (ArrayList<Node>) children.clone();
     }
     public String getInfo(){return info;}
+    public String getFunctionType(){return functionType;}
 }

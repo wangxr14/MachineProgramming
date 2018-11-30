@@ -50,7 +50,7 @@ public class CraneMaster {
         firstLevelWorkers.remove(0);
         // initialize spout
         for(Spout spout:curTopology.spoutList){
-            Record spoutRecord = new Record(spoutNode.nodeID,spoutNode.nodeAddr,spout.appType,"","spout",firstLevelWorkers);
+            Record spoutRecord = new Record(spoutNode.nodeID,spoutNode.nodeAddr,spout.appType,spout.functionType,"","spout",firstLevelWorkers);
             curTopology.addRecord(spoutRecord);
             logger.info("spout NodeID "+spoutNode.nodeID);
         }
@@ -59,13 +59,13 @@ public class CraneMaster {
             if(i==curTopology.boltList.size()-1){
                 ArrayList<Node> tmp = new ArrayList<>();// null arraylist
                 Record bolt2 = new Record(secondLevelWorker.get(0).nodeID,secondLevelWorker.get(0).nodeAddr,
-                        bolt.functionType,bolt.info,"bolt",tmp);
+                        bolt.appType,bolt.functionType,bolt.info,"bolt",tmp);
                 curTopology.addRecord(bolt2);
                 logger.info("bolt NodeID "+secondLevelWorker.get(0).nodeID+" function "+bolt.functionType);
             }
             else{
                 for(Node worker:firstLevelWorkers){
-                    Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.functionType,bolt.info,"bolt",secondLevelWorker);
+                    Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.appType,bolt.functionType,bolt.info,"bolt",secondLevelWorker);
                     curTopology.addRecord(bolt1);
                     logger.info("bolt NodeID "+worker.nodeID+" function "+bolt.functionType+" info "+bolt.info);
                 }
@@ -94,6 +94,7 @@ public class CraneMaster {
                 JSONObject jsonMsg = new JSONObject();
                 jsonMsg.put("workerType", record.getWorkerType());
                 jsonMsg.put("appType", record.getAppType());
+                jsonMsg.put("function", record.getAppType());
                 jsonMsg.put("filename", fileSpout);
                 jsonMsg.put("info",record.getInfo());
                 JSONArray arr = new JSONArray();
@@ -134,6 +135,7 @@ public class CraneMaster {
                 JSONObject jsonMsg = new JSONObject();
                 jsonMsg.put("workerType", record.getWorkerType());
                 jsonMsg.put("appType", record.getAppType());
+                jsonMsg.put("functionType", record.getAppType());
                 jsonMsg.put("filename", fileSpout);
                 jsonMsg.put("info",record.getInfo());
                 JSONArray arr = new JSONArray();
@@ -150,13 +152,15 @@ public class CraneMaster {
             JSONArray spoutArr = new JSONArray();
             for(Spout spout:curTopology.spoutList){
                 JSONObject obj = new JSONObject();
-                obj.put("functionType",spout.appType);
+                obj.put("appType",spout.appType);
+                obj.put("functionType",spout.functionType);
                 obj.put("spoutFile",spout.spoutFile);
                 spoutArr.put(obj);
             }
             JSONArray boltArr = new JSONArray();
             for(Bolt bolt:curTopology.boltList){
                 JSONObject obj = new JSONObject();
+                obj.put("appType",bolt.appType);
                 obj.put("functionType",bolt.functionType);
                 obj.put("info",bolt.info);
                 boltArr.put(obj);

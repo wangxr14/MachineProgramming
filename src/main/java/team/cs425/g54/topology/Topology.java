@@ -17,12 +17,12 @@ public class Topology {
     public ArrayList<Record> getRecordList(){
         return (ArrayList<Record>) recordList.clone();
     }
-    public void addSpout(String functionType,String file){
-        Spout spout = new Spout(file,functionType);
+    public void addSpout(String appType,String file,String functionType){
+        Spout spout = new Spout(file,appType,functionType);
         spoutList.add(spout);
     }
-    public void addBolt(String functiontype,String info){
-        Bolt bolt = new Bolt(functiontype,info);
+    public void addBolt(String functiontype,String info,String appType){
+        Bolt bolt = new Bolt(functiontype,info,appType);
         boltList.add(bolt);
     }
 }

@@ -291,4 +291,12 @@ public class MasterInfo {
             System.out.println();
         }
     }
+    public String getLatestVersion(String file){
+        if(fileVersions.containsKey(file)){
+            logger.info("get file version succeed");
+            return fileVersions.get(file).get(0).getValue();
+        }
+        logger.info("no file version existed");
+        return "";
+    }
 }
