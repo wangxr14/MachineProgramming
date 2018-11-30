@@ -267,6 +267,9 @@ public class Detector {
 	public void showID() {
 		System.out.println("This is VM"+myNode.nodeID+", Node Address:"+myNode.nodeAddr+", Node Port:"+myNode.nodePort);
 	}
+	public void showCraneMaster(){
+		System.out.println("craneMaster is node "+craneMaster.nodeID);
+	}
 	
 	public void showMembershipList() {
 		System.out.println("Number of Members:"+membershipList.size());
@@ -376,7 +379,7 @@ public class Detector {
 	public void setCraneMaster(){
 		craneMaster = myNode;
 		broadcastMasterMsgToAll("craneMaster", craneMaster);
-		logger.info("set crane master node "+myNode.nodeID);
+		logger.info("set crane master node "+craneMaster.nodeID);
 	}
 
 	public void setStandByMaster(){
@@ -849,7 +852,9 @@ public class Detector {
 				if(cmdInput.startsWith("crane wordcount")){
 					mp.wordCountApp(cmdInput);
 				}
-
+				if(cmdInput.startsWith("showcmaster")){
+					mp.showCraneMaster();
+				}
 				long time=System.currentTimeMillis()-startTime;
 				System.out.println("*************Time to finish is : "+time);
 
