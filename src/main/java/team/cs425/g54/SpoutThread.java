@@ -45,6 +45,7 @@ public class SpoutThread extends Thread {
 	    		bufferedReader = new BufferedReader(new FileReader(spoutFile));
 				String line = bufferedReader.readLine();
 				if(line!=null){
+					System.out.println("Line is:"+line);
 					linenumber++;
 					HashMap<String,String> emit=new HashMap<String, String>();
 					emit.put("linenumber", Integer.toString(linenumber));
@@ -79,6 +80,7 @@ public class SpoutThread extends Thread {
 	            dSock.send(dp);
 	            os.close();
 	            dSock.close();
+	            System.out.println("tuple sent "+tuple.values().toString());
     		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
