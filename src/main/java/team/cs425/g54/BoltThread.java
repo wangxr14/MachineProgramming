@@ -44,15 +44,13 @@ public class BoltThread extends Thread {
     // For word count
     HashMap<String,Integer> wordCounter=new HashMap<String, Integer>();
     
-    // For streaming to write a file
-    long lastWriteTime;
-    long timeToSend = 5000;
+    // For upload File to sdfs
+    FileUploader uploader;
 
     public BoltThread(String appType,CopyOnWriteArrayList<Node> children){
         this.appType = appType;
         this.children = children;
         pointer=0;
-        lastWriteTime=System.currentTimeMillis();
         port=Detector.workerPort;
         try {
 			socket=new DatagramSocket(port);
@@ -71,6 +69,9 @@ public class BoltThread extends Thread {
     	File tmpFile = new File(workingFilepath);
     	tmpFile.delete();
     	
+    	uploader=new FileUploader(appType,workingFilepath);
+    	uploader.start();
+    	
     	// Start listening
         byte [] receiveData=new byte[BYTE_LEN];
         while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
@@ -81,11 +82,9 @@ public class BoltThread extends Thread {
                 HashMap<String,String> in = (HashMap<String,String>) is.readObject();
                 is.close();
 
-//              // Deal
+              // Deal
                 dealWithData(in);
-                
-                // For stream to check if the file need to be written
-                checkWriteDownTime(false);
+                uploader.setFileChanged();
                 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -93,7 +92,6 @@ public class BoltThread extends Thread {
                 e.printStackTrace();
             }
         }
-        checkWriteDownTime(true);
     }
 	
 	public void dealWithData(HashMap<String,String> inData){
@@ -197,88 +195,8 @@ public class BoltThread extends Thread {
 			}
     		pointer = (pointer + 1) % children.size();
     	}
-    }
+    }	
 	
-	public ArrayList<Node> getNodeList(String str){
-		
-		ArrayList<Node> nodes = new ArrayList<>();
-		try {
-			JSONArray objArray = new JSONArray(str);
-			for (int i = 0; i < objArray.length(); i++) {
-				Node node = new Node();
-				JSONObject jsonNode = objArray.getJSONObject(i);
-				node.nodeAddr = jsonNode.get("nodeAddr").toString();
-				node.nodeID = Integer.parseInt(jsonNode.get("nodeID").toString());
-				node.nodePort = Integer.parseInt(jsonNode.get("nodePort").toString());
-				nodes.add(node);
-			}
-
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return nodes;
-	}
-	
-	public void checkWriteDownTime(boolean forced) {
-		// If filter, this bolt will put the file into sdfs every time unit
-		System.out.println("Time is "+(System.currentTimeMillis() - lastWriteTime));
-		if ((System.currentTimeMillis() - lastWriteTime) > timeToSend || forced) {
-			try {
-				DatagramSocket ds = new DatagramSocket();
-				ds.setSoTimeout(TIMEOUT);
-
-				String local = workingFilepath;
-				String sdfs = appType;
-				String timestamp = String.valueOf(System.currentTimeMillis());
-				// send msg to master
-				JSONObject obj = new JSONObject();
-				obj.put("type","toMaster");
-				obj.put("command","put");
-				obj.put("sdfsName",sdfs);
-				obj.put("timestamp",timestamp);
-				obj.put("nodeID", Detector.myNode.nodeID);
-				obj.put("nodeAddr", Detector.myNode.nodeAddr);
-				obj.put("nodePort", Detector.myNode.nodePort);
-				String msgToMaster = obj.toString();
-				InetAddress address = InetAddress.getByName(Detector.master.nodeAddr);
-				DatagramPacket dpSent= new DatagramPacket(msgToMaster.getBytes(),msgToMaster.length(),address,Detector.master.nodePort);
-				byte[] data = new byte[2048];
-				DatagramPacket dpReceived = new DatagramPacket(data, 2048);
-				ds.send(dpSent);
-				ds.receive(dpReceived);
-
-				String dpRecivedData = new String(dpReceived.getData());
-				System.out.println("Received "+dpRecivedData);
-				ArrayList<Node> nodes = getNodeList(dpRecivedData);
-
-				for(Node node:nodes){
-					Socket clientToNodes = new Socket(node.nodeAddr,Detector.toNodesPort);
-					JSONObject obj2 = new JSONObject();
-					obj2.put("type","put");
-					obj2.put("sdfsName",sdfs);
-					obj2.put("timestamp",timestamp);
-					DataOutputStream outputStream = new DataOutputStream(clientToNodes.getOutputStream());
-					outputStream.writeUTF(obj2.toString()); // send the put command to the node first
-					FileInputStream fis = new FileInputStream(local);
-					IOUtils.copy(fis,outputStream);
-					outputStream.flush();
-					clientToNodes.close();
-				}
-
-				ds.close();
-				lastWriteTime=System.currentTimeMillis();
-			} catch (SocketException e) {
-				e.printStackTrace();
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-		
-	}
 	
 	public void stopThread() {
 		socket.close();
