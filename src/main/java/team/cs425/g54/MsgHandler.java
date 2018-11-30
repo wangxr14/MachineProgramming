@@ -510,7 +510,7 @@ public class MsgHandler extends Thread{
             JSONArray boltArr = msg.getJSONArray("boltArr");
             for(int i=0;i<boltArr.length();i++){
                 String functionType = boltArr.getJSONObject(i).getString("functionType");
-                String info = spoutArr.getJSONObject(i).getString("info");
+                String info = boltArr.getJSONObject(i).getString("info");
                 Bolt b = new Bolt(functionType,info);
                 Detector.craneMasterCmd.curTopology.boltList.add(b);
             }
