@@ -811,9 +811,9 @@ public class MsgHandler extends Thread{
                 String nodeAddr = jsonData.get("nodeAddr").toString();
                 Detector.standByMaster = new Node(nodeID,nodeAddr,Detector.sendTaskPort);
             }
-            else if (messageType.equals("clone")){
+            else if (messageType.equals("setStandByMaster")){
                 //TODO backup crane master
-
+                cloneCraneMaster(jsonData);
             }
 
 

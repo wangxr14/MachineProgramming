@@ -166,6 +166,7 @@ public class CraneMaster {
             jsonAllMsgs.put("spoutArr",spoutArr);
             jsonAllMsgs.put("boltArr",boltArr);
             jsonAllMsgs.put("clone",arrRecord);
+            jsonAllMsgs.put("type","setStandByMaster");
             InetAddress address = InetAddress.getByName(Detector.standByMaster.nodeAddr);
             DatagramPacket send_message = new DatagramPacket(jsonAllMsgs.toString().getBytes(), jsonAllMsgs.toString().getBytes().length, address,Detector.nodePort);
             server.send(send_message);
