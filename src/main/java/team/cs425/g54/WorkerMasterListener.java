@@ -83,7 +83,7 @@ public class WorkerMasterListener extends Thread {
                 }
         		BoltThread bolt = new BoltThread(appType, childrenList);
         		if(appType.equals("filter")) {
-        			bolt.filterWord=jsonData.get("filterWord").toString();
+        			bolt.info=jsonData.get("info").toString();
         		}
         		workingThread = bolt;
         		bolt.start();

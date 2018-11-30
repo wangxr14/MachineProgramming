@@ -26,7 +26,7 @@ public class BoltThread extends Thread {
     int pointer;
     int port;
     private DatagramSocket socket;
-    String filterWord="";
+    String info="";
     private final int BYTE_LEN=10000;
 
     public BoltThread(String appType,CopyOnWriteArrayList<Node> children){
@@ -86,7 +86,7 @@ public class BoltThread extends Thread {
 			}
 			else {
 				for (Entry<String, String> entry : inData.entrySet()) {
-					if(entry.getValue().equals(filterWord)) {
+					if(entry.getValue().equals(info)) {
 						outData.put(entry.getKey(), entry.getValue());
 					}
 					
