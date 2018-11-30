@@ -746,7 +746,7 @@ public class Detector {
 			return;
 		}
 		String appType = command[1],file = command[2],filterWord = command[3];
-		logger.info("Execute "+appType+", "+"getting file"+file);
+		logger.info("Execute "+appType+", "+"getting file "+file);
 		// get the nodes that contains the file
 		ArrayList<Node> nodesList = lsCommand("ls "+file);
 		if(nodesList==null || nodesList.size()==0) {
@@ -763,6 +763,7 @@ public class Detector {
 			}
 		}
 		try {
+			logger.info("send task to cranemaster...");
 			DatagramSocket ds = new DatagramSocket();
 			ds.setSoTimeout(TIMEOUT);
 			// send msg to master
