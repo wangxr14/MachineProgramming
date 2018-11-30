@@ -311,7 +311,7 @@ public class MsgHandler extends Thread{
         if(deleteFile.delete()){
         	// Remove it from the list
         	for(int i=0; i<Detector.storeInfo.fileVersions.get(sdfsName).size();i++) {
-        		if(Detector.storeInfo.fileVersions.get(sdfsName).get(i)==timestamp) {
+        		if(Detector.storeInfo.fileVersions.get(sdfsName).get(i).equals(timestamp)) {
         			Detector.storeInfo.fileVersions.get(sdfsName).remove(i);
         		}
         	}
@@ -528,14 +528,6 @@ public class MsgHandler extends Thread{
             JSONObject jsonData = new JSONObject(receivedData);
         
             String messageType = jsonData.get("type").toString();
-
-                    // get new node information
-            //Node node = new Node(0,"",0);  // join need not use node but the whole list membership 
-            //if(!messageType.equals("ping")){
-            //    node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
-            //    node.nodeAddr = jsonData.get("nodeAddr").toString();
-            //    node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
-           // }
             
             if(messageType.equals("ping")){
                 //measure bytes
@@ -813,6 +805,7 @@ public class MsgHandler extends Thread{
                 int nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
                 String nodeAddr = jsonData.get("nodeAddr").toString();
                 Detector.standByMaster = new Node(nodeID,nodeAddr,Detector.sendTaskPort);
+                logger.info("set standby master as node "+Detector.standByMaster.nodeID);
             }
             else if (messageType.equals("setStandByMaster")){
                 //TODO backup crane master

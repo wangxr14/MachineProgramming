@@ -381,6 +381,7 @@ public class Detector {
 		broadcastMasterMsgToAll("craneMaster", craneMaster);
 		logger.info("set crane master node "+craneMaster.nodeID);
 		setStandByMaster();
+
 	}
 
 	public void setStandByMaster(){
