@@ -71,28 +71,32 @@ public class BoltThread extends Thread {
 		HashMap<String,String> outData = new HashMap<String,String>();
 		
 		if(appType.equals("filter")) {
-			for (Entry<String, String> entry : inData.entrySet()) {
-				if(entry.getValue().equals(filterWord)) {
-					outData.put(entry.getKey(), entry.getValue());
+			if(children.size()==0) {
+				BufferedWriter bufferedWriter;
+				try {
+					bufferedWriter = new BufferedWriter(new FileWriter("sdfs_bolt", true));
+					for (Entry<String, String> entry : inData.entrySet()) {
+						bufferedWriter.write(entry.getValue());
+						
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				
 			}
-			// Send
-            sendTuple(outData);
-    	}
-		if(appType.equals("combine")) {
-			BufferedWriter bufferedWriter;
-			try {
-				bufferedWriter = new BufferedWriter(new FileWriter("sdfs_bolt", true));
+			else {
 				for (Entry<String, String> entry : inData.entrySet()) {
-					bufferedWriter.write(entry.getValue());
+					if(entry.getValue().equals(filterWord)) {
+						outData.put(entry.getKey(), entry.getValue());
+					}
 					
 				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// Send
+	            sendTuple(outData);
 			}
-		}
+			
+    	}
+		
     	
 		
 	}
