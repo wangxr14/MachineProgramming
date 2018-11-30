@@ -816,7 +816,7 @@ public class MsgHandler extends Thread{
             }
             else if(messageType.equals("toCraneMaster")){
 
-                String appType = jsonData.getString("appTypeType");
+                String appType = jsonData.getString("appType");
                 if(appType.equals("filter")){
                     String file = jsonData.getString("file");
                     String filterWord = jsonData.getString("filterWord");
