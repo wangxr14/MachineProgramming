@@ -68,8 +68,8 @@ public class BoltThread extends Thread {
     	// Delete the previous working file
     	File tmpFile = new File(workingFilepath);
     	tmpFile.delete();
+    	uploader=new FileUploader(appType,workingFilepath);
     	if(children.size()==0) {
-    		uploader=new FileUploader(appType,workingFilepath);
         	uploader.start();
     	}
     	
