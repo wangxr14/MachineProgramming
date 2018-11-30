@@ -7,6 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import team.cs425.g54.topology.Record;
+import team.cs425.g54.topology.Spout;
+import team.cs425.g54.topology.Topology;
+import team.cs425.g54.topology.Bolt;
+
 
 
 import java.io.*;
@@ -470,6 +474,7 @@ public class MsgHandler extends Thread{
     // Set up standbyMaster
     public void cloneCraneMaster(JSONObject msg){
         try {
+            Detector.craneMasterCmd.curTopology = new Topology();
             JSONArray arr = msg.getJSONArray("clone");
             for(int i=0;i<arr.length();i++){
                 JSONObject recordObj = arr.getJSONObject(i);
@@ -482,12 +487,29 @@ public class MsgHandler extends Thread{
                 }
                 String workerType = recordObj.getString("workerType");
                 String appType = recordObj.getString("appType");
-                String spoutfile = recordObj.getString("fileSpout");
                 int id = recordObj.getInt("nodeID");
                 String addr = recordObj.getString("nodeAddr");
                 String info = recordObj.getString("info");
                 Record record = new Record(id,addr,appType,info,workerType,children);
                 Detector.craneMasterCmd.curTopology.addRecode(record);
+            }
+            String fileSpout = msg.getString("fileSpout");
+            Detector.craneMasterCmd.fileSpout = fileSpout;
+            // spoutlist
+            JSONArray spoutArr = msg.getJSONArray("spoutArr");
+            for(int i=0;i<spoutArr.length();i++){
+                String spoutFile = spoutArr.getJSONObject(i).getString("spoutFile");
+                String appType = spoutArr.getJSONObject(i).getString("appType");
+                Spout s = new Spout(spoutFile,appType);
+                Detector.craneMasterCmd.curTopology.spoutList.add(s);
+            }
+            // boltList
+            JSONArray boltArr = msg.getJSONArray("boltArr");
+            for(int i=0;i<boltArr.length();i++){
+                String functionType = boltArr.getJSONObject(i).getString("functionType");
+                String info = spoutArr.getJSONObject(i).getString("info");
+                Bolt b = new Bolt(functionType,info);
+                Detector.craneMasterCmd.curTopology.boltList.add(b);
             }
 
         } catch (JSONException e) {

@@ -35,7 +35,7 @@ public class CraneMaster {
         this.spoutNode.nodeAddr = spoutNode.nodeAddr;
         this.spoutNode.nodePort = spoutNode.nodePort;
         curTopology = new Topology();
-
+        setStandByMaster();
     }
 
     // constructTopology according to application type
@@ -69,7 +69,16 @@ public class CraneMaster {
         }
         backUpStandByMaster();
     }
-
+    void setStandByMaster(){
+        for(Node node:Detector.groupList){
+            if(node.nodeID!=Detector.craneMaster.nodeID){
+                Detector.standByMaster = node;
+                break;
+            }
+        }
+        // broadcast standByMaster
+        broadcastMasterMsgToAll("standByMaster",Detector.standByMaster);
+    }
     // distribute task to each node in topology
     void sendTask() {
         try {
@@ -143,7 +152,7 @@ public class CraneMaster {
             for(Bolt bolt:curTopology.boltList){
                 JSONObject obj = new JSONObject();
                 obj.put("functionType",bolt.functionType);
-                obj.put("spoutFile",bolt.info);
+                obj.put("info",bolt.info);
                 boltArr.put(obj);
             }
             jsonAllMsgs.put("fileSpout",fileSpout); // for input file stream
@@ -164,6 +173,32 @@ public class CraneMaster {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void broadcastMasterMsgToAll(String type, Node toSend) {
+        try {
+            DatagramSocket ds = new DatagramSocket();
+
+            for(Node node : Detector.groupList) {
+                JSONObject message = new JSONObject();
+                message.put("type", type);
+                message.put("nodeID", toSend.nodeID);
+                message.put("nodeAddr", toSend.nodeAddr);
+                message.put("nodePort", toSend.nodePort);
+                InetAddress address = InetAddress.getByName(node.nodeAddr);
+                DatagramPacket send_message = new DatagramPacket(message.toString().getBytes(), message.toString().getBytes().length, address, node.nodePort);
+                ds.send(send_message);
+            }
+            ds.close();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e){
             e.printStackTrace();
         }
     }

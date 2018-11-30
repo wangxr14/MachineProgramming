@@ -6,6 +6,10 @@ public class Topology {
     ArrayList<Record> recordList;
     public ArrayList<Spout> spoutList;
     public ArrayList<Bolt>  boltList;
+    public Topology(){
+        spoutList = new ArrayList<>();
+        boltList = new ArrayList<>();
+    }
     public void addRecode(Record record){
         recordList.add(record);
     }
