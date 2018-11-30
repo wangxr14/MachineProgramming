@@ -43,6 +43,7 @@ public class WorkerMasterListener extends Thread {
     private void handleMessage(String receivedData) {
         try {
         	JSONObject jsonData = new JSONObject(receivedData);
+            System.out.println("json received: " + jsonData.toString());
         	String workerType = jsonData.get("workerType").toString();
         	System.out.println("WorkerType received is "+workerType);
         	// Stop the current worker if there is any
