@@ -801,6 +801,16 @@ public class MsgHandler extends Thread{
                     cloneCraneMaster(jsonData);
                 }
             }
+            else if(messageType.equals("craneMaster")){
+                int nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                String nodeAddr = jsonData.get("nodeAddr").toString();
+                Detector.craneMaster = new Node(nodeID,nodeAddr,Detector.sendTaskPort);
+            }
+            else if(messageType.equals("standByMaster")){
+                int nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                String nodeAddr = jsonData.get("nodeAddr").toString();
+                Detector.standByMaster = new Node(nodeID,nodeAddr,Detector.sendTaskPort);
+            }
             else if (messageType.equals("clone")){
                 //TODO backup crane master
 
