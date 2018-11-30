@@ -710,8 +710,8 @@ public class Detector {
 		if(command.length<4){
 			return;
 		}
-		String functionType = command[1],file = command[2],filterWord = command[3];
-		logger.info("Execute "+functionType+", "+"getting file"+file);
+		String appType = command[1],file = command[2],filterWord = command[3];
+		logger.info("Execute "+appType+", "+"getting file"+file);
 		// get the nodes that contains the file
 		ArrayList<Node> nodesList = lsCommand("ls "+file);
 		if(nodesList==null || nodesList.size()==0) {
@@ -731,7 +731,7 @@ public class Detector {
 			// send msg to master
 			JSONObject obj = new JSONObject();
 			obj.put("type", "toCraneMaster");
-			obj.put("functionType", "filter");
+			obj.put("appType", "filter");
 			obj.put("file",file);
 			obj.put("filterWord",filterWord);
 			obj.put("spoutID",spoutNode.nodeID);
@@ -759,8 +759,8 @@ public class Detector {
 		if(command.length<3){
 			return;
 		}
-		String functionType = command[1],file = command[2];
-		logger.info("Execute "+functionType+", "+"getting file"+file);
+		String appType = command[1],file = command[2];
+		logger.info("Execute "+appType+", "+"getting file"+file);
 		// get the nodes that contains the file
 		ArrayList<Node> nodesList = lsCommand("ls "+file);
 		if(nodesList==null || nodesList.size()==0){
@@ -780,7 +780,7 @@ public class Detector {
 			// send msg to master
 			JSONObject obj = new JSONObject();
 			obj.put("type", "toCraneMaster");
-			obj.put("functionType", "wordCount");
+			obj.put("appType", "wordCount");
 			obj.put("file",file);
 			obj.put("spoutID",spoutNode.nodeID);
 			obj.put("spoutAddr",spoutNode.nodeAddr);
