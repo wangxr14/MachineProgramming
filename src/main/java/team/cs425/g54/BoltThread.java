@@ -111,7 +111,6 @@ public class BoltThread extends Thread {
 						
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -121,12 +120,13 @@ public class BoltThread extends Thread {
 					for(String s: entry.getValue().split(" ")) {
 						if(s.equals(info)) {
 							outData.put(entry.getKey(), entry.getValue());
+				            sendTuple(outData);
+				            outData=new HashMap<String, String>();
 							break;
 						}
 					}
 				}
-				// Send
-	            sendTuple(outData);
+				
 			}
 			
     	}
