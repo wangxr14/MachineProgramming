@@ -474,6 +474,9 @@ public class MsgHandler extends Thread{
     // Set up standbyMaster
     public void cloneCraneMaster(JSONObject msg){
         try {
+            String fileSpout = msg.getString("fileSpout");
+            Node spoutNode = new Node(msg.getInt("spoutID"),msg.getString("spoutAddr"),Detector.sendTaskPort);
+            Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr,serverNode.nodeID,fileSpout,spoutNode);
             Detector.craneMasterCmd.curTopology = new Topology();
             JSONArray arr = msg.getJSONArray("clone");
             for(int i=0;i<arr.length();i++){
@@ -493,7 +496,7 @@ public class MsgHandler extends Thread{
                 Record record = new Record(id,addr,appType,info,workerType,children);
                 Detector.craneMasterCmd.curTopology.addRecord(record);
             }
-            String fileSpout = msg.getString("fileSpout");
+
             Detector.craneMasterCmd.fileSpout = fileSpout;
             // spoutlist
             JSONArray spoutArr = msg.getJSONArray("spoutArr");
@@ -814,6 +817,20 @@ public class MsgHandler extends Thread{
             else if (messageType.equals("setStandByMaster")){
                 //TODO backup crane master
                 cloneCraneMaster(jsonData);
+            }
+            else if(messageType.equals("toCraneMaster")){
+                String functionType = jsonData.getString("functionType");
+                String file = jsonData.getString("file");
+                String filterWord = jsonData.getString("filterWord");
+                int spoutID = jsonData.getInt("spoutID");
+                String spoutAddr = jsonData.getString("spoutAddr");
+                Node spout = new Node(spoutID,spoutAddr,Detector.sendTaskPort);
+                Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr, serverNode.nodeID, file, spout);
+                Detector.craneMasterCmd.curTopology.addSpout("filter",file);
+                Detector.craneMasterCmd.curTopology.addBolt("filter",filterWord);
+                Detector.craneMasterCmd.curTopology.addBolt("combine","");
+                Detector.craneMasterCmd.constructTopology();
+                Detector.craneMasterCmd.sendTask();
             }
 
 
