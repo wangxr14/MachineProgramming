@@ -656,7 +656,7 @@ public class MsgHandler extends Thread{
                         Detector.craneMaster.nodeID = Detector.standByMaster.nodeID;
                         Detector.craneMaster.nodeAddr = Detector.standByMaster.nodeAddr;
                         broadcast("renewCraneMaster",Detector.craneMaster);
-
+                        logger.info("sending renew cranemaster msg to everyone..");
                         //find a new standbymaster, and clone the CraneMasterinfo to it
                         if(Detector.membershipList.size()>0){
                             Node newStandBy = Detector.membershipList.get(0);
@@ -664,6 +664,7 @@ public class MsgHandler extends Thread{
                             Detector.standByMaster.nodeAddr = newStandBy.nodeAddr;
                             Detector.craneMasterCmd.backUpStandByMaster();
                             broadcast("renewStandByMaster",Detector.standByMaster);
+                            logger.info("sending renew Standbymaster msg to everyone..");
                             //broadcast to all nodes;
                         }
                     }
@@ -696,6 +697,7 @@ public class MsgHandler extends Thread{
 	                    }
                     }
                     broadcast(messageType,node);
+
                     
                 }
 

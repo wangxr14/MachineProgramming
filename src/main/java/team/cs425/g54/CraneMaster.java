@@ -51,6 +51,7 @@ public class CraneMaster {
         for(Spout spout:curTopology.spoutList){
             Record spoutRecord = new Record(spoutNode.nodeID,spoutNode.nodeAddr,spout.appType,"","spout",firstLevelWorkers);
             curTopology.addRecode(spoutRecord);
+            logger.info("spout NodeID "+spoutNode.nodeID);
         }
         int i = 0;
         for(Bolt bolt:curTopology.boltList){
@@ -59,13 +60,16 @@ public class CraneMaster {
                 Record bolt2 = new Record(secondLevelWorker.get(0).nodeID,secondLevelWorker.get(0).nodeAddr,
                         bolt.functionType,bolt.info,"bolt2",tmp);
                 curTopology.addRecode(bolt2);
+                logger.info("bolt2 NodeID "+secondLevelWorker.get(0).nodeID+" function "+bolt.functionType);
             }
             else{
                 for(Node worker:firstLevelWorkers){
                     Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.functionType,bolt.info,"bolt1",secondLevelWorker);
                     curTopology.addRecode(bolt1);
+                    logger.info("bolt1 NodeID "+worker.nodeID+" function "+bolt.functionType+" info "+bolt.info);
                 }
             }
+            i++;
         }
         backUpStandByMaster();
     }
@@ -76,6 +80,7 @@ public class CraneMaster {
                 break;
             }
         }
+        logger.info("set standby master as node "+Detector.standByMaster.nodeID);
         // broadcast standByMaster
         broadcastMasterMsgToAll("standByMaster",Detector.standByMaster);
     }
@@ -164,7 +169,7 @@ public class CraneMaster {
             InetAddress address = InetAddress.getByName(Detector.standByMaster.nodeAddr);
             DatagramPacket send_message = new DatagramPacket(jsonAllMsgs.toString().getBytes(), jsonAllMsgs.toString().getBytes().length, address,Detector.sendTaskPort);
             server.send(send_message);
-
+            logger.info("sending backup standbymaster msg..");
 
         }catch (JSONException e) {
             e.printStackTrace();
