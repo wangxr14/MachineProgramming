@@ -58,15 +58,15 @@ public class CraneMaster {
             if(i==curTopology.boltList.size()-1){
                 ArrayList<Node> tmp = new ArrayList<>();// null arraylist
                 Record bolt2 = new Record(secondLevelWorker.get(0).nodeID,secondLevelWorker.get(0).nodeAddr,
-                        bolt.functionType,bolt.info,"bolt2",tmp);
+                        bolt.functionType,bolt.info,"bolt",tmp);
                 curTopology.addRecord(bolt2);
-                logger.info("bolt2 NodeID "+secondLevelWorker.get(0).nodeID+" function "+bolt.functionType);
+                logger.info("bolt NodeID "+secondLevelWorker.get(0).nodeID+" function "+bolt.functionType);
             }
             else{
                 for(Node worker:firstLevelWorkers){
-                    Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.functionType,bolt.info,"bolt1",secondLevelWorker);
+                    Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.functionType,bolt.info,"bolt",secondLevelWorker);
                     curTopology.addRecord(bolt1);
-                    logger.info("bolt1 NodeID "+worker.nodeID+" function "+bolt.functionType+" info "+bolt.info);
+                    logger.info("bolt NodeID "+worker.nodeID+" function "+bolt.functionType+" info "+bolt.info);
                 }
             }
             i++;
