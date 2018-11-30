@@ -68,10 +68,12 @@ public class BoltThread extends Thread {
     }
 	
 	public void dealWithData(HashMap<String,String> inData){
+		System.out.println("Data received: "+inData.values().toString());
 		HashMap<String,String> outData = new HashMap<String,String>();
 		
 		if(appType.equals("filter")) {
 			if(children.size()==0) {
+				System.out.println("Write to file");
 				BufferedWriter bufferedWriter;
 				try {
 					bufferedWriter = new BufferedWriter(new FileWriter("sdfs_bolt", true));
@@ -85,6 +87,7 @@ public class BoltThread extends Thread {
 				}
 			}
 			else {
+				System.out.println("Send to children");
 				for (Entry<String, String> entry : inData.entrySet()) {
 					if(entry.getValue().equals(info)) {
 						outData.put(entry.getKey(), entry.getValue());
