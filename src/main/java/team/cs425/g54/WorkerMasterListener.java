@@ -88,9 +88,7 @@ public class WorkerMasterListener extends Thread {
         		bolt.start();
         	}
         	
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        }  catch (JSONException e) {
             e.printStackTrace();
         } 
     }
