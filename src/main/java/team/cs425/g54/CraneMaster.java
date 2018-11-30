@@ -50,7 +50,7 @@ public class CraneMaster {
         // initialize spout
         for(Spout spout:curTopology.spoutList){
             Record spoutRecord = new Record(spoutNode.nodeID,spoutNode.nodeAddr,spout.appType,"","spout",firstLevelWorkers);
-            curTopology.addRecode(spoutRecord);
+            curTopology.addRecord(spoutRecord);
             logger.info("spout NodeID "+spoutNode.nodeID);
         }
         int i = 0;
@@ -59,13 +59,13 @@ public class CraneMaster {
                 ArrayList<Node> tmp = new ArrayList<>();// null arraylist
                 Record bolt2 = new Record(secondLevelWorker.get(0).nodeID,secondLevelWorker.get(0).nodeAddr,
                         bolt.functionType,bolt.info,"bolt2",tmp);
-                curTopology.addRecode(bolt2);
+                curTopology.addRecord(bolt2);
                 logger.info("bolt2 NodeID "+secondLevelWorker.get(0).nodeID+" function "+bolt.functionType);
             }
             else{
                 for(Node worker:firstLevelWorkers){
                     Record bolt1 = new Record(worker.nodeID,worker.nodeAddr,bolt.functionType,bolt.info,"bolt1",secondLevelWorker);
-                    curTopology.addRecode(bolt1);
+                    curTopology.addRecord(bolt1);
                     logger.info("bolt1 NodeID "+worker.nodeID+" function "+bolt.functionType+" info "+bolt.info);
                 }
             }

@@ -491,7 +491,7 @@ public class MsgHandler extends Thread{
                 String addr = recordObj.getString("nodeAddr");
                 String info = recordObj.getString("info");
                 Record record = new Record(id,addr,appType,info,workerType,children);
-                Detector.craneMasterCmd.curTopology.addRecode(record);
+                Detector.craneMasterCmd.curTopology.addRecord(record);
             }
             String fileSpout = msg.getString("fileSpout");
             Detector.craneMasterCmd.fileSpout = fileSpout;
