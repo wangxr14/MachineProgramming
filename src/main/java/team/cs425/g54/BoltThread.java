@@ -99,7 +99,7 @@ public class BoltThread extends Thread {
 	public void dealWithData(HashMap<String,String> inData){
 		System.out.println("Data received: "+inData.values().toString());
 		HashMap<String,String> outData = new HashMap<String,String>();
-		
+		System.out.println("Apptype is "+appType+" "+appType.equals("filter"));
 		if(appType.equals("filter")) {
 			if(children.size()==0) {
 				System.out.println("Write to file");
