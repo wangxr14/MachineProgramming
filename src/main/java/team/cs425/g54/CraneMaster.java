@@ -31,9 +31,7 @@ public class CraneMaster {
         this.fileSpout = file;
         totalWorker = Detector.groupList.size()-1;
         firstLevelWorkers = new ArrayList<>();
-        this.spoutNode.nodeID = spoutNode.nodeID;
-        this.spoutNode.nodeAddr = spoutNode.nodeAddr;
-        this.spoutNode.nodePort = spoutNode.nodePort;
+        this.spoutNode = spoutNode;
         curTopology = new Topology();
         setStandByMaster();
     }

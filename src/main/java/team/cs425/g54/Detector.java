@@ -367,11 +367,13 @@ public class Detector {
 		master=myNode;
 		//Broadcast this message to all 
 		broadcastMasterMsgToAll("master", master);
+
 	}
 
 	public void setCraneMaster(){
 		craneMaster = myNode;
 		broadcastMasterMsgToAll("craneMaster", craneMaster);
+		logger.info("set crane master node "+myNode.nodeID);
 	}
 
 	public void setStandByMaster(){
@@ -699,12 +701,23 @@ public class Detector {
 		logger.info("Execute "+functionType+", "+"getting file"+file);
 		// get the nodes that contains the file
 		ArrayList<Node> nodesList = lsCommand("ls "+file);
-		if(nodesList==null || nodesList.size()==0){
+		if(nodesList==null || nodesList.size()==0) {
 			logger.info("no such file");
-			return ;
+			return;
 		}
-		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,file,nodesList.get(0));
-
+		for(Node node:groupList){
+			if(node.nodeID!=Detector.craneMaster.nodeID){
+				Detector.standByMaster = node;
+				logger.info("standbymaster node "+node.nodeID+" set");
+				break;
+			}
+		}
+		for(Node node:nodesList){
+			if(node.nodeID!=craneMaster.nodeID && node.nodeID==standByMaster.nodeID) {
+				craneMasterCmd = new CraneMaster(myNode.nodeAddr, myNode.nodeID, file, node);
+				break;
+			}
+		}
 		craneMasterCmd.curTopology.addSpout("filter",file);
 		craneMasterCmd.curTopology.addBolt("filter",filterWord);
 		craneMasterCmd.curTopology.addBolt("combine","");
@@ -726,7 +739,20 @@ public class Detector {
 			logger.info("no such file");
 			return ;
 		}
-		craneMasterCmd = new CraneMaster(myNode.nodeAddr,myNode.nodeID,file,nodesList.get(0));
+		for(Node node:groupList){
+			if(node.nodeID!=Detector.craneMaster.nodeID){
+				Detector.standByMaster = node;
+				logger.info("standbymaster node "+node.nodeID+" set");
+				break;
+			}
+		}
+		for(Node node:nodesList){
+			if(node.nodeID!=craneMaster.nodeID && node.nodeID==standByMaster.nodeID) {
+				craneMasterCmd = new CraneMaster(myNode.nodeAddr, myNode.nodeID, file, node);
+				break;
+			}
+		}
+
 		craneMasterCmd.curTopology.addSpout("wordCount",file);
 		craneMasterCmd.curTopology.addBolt("mapKey","");
 		craneMasterCmd.curTopology.addBolt("sum","");
