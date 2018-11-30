@@ -142,7 +142,17 @@ public class MsgHandler extends Thread{
         }
         return jsonNodeInfo;
     }
-    
+
+    String packVersionToJson(String version){
+        JSONObject obj = new JSONObject();
+        try{
+            obj.put("latestVersion",version);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj.toString();
+    }
+
     public boolean deleteMsgNeedToSend(Node failNode, Node detector) {
     	int nodeId = containsInstance(totalMemberList,failNode);
     	if(nodeId!=-1 || detector.nodeID != Detector.master.nodeID) {
@@ -772,6 +782,13 @@ public class MsgHandler extends Thread{
                     node.nodeAddr = jsonData.get("nodeAddr").toString();
                     node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
                     Detector.masterInfo.deleteNodeFile(node, sdfsName);
+                }
+                else if(command.equals("getLatestVersion")){
+                    String sdfsName = jsonData.get("sdfsName").toString();
+                    String version = Detector.masterInfo.getLatestVersion(sdfsName);
+                    String jsonString = packVersionToJson(version);
+                    DatagramPacket send_msg = new DatagramPacket(jsonString.getBytes(),jsonString.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                    server.send(send_msg);
                 }
             }
             else if(messageType.equals("requset")){ // send node info to new master
