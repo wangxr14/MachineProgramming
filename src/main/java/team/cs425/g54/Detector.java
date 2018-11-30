@@ -719,7 +719,7 @@ public class Detector {
 			}
 		}
 		for(Node node:nodesList){
-			if(node.nodeID!=craneMaster.nodeID && node.nodeID==standByMaster.nodeID) {
+			if(node.nodeID!=craneMaster.nodeID && node.nodeID!=standByMaster.nodeID) {
 				craneMasterCmd = new CraneMaster(myNode.nodeAddr, myNode.nodeID, file, node);
 				break;
 			}
