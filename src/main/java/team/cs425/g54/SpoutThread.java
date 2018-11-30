@@ -68,7 +68,7 @@ public class SpoutThread extends Thread {
     public void sendTuple(HashMap<String,String> tuple) {
     	if(children.size()>0) {
     		try {
-	    		// Tcp connect children[pointer]
+	    		// connect children[pointer]
 	    		String address = children.get(pointer).nodeAddr; 
 	    		int port = children.get(pointer).nodePort;
 	    		// Send tuple
@@ -90,6 +90,10 @@ public class SpoutThread extends Thread {
 			}
     		pointer = (pointer + 1) % children.size();
     	}
+    }
+    
+    public void stopThread() {
+    	Thread.currentThread().interrupt();
     }
 
 }

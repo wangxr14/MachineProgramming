@@ -13,7 +13,8 @@ import org.json.JSONObject;
 
 public class WorkerMasterListener extends Thread {
 	private DatagramSocket socket;
-	public Thread workingThread = null; 
+	public SpoutThread workingSpout = null;
+	public BoltThread workingBolt = null;
     
 
     public WorkerMasterListener(int port) throws IOException {
@@ -47,9 +48,13 @@ public class WorkerMasterListener extends Thread {
         	String workerType = jsonData.get("workerType").toString();
         	System.out.println("WorkerType received is "+workerType);
         	// Stop the current worker if there is any
-        	if (workingThread != null) {
-        		workingThread.interrupt();
-        		workingThread = null;
+        	if (workingSpout != null) {
+        		workingSpout.stopThread();
+        		workingSpout = null;
+        	}
+        	if (workingBolt != null ) {
+        		workingBolt.stopThread();
+        		workingBolt = null;
         	}
         	
         	if(workerType.equals("spout")) {
@@ -66,7 +71,7 @@ public class WorkerMasterListener extends Thread {
                     childrenList.add(tmp_node);
                 }
         		SpoutThread spout = new SpoutThread(filename, appType, childrenList);
-        		workingThread = spout;
+        		workingSpout = spout;
         		spout.start();
         	}
         	if(workerType.equals("bolt")) {
@@ -85,7 +90,7 @@ public class WorkerMasterListener extends Thread {
         		if(appType.equals("filter")) {
         			bolt.info=jsonData.get("info").toString();
         		}
-        		workingThread = bolt;
+        		workingBolt = bolt;
         		bolt.start();
         	}
         	
