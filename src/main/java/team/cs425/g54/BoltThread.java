@@ -107,6 +107,7 @@ public class BoltThread extends Thread {
 				try {
 					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath, true));
 					for (Entry<String, String> entry : inData.entrySet()) {
+						System.out.println("entry "+entry.getValue());
 						bufferedWriter.write(entry.getValue());
 						
 					}
