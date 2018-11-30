@@ -819,18 +819,34 @@ public class MsgHandler extends Thread{
                 cloneCraneMaster(jsonData);
             }
             else if(messageType.equals("toCraneMaster")){
+
                 String functionType = jsonData.getString("functionType");
-                String file = jsonData.getString("file");
-                String filterWord = jsonData.getString("filterWord");
-                int spoutID = jsonData.getInt("spoutID");
-                String spoutAddr = jsonData.getString("spoutAddr");
-                Node spout = new Node(spoutID,spoutAddr,Detector.sendTaskPort);
-                Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr, serverNode.nodeID, file, spout);
-                Detector.craneMasterCmd.curTopology.addSpout("filter",file);
-                Detector.craneMasterCmd.curTopology.addBolt("filter",filterWord);
-                Detector.craneMasterCmd.curTopology.addBolt("combine","");
-                Detector.craneMasterCmd.constructTopology();
-                Detector.craneMasterCmd.sendTask();
+                if(functionType.equals("filter")){
+                    String file = jsonData.getString("file");
+                    String filterWord = jsonData.getString("filterWord");
+                    int spoutID = jsonData.getInt("spoutID");
+                    String spoutAddr = jsonData.getString("spoutAddr");
+                    Node spout = new Node(spoutID,spoutAddr,Detector.sendTaskPort);
+                    Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr, serverNode.nodeID, file, spout);
+                    Detector.craneMasterCmd.curTopology.addSpout("filter",file);
+                    Detector.craneMasterCmd.curTopology.addBolt("filter",filterWord);
+                    Detector.craneMasterCmd.curTopology.addBolt("combine","");
+                    Detector.craneMasterCmd.constructTopology();
+                    Detector.craneMasterCmd.sendTask();
+                }
+                else if(functionType.equals("wordCount")){
+                    String file = jsonData.getString("file");
+                    int spoutID = jsonData.getInt("spoutID");
+                    String spoutAddr = jsonData.getString("spoutAddr");
+                    Node spout = new Node(spoutID,spoutAddr,Detector.sendTaskPort);
+                    Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr, serverNode.nodeID, file, spout);
+                    Detector.craneMasterCmd.curTopology.addSpout("wordCount",file);
+                    Detector.craneMasterCmd.curTopology.addBolt("mapKey","");
+                    Detector.craneMasterCmd.curTopology.addBolt("sum","");
+                    Detector.craneMasterCmd.constructTopology();
+                    Detector.craneMasterCmd.sendTask();
+                }
+
             }
 
 
