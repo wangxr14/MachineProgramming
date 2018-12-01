@@ -659,33 +659,7 @@ public class MsgHandler extends Thread{
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
                     renewMemberList();
-                    // check if the node is a craneMaster
-                    if(node.nodeID==Detector.craneMaster.nodeID){
-                        Detector.craneMaster.nodeID = Detector.standByMaster.nodeID;
-                        Detector.craneMaster.nodeAddr = Detector.standByMaster.nodeAddr;
-                        broadcast("renewCraneMaster",Detector.craneMaster);
-                        logger.info("sending renew cranemaster msg to everyone..");
-                        //find a new standbymaster, and clone the CraneMasterinfo to it
-                        if(Detector.membershipList.size()>0){
-                            Node newStandBy = Detector.membershipList.get(0);
-                            Detector.standByMaster.nodeID = newStandBy.nodeID;
-                            Detector.standByMaster.nodeAddr = newStandBy.nodeAddr;
-                            Detector.craneMasterCmd.backUpStandByMaster();
-                            broadcast("renewStandByMaster",Detector.standByMaster);
-                            logger.info("sending renew Standbymaster msg to everyone..");
-                            //broadcast to all nodes;
-                        }
-                    }
-                    else if(Detector.craneMaster.nodeID == serverNode.nodeID){// worker down
-                        // find available node for spout
-                        ArrayList<Node> newSpout = Detector.masterInfo.hasFileNodes(Detector.craneMasterCmd.fileSpout);
-                        if(newSpout.size()!=0) {
-                            Detector.craneMasterCmd.spoutNode.nodeID = newSpout.get(0).nodeID;
-                            Detector.craneMasterCmd.spoutNode.nodeAddr = newSpout.get(0).nodeAddr;
-                            Detector.craneMasterCmd.constructTopology();
-                            Detector.craneMasterCmd.sendTask();
-                        }
-                    }
+
 
                     // tell master to update
                     if(Detector.master!= null) {
@@ -705,6 +679,40 @@ public class MsgHandler extends Thread{
 	                    }
                     }
                     broadcast(messageType,node);
+
+                    // check if the node is a craneMaster
+                    if(node.nodeID==Detector.craneMaster.nodeID){
+                        Detector.craneMaster.nodeID = Detector.standByMaster.nodeID;
+                        Detector.craneMaster.nodeAddr = Detector.standByMaster.nodeAddr;
+                        broadcast("renewCraneMaster",Detector.craneMaster);
+                        logger.info("sending renew cranemaster msg to everyone..");
+                        //find a new standbymaster, and clone the CraneMasterinfo to it
+                        if(Detector.membershipList.size()>0){
+                            Node newStandBy = Detector.membershipList.get(0);
+                            Detector.standByMaster.nodeID = newStandBy.nodeID;
+                            Detector.standByMaster.nodeAddr = newStandBy.nodeAddr;
+                            Detector.craneMasterCmd.backUpStandByMaster();
+                            broadcast("renewStandByMaster",Detector.standByMaster);
+                            logger.info("sending renew Standbymaster msg to everyone..");
+                            //broadcast to all nodes;
+                        }
+                    }
+                    else if(Detector.craneMaster.nodeID == serverNode.nodeID){// worker down
+                        // find available node for spout
+                        String file = Detector.craneMasterCmd.fileSpout.split("_")[0].split("/")[1];
+                        ArrayList<Node> newSpout = Detector.masterInfo.hasFileNodes(file);
+                        logger.info("fileSpout"+Detector.craneMasterCmd.fileSpout);
+                        if(newSpout.size()!=0) {
+                            logger.info("new spout node "+newSpout.get(0).nodeID);
+                            Detector.craneMasterCmd.spoutNode.nodeID = newSpout.get(0).nodeID;
+                            Detector.craneMasterCmd.spoutNode.nodeAddr = newSpout.get(0).nodeAddr;
+                            Detector.craneMasterCmd.constructTopology();
+                            Detector.craneMasterCmd.sendTask();
+                        }
+                        else{
+                            logger.info("no spout existed");
+                        }
+                    }
 
                     
                 }

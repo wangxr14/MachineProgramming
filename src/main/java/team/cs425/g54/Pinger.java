@@ -229,7 +229,90 @@ public class Pinger extends Thread{
 		stopped = false;
 	}
 
-	
+	public String packMasterInfo(String type,Node master){
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put("type",type);
+			obj.put("nodeID",master.nodeID);
+			obj.put("nodeAddr",master.nodeAddr);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return obj.toString();
+	}
+
+	public void broadcast(String messageType, Node node){
+		try {
+			DatagramPacket send_message;
+
+			if (messageType.equals("renewCraneMaster")) {
+
+				logger.info("broadcasting renew crane master from new crane master...");
+				for (Node member : Detector.groupList) {
+					if(compareNode(member,myNode))
+						continue;
+					String message = packMasterInfo("renewCraneMaster",Detector.craneMaster);
+					InetAddress address = InetAddress.getByName(member.nodeAddr);
+					logger.info("Introducer send join to all bytes: "+message.getBytes().length);
+					DatagramSocket server = new DatagramSocket();
+					send_message = new DatagramPacket(message.getBytes(), message.getBytes().length, address, member.nodePort);
+					server.send(send_message);
+				}
+			}
+			else if (messageType.equals("renewStandByMaster")) {
+
+				logger.info("broadcasting renew standBy master from new crane master...");
+				for (Node member : Detector.groupList) {
+					if(compareNode(member,myNode))
+						continue;
+					String message = packMasterInfo("renewStandByMaster",Detector.standByMaster);
+					InetAddress address = InetAddress.getByName(member.nodeAddr);
+					logger.info("Introducer send join to all bytes: "+message.getBytes().length);
+					DatagramSocket server = new DatagramSocket();
+					send_message = new DatagramPacket(message.getBytes(), message.getBytes().length, address, member.nodePort);
+					server.send(send_message);
+				}
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void reSendTask(Node node){
+		if(node.nodeID==Detector.craneMaster.nodeID){
+			Detector.craneMaster.nodeID = Detector.standByMaster.nodeID;
+			Detector.craneMaster.nodeAddr = Detector.standByMaster.nodeAddr;
+			broadcast("renewCraneMaster",Detector.craneMaster);
+			logger.info("sending renew cranemaster msg to everyone..");
+			//find a new standbymaster, and clone the CraneMasterinfo to it
+			if(Detector.membershipList.size()>0){
+				Node newStandBy = Detector.membershipList.get(0);
+				Detector.standByMaster.nodeID = newStandBy.nodeID;
+				Detector.standByMaster.nodeAddr = newStandBy.nodeAddr;
+				Detector.craneMasterCmd.backUpStandByMaster();
+				broadcast("renewStandByMaster",Detector.standByMaster);
+				logger.info("sending renew Standbymaster msg to everyone..");
+				//broadcast to all nodes;
+			}
+		}
+		else if(Detector.craneMaster.nodeID == myNode.nodeID){// worker down
+			// find available node for spout
+			String file = Detector.craneMasterCmd.fileSpout.split("_")[0].split("/")[1];
+			ArrayList<Node> newSpout = Detector.masterInfo.hasFileNodes(file);
+			if(newSpout.size()!=0) {
+				logger.info("new spout node "+newSpout.get(0).nodeID);
+				Detector.craneMasterCmd.spoutNode.nodeID = newSpout.get(0).nodeID;
+				Detector.craneMasterCmd.spoutNode.nodeAddr = newSpout.get(0).nodeAddr;
+				Detector.craneMasterCmd.constructTopology();
+				Detector.craneMasterCmd.sendTask();
+			}
+			else{
+				logger.info("no spout existed");
+			}
+		}
+
+	}
 	private void ping(Node node) throws IOException {
 //		logger.info("Pinging "+node.nodeID+"......");
 		boolean receivedResponse = false;
@@ -263,6 +346,8 @@ public class Pinger extends Thread{
 				removeNode(node);
 				updateMaster(node);
 				checkMasterOperation(node);
+				reSendTask(node);
+				logger.info("finishing sending task..");
 			}
 		}catch (SocketException e) {
 			// TODO Auto-generated catch block

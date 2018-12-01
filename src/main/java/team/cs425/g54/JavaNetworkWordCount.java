@@ -16,15 +16,12 @@ public final class JavaNetworkWordCount {
     private static final Pattern SPACE = Pattern.compile(" ");
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 2) {
-            System.err.println("Usage: JavaNetworkWordCount <hostname> <port>");
-            System.exit(1);
-        }
+
 
 //        StreamingExamples.setStreamingLogLevels();
 
         // Create the context with a 1 second batch size
-        SparkConf sparkConf = new SparkConf().setAppName("JavaNetworkWordCount");
+        SparkConf sparkConf = new SparkConf().setAppName("JavaNetworkWordCount").setMaster("spark://172.22.156.180");
         JavaStreamingContext ssc = new JavaStreamingContext(sparkConf, Durations.seconds(20));
         JavaDStream<String> lines = ssc.textFileStream("/usr/local/spark/corpus");
         JavaDStream<String> words = lines.flatMap(x -> Arrays.asList(SPACE.split(x)).iterator());
