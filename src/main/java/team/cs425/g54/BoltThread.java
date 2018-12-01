@@ -67,6 +67,7 @@ public class BoltThread extends Thread {
         
         childrenSocket = new CopyOnWriteArrayList<Socket>();
         childrenOutputStream = new CopyOnWriteArrayList<ObjectOutputStream>();
+        dataHandlerThreads = new CopyOnWriteArrayList<BoltDataHandlerThread>
     }
     
     public void connectToChildren() {
@@ -78,6 +79,7 @@ public class BoltThread extends Thread {
     		ArrayList<Node> tmp = new ArrayList<Node>();
 	    	for(Node node:childrenToConnect) {
 	    		try {
+	    			System.out.println("connect "+node.nodeID);
 		    		Socket socket = new Socket(node.nodeAddr, port);
 		    		childrenSocket.add(socket);
 		    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
@@ -89,6 +91,7 @@ public class BoltThread extends Thread {
 	    	}
 	    	childrenToConnect = tmp;
     	}
+    	System.out.println("children connected done");
     }
     
     @Override
