@@ -35,7 +35,7 @@ public class BoltThread extends Thread {
     public String appType;
     // Output
     public CopyOnWriteArrayList<Node> children;
-    public CopyOnWriteArrayList<Socket> childrenSocket;
+    public CopyOnWriteArrayList<Socket> childrenSocket = new CopyOnWriteArrayList<Socket>();
     public CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream;
 
     // Input thread
@@ -65,6 +65,8 @@ public class BoltThread extends Thread {
         this.children = children;
         port=Detector.workerPort;
         
+        childrenSocket = new CopyOnWriteArrayList<Socket>();
+        childrenOutputStream = new CopyOnWriteArrayList<ObjectOutputStream>();
     }
     
     public void connectToChildren() {
