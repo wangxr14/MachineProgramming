@@ -92,7 +92,7 @@ public class SpoutThread extends Thread {
 					line = bufferedReader.readLine();
 				}
 				System.out.println("################linenumber "+linenumber+"#########");
-				System.err.println("####################### FILE END ############################");
+				System.out.println("####################### FILE END ############################");
 				isFinished = true;
 				
 			} catch (IOException e) {
