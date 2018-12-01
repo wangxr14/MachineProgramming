@@ -66,15 +66,15 @@ public class BoltDataHandlerThread extends Thread {
 	    	// Begin read data
 	    	while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
 	    		HashMap<String,String> in = (HashMap<String,String>) is.readObject();
-	    		System.out.println("Data received: "+count);
+	    		//
 	          // Deal
 	            dealWithData(in);
 	            uploader.setFileChanged();
 	            count++;
-	            //if(count%100==0) {
-	            	
+	            if(count%100==0) {
+	            	System.out.println("Data received: "+count);
 	            	System.out.println("Data sent: "+sendCount);
-	            //}
+	            }
 	            //if(count%1000==0 && appType.equals("wordCount")) {
 	            //	wordcount_writeToLocalFile();
 	            //}
