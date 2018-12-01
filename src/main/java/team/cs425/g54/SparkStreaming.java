@@ -75,6 +75,7 @@ public class SparkStreaming implements Serializable {
         JavaPairDStream<String, Integer> pairs = words.mapToPair(s -> new Tuple2<>(s, 1));
         JavaPairDStream<String, Integer> wordCounts = pairs.reduceByKey((i1, i2) -> i1 + i2);
         wordCounts.print();
+
 //        wordCounts.dstream().saveAsTextFiles("output2","");
 //        wordCounts.dstream().print();
         jssc.start();
@@ -90,6 +91,8 @@ public class SparkStreaming implements Serializable {
             e.printStackTrace();
         }
     }
+
+
 
 
 }
