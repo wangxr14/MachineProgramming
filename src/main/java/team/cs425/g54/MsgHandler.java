@@ -659,6 +659,27 @@ public class MsgHandler extends Thread{
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
                     renewMemberList();
+
+
+                    // tell master to update
+                    if(Detector.master!= null) {
+	                    if(node.nodeID == Detector.master.nodeID) {
+	                        Detector.master=totalMemberList.get(0);
+	                        if(serverNode.nodeID!=Detector.master.nodeID){
+	                            String msg = packNodeInfo().toString();
+                                InetAddress address = InetAddress.getByName(Detector.master.nodeAddr);
+                                DatagramPacket send_message = new DatagramPacket(msg.getBytes(), msg.getBytes().length, address, Detector.master.nodePort);
+                                server.send(send_message);
+                            }
+	                    }
+	                    if(Detector.master.nodeID==serverNode.nodeID){ // check if it needs to send rereplica
+	                        logger.info("I am master and now I'm going to delete node "+node.nodeID);
+	                    	Detector.masterInfo.deleteNodeAllFiles(node);
+	                        sendReReplicaRequest();
+	                    }
+                    }
+                    broadcast(messageType,node);
+
                     // check if the node is a craneMaster
                     if(node.nodeID==Detector.craneMaster.nodeID){
                         Detector.craneMaster.nodeID = Detector.standByMaster.nodeID;
@@ -679,32 +700,18 @@ public class MsgHandler extends Thread{
                     else if(Detector.craneMaster.nodeID == serverNode.nodeID){// worker down
                         // find available node for spout
                         ArrayList<Node> newSpout = Detector.masterInfo.hasFileNodes(Detector.craneMasterCmd.fileSpout);
+                        logger.info("fileSpout"+Detector.craneMasterCmd.fileSpout);
                         if(newSpout.size()!=0) {
+                            logger.info("new spout node "+newSpout.get(0).nodeID);
                             Detector.craneMasterCmd.spoutNode.nodeID = newSpout.get(0).nodeID;
                             Detector.craneMasterCmd.spoutNode.nodeAddr = newSpout.get(0).nodeAddr;
                             Detector.craneMasterCmd.constructTopology();
                             Detector.craneMasterCmd.sendTask();
                         }
+                        else{
+                            logger.info("no spout existed");
+                        }
                     }
-
-                    // tell master to update
-                    if(Detector.master!= null) {
-	                    if(node.nodeID == Detector.master.nodeID) {
-	                        Detector.master=totalMemberList.get(0);
-	                        if(serverNode.nodeID!=Detector.master.nodeID){
-	                            String msg = packNodeInfo().toString();
-                                InetAddress address = InetAddress.getByName(Detector.master.nodeAddr);
-                                DatagramPacket send_message = new DatagramPacket(msg.getBytes(), msg.getBytes().length, address, Detector.master.nodePort);
-                                server.send(send_message);
-                            }
-	                    }
-	                    if(Detector.master.nodeID==serverNode.nodeID){ // check if it needs to send rereplica
-	                        logger.info("I am master and now I'm going to delete node "+node.nodeID);
-	                    	Detector.masterInfo.deleteNodeAllFiles(node);
-	                        sendReReplicaRequest();
-	                    }
-                    }
-                    broadcast(messageType,node);
 
                     
                 }
