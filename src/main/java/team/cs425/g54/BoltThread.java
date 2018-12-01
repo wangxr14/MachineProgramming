@@ -67,7 +67,7 @@ public class BoltThread extends Thread {
         
         childrenSocket = new CopyOnWriteArrayList<Socket>();
         childrenOutputStream = new CopyOnWriteArrayList<ObjectOutputStream>();
-        dataHandlerThreads = new CopyOnWriteArrayList<BoltDataHandlerThread>
+        dataHandlerThreads = new CopyOnWriteArrayList<BoltDataHandlerThread>();
     }
     
     public void connectToChildren() {
