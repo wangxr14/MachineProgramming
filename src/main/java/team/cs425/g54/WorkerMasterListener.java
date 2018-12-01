@@ -53,10 +53,12 @@ public class WorkerMasterListener extends Thread {
         	// Stop the current worker if there is any
         	if (workingSpout != null) {
         		workingSpout.stopThread();
+        		sleep(3000);
         		workingSpout = null;
         	}
         	if (workingBolt != null ) {
         		workingBolt.stopThread();
+        		sleep(3000);
         		workingBolt = null;
         	}
         	
