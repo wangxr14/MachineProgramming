@@ -43,15 +43,24 @@ public class SpoutThread extends Thread {
     }
     
     public void connectToChildren() {
+    	ArrayList<Node> childrenToConnect = new ArrayList<Node>();
     	for(Node node:children) {
-    		try {
-	    		Socket socket = new Socket(node.nodeAddr, port);
-	    		childrenSocket.add(socket);
-	    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
-	    		childrenOutputStream.add(os);
-    		} catch (IOException e) {
-				e.printStackTrace();
-			} 
+    		childrenToConnect.add(node);
+    	}
+    	while(childrenToConnect.size()>0) {
+    		ArrayList<Node> tmp = new ArrayList<Node>();
+	    	for(Node node:childrenToConnect) {
+	    		try {
+		    		Socket socket = new Socket(node.nodeAddr, port);
+		    		childrenSocket.add(socket);
+		    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
+		    		childrenOutputStream.add(os);
+	    		}catch (IOException e) {
+	    			tmp.add(node);
+					e.printStackTrace();
+				} 
+	    	}
+	    	childrenToConnect = tmp;
     	}
     }
     
