@@ -20,7 +20,7 @@ public class WorkerMasterListener extends Thread {
     public WorkerMasterListener(int port) throws IOException {
         socket=new DatagramSocket(port);
         // For spout or bolt
-        workerSocket=new DatagramSocket(Detector.workerPort);
+        //workerSocket=new DatagramSocket(Detector.workerPort);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
-        		BoltThread bolt = new BoltThread(appType, childrenList, workerSocket);
+        		BoltThread bolt = new BoltThread(appType, childrenList);
         		if(appType.equals("filter")) {
         			bolt.info=jsonData.get("info").toString();
         		}

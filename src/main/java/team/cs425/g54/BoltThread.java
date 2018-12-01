@@ -15,12 +15,15 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.IOUtils;
@@ -30,10 +33,18 @@ import org.json.JSONObject;
 
 public class BoltThread extends Thread {
     public String appType;
+    // Output
     public CopyOnWriteArrayList<Node> children;
-    int pointer;
+    public CopyOnWriteArrayList<Socket> childrenSocket;
+    public CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream;
+
+    // Input thread
+    public CopyOnWriteArrayList<BoltDataHandlerThread> dataHandlerThreads;
     
-    private DatagramSocket socket;
+    private ServerSocket serverSocket;
+    
+    int port;
+    
     String info="";
     private final int BYTE_LEN=10000;
     final int TIMEOUT = 5000;
@@ -42,55 +53,45 @@ public class BoltThread extends Thread {
     // File for working
     String workingFilepath = "files/tmpBolt";
     // For word count
-    HashMap<String,Integer> wordCounter=new HashMap<String, Integer>();
+    public static ConcurrentHashMap<String,Integer> wordCounter=new ConcurrentHashMap<String, Integer>();
     
     // For upload File to sdfs
     FileUploader uploader;
     
     int sendCount=0;
 
-    public BoltThread(String appType,CopyOnWriteArrayList<Node> children, DatagramSocket workerSocket){
+    public BoltThread(String appType,CopyOnWriteArrayList<Node> children){
         this.appType = appType;
         this.children = children;
-        pointer=0;
-        socket=workerSocket;
+        port=Detector.workerPort;
         
     }
     
+    public void connectToChildren() {
+    	for(Node node:children) {
+    		Socket socket = new Socket(node.nodeAddr, port);
+    		childrenSocket.add(socket);
+    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
+    		childrenOutputStream.add(os);
+    	}
+    }
     
     @Override
     public void run() {
     	System.out.println("Bolt started");
-    	// Delete the previous working file
-    	File tmpFile = new File(workingFilepath);
-    	tmpFile.delete();
-    	uploader=new FileUploader(appType,workingFilepath);
-    	if(children.size()==0) {
-        	uploader.start();
-    	}
-    	
-    	
-    	// Start listening
-        byte [] receiveData=new byte[BYTE_LEN];
-        int count=0;
+        
+    	connectToChildren();
+    	int count=0;
         while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
             try {
-                DatagramPacket pack=new DatagramPacket(receiveData,receiveData.length);
-                socket.receive(pack);
-                ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(receiveData));
-                HashMap<String,String> in = (HashMap<String,String>) is.readObject();
-                is.close();
-
-              // Deal
-                dealWithData(in);
-                uploader.setFileChanged();
-                count++;
-                if(count%100==0) {
-                	System.out.println("Data received: "+count);
-                	System.out.println("Data sent: "+sendCount);
-                }
-   
+            	// Start listening
+            	serverSocket=new ServerSocket(port);
+            	Socket socket = serverSocket.accept();
+            	BoltDataHandlerThread dataHandler = new BoltDataHandlerThread(appType, children, childrenOutputStream, socket, count);
+            	dataHandlerThreads.add(dataHandler);
+            	dataHandler.start();   
                 
+            	count++;
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -99,113 +100,11 @@ public class BoltThread extends Thread {
         }
     }
 	
-	public void dealWithData(HashMap<String,String> inData){
-		//System.out.println("Data received: "+inData.values().toString());
-		HashMap<String,String> outData = new HashMap<String,String>();
-		//System.out.println("Apptype is "+appType+" "+appType.equals("filter"));
-		if(appType.equals("filter")) {
-			if(children.size()==0) {
-				//System.out.println("Write to file");
-				BufferedWriter bufferedWriter;
-				try {
-					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath, true));
-					for (Entry<String, String> entry : inData.entrySet()) {
-						bufferedWriter.write(entry.getValue()+"\n");
-						bufferedWriter.flush();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			else {
-				//System.out.println("Send to children");
-				for (Entry<String, String> entry : inData.entrySet()) {
-					for(String s: entry.getValue().split(" ")) {
-						if(s.equals(info)) {
-							outData.put(entry.getKey(), entry.getValue());
-				            sendTuple(outData);
-				            outData=new HashMap<String, String>();
-							break;
-						}
-					}
-				}
-				
-			}
-			
-    	}
-		if (appType.equals("wordCount")) {
-			if(children.size()==0) {
-				for (Entry<String, String> entry : inData.entrySet()) {
-					String key = entry.getKey();
-					if (!wordCounter.containsKey(key)) {  
-						wordCounter.put(key, 1);
-					}
-					else {
-						int count = wordCounter.get(key);
-					    wordCounter.put(key, count + 1);
-					}
-				}
-				//System.out.println("Write to file");
-				BufferedWriter bufferedWriter;
-				try {
-					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath));
-					for (Entry<String, Integer> entry : wordCounter.entrySet()) {
-						bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
-						bufferedWriter.flush();
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			else {
-				//System.out.println("Send to children");
-				for (Entry<String, String> entry : inData.entrySet()) {
-					for(String s: entry.getValue().split(" ")) {
-						outData.put(s, "1");
-			            sendTuple(outData);
-			            outData = new HashMap<String,String>();
-					}
-				}
-				
-			}
-		}
-		
-    	
-		
-	}
-
-	public void sendTuple(HashMap<String,String> tuple) {
-    	if(children.size()>0) {
-    		try {
-	    		// Connect children[pointer]
-	    		String address = children.get(pointer).nodeAddr; 
-	    		int port = children.get(pointer).nodePort;
-	    		// Send tuple
-	    		ByteArrayOutputStream bo=new ByteArrayOutputStream(BYTE_LEN);
-	            ObjectOutputStream os;
-				os = new ObjectOutputStream(bo);
-	            os.writeObject(tuple);
-	            os.flush();
-	            byte [] sendBytes=bo.toByteArray();
-	            DatagramPacket dp=new DatagramPacket(sendBytes,sendBytes.length, InetAddress.getByName(address),port);
-	            DatagramSocket dSock=new DatagramSocket();
-	            dSock.send(dp);
-	            os.close();
-	            dSock.close();
-    		} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		pointer = (pointer + 1) % children.size();
-    		
-    		// For debug
-    		sendCount++;
-    	}
-    }	
-	
 	
 	public void stopThread() {
 		stopped_sign = true;
+		for(BoltDataHandlerThread thread:dataHandlerThreads) {
+			thread.stopThread();
+		}
 	}
 }
