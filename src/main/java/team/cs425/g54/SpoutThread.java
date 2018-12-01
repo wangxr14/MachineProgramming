@@ -54,7 +54,7 @@ public class SpoutThread extends Thread {
 					sendTuple(emit);
 					line = bufferedReader.readLine();
 				}
-				
+				System.out.println("################linenumber "+linenumber+"#########");
 				System.err.println("####################### FILE END ############################");
 				isFinished = true;
 				
