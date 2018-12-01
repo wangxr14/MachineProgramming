@@ -26,6 +26,7 @@ public class SpoutThread extends Thread {
     int pointer;
     int port;
     boolean isFinished = false;
+    boolean spoutOpen = false;
     CopyOnWriteArrayList<Socket> childrenSocket;
     CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream;
     
@@ -57,7 +58,7 @@ public class SpoutThread extends Thread {
 		    		childrenOutputStream.add(os);
 	    		}catch (IOException e) {
 	    			tmp.add(node);
-					e.printStackTrace();
+	    			System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
 				} 
 	    	}
 	    	childrenToConnect = tmp;
@@ -69,7 +70,7 @@ public class SpoutThread extends Thread {
     	System.out.println("Spout started");
     	//Connect to children
     	connectToChildren();
-    	boolean spoutOpen = true;
+    	spoutOpen = true;
     	while(!Thread.currentThread().isInterrupted() && !isFinished) {
 	    	//
     		if(spoutOpen) {
@@ -133,6 +134,7 @@ public class SpoutThread extends Thread {
     	}catch (IOException e) {
 			e.printStackTrace();
 		} 
+    	spoutOpen = false;
     	isFinished = true;
     }
 
