@@ -70,6 +70,7 @@ public class BoltThread extends Thread {
     	
     	// Start listening
         byte [] receiveData=new byte[BYTE_LEN];
+        int count=0;
         while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
             try {
                 DatagramPacket pack=new DatagramPacket(receiveData,receiveData.length);
@@ -81,6 +82,10 @@ public class BoltThread extends Thread {
               // Deal
                 dealWithData(in);
                 uploader.setFileChanged();
+                count++;
+                if(count%100==0) {
+                	System.out.println("Data received: "+in.values().toString());
+                }
                 
             } catch (IOException e) {
                 e.printStackTrace();
