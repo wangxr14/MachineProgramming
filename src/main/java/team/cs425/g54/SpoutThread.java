@@ -69,35 +69,39 @@ public class SpoutThread extends Thread {
     	System.out.println("Spout started");
     	//Connect to children
     	connectToChildren();
+    	boolean spoutOpen = true;
     	while(!Thread.currentThread().isInterrupted() && !isFinished) {
 	    	//
-	    	BufferedReader bufferedReader;
-	    	int linenumber=0;
-	    	try {
-	    		bufferedReader = new BufferedReader(new FileReader(spoutFile));
-	    		//System.out.println("Read file "+spoutFile);
-				String line = bufferedReader.readLine();
-				//System.out.println("Line is:"+line);
-				while(line!=null) {
-					System.out.println("Line is:"+line);
-					linenumber++;
-					if(line.isEmpty()) {
-						line = bufferedReader.readLine();
-						continue;
-					}
-					HashMap<String,String> emit=new HashMap<String, String>();
-					emit.put(Integer.toString(linenumber), line);
-					sendTuple(emit);
-					
-					line = bufferedReader.readLine();
-				}
-				System.out.println("################linenumber "+linenumber+"#########");
-				System.out.println("####################### FILE END ############################");
-				isFinished = true;
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 
+    		if(spoutOpen) {
+    			BufferedReader bufferedReader;
+    	    	int linenumber=0;
+    	    	try {
+    	    		bufferedReader = new BufferedReader(new FileReader(spoutFile));
+    	    		//System.out.println("Read file "+spoutFile);
+    				String line = bufferedReader.readLine();
+    				//System.out.println("Line is:"+line);
+    				while(line!=null) {
+    					System.out.println("Line is:"+line);
+    					linenumber++;
+    					if(line.isEmpty()) {
+    						line = bufferedReader.readLine();
+    						continue;
+    					}
+    					HashMap<String,String> emit=new HashMap<String, String>();
+    					emit.put(Integer.toString(linenumber), line);
+    					sendTuple(emit);
+    					
+    					line = bufferedReader.readLine();
+    				}
+    				System.out.println("################linenumber "+linenumber+"#########");
+    				System.out.println("####################### FILE END ############################");
+    				spoutOpen = false;
+    				
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    			}
+    		}
+	    	 
     	}
     }
     
