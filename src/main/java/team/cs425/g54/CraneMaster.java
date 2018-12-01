@@ -109,6 +109,7 @@ public class CraneMaster {
                 jsonMsg.put("children", arr);
                 InetAddress address = InetAddress.getByName(record.getIpAddr());
                 logger.info("sending task to Node" + record.getID() + " Addr "+record.getIpAddr());
+                logger.info("send msg: "+jsonMsg.toString());
                 DatagramPacket send_message = new DatagramPacket(jsonMsg.toString().getBytes(), jsonMsg.toString().getBytes().length, address,Detector.sendTaskPort);
                 server.send(send_message);
             }
