@@ -22,7 +22,7 @@ import team.cs425.g54.topology.Topology;
 
 
 public class Detector {
-	public Node myNode;
+	public static Node myNode;
 	// Set a contactor(fixed)
 	public Node introducer = new Node(1,"172.22.158.178", 12345);
 	// Membership List & Group
