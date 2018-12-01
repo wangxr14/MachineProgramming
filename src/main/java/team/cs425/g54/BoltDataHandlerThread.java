@@ -72,6 +72,9 @@ public class BoltDataHandlerThread extends Thread {
 	            	System.out.println("Data received: "+count);
 	            	System.out.println("Data sent: "+sendCount);
 	            }
+	            if(count%1000==0 && appType.equals("wordCount")) {
+	            	wordcount_writeToLocalFile();
+	            }
 	    	}
 	    	is.close();
     	}catch (IOException e) {
@@ -81,6 +84,19 @@ public class BoltDataHandlerThread extends Thread {
 		}
     }
     
+    public void wordcount_writeToLocalFile() {
+    	BufferedWriter bufferedWriter;
+		try {
+			bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath));
+			for (Entry<String, Integer> entry : wordCounter.entrySet()) {
+				bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
+				bufferedWriter.flush();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
     public void dealWithData(HashMap<String,String> inData){
 		//System.out.println("Data received: "+inData.values().toString());
 		HashMap<String,String> outData = new HashMap<String,String>();
@@ -128,17 +144,7 @@ public class BoltDataHandlerThread extends Thread {
 					}
 				}
 				//System.out.println("Write to file");
-				BufferedWriter bufferedWriter;
-				try {
-					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath));
-					for (Entry<String, Integer> entry : wordCounter.entrySet()) {
-						bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
-						bufferedWriter.flush();
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
 			}
 			else {
 				//System.out.println("Send to children");

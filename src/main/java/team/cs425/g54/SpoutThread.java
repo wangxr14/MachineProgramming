@@ -79,7 +79,7 @@ public class SpoutThread extends Thread {
 				String line = bufferedReader.readLine();
 				//System.out.println("Line is:"+line);
 				while(line!=null) {
-					//System.out.println("Line is:"+line);
+					System.out.println("Line is:"+line);
 					linenumber++;
 					if(line.isEmpty()) {
 						line = bufferedReader.readLine();
@@ -104,6 +104,7 @@ public class SpoutThread extends Thread {
     public void sendTuple(HashMap<String,String> tuple) {
     	if(children.size()>0) {
     		try {
+    			System.out.println("begin to send tuple");
     			childrenOutputStream.get(pointer).writeObject(tuple);
     			childrenOutputStream.get(pointer).flush();
 	            System.out.println("tuple sent "+tuple.values().toString());
