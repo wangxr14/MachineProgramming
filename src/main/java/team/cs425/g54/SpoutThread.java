@@ -49,6 +49,10 @@ public class SpoutThread extends Thread {
 				while(line!=null) {
 					System.out.println("Line is:"+line);
 					linenumber++;
+					if(line.isEmpty()) {
+						line = bufferedReader.readLine();
+						continue;
+					}
 					HashMap<String,String> emit=new HashMap<String, String>();
 					emit.put(Integer.toString(linenumber), line);
 					sendTuple(emit);
