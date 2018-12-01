@@ -67,6 +67,7 @@ public class BoltThread extends Thread {
         
         childrenSocket = new CopyOnWriteArrayList<Socket>();
         childrenOutputStream = new CopyOnWriteArrayList<ObjectOutputStream>();
+        dataHandlerThreads = new CopyOnWriteArrayList<BoltDataHandlerThread>();
     }
     
     public void connectToChildren() {
@@ -78,6 +79,7 @@ public class BoltThread extends Thread {
     		ArrayList<Node> tmp = new ArrayList<Node>();
 	    	for(Node node:childrenToConnect) {
 	    		try {
+	    			System.out.println("connect "+node.nodeID);
 		    		Socket socket = new Socket(node.nodeAddr, port);
 		    		childrenSocket.add(socket);
 		    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
@@ -89,6 +91,7 @@ public class BoltThread extends Thread {
 	    	}
 	    	childrenToConnect = tmp;
     	}
+    	System.out.println("children connected done");
     }
     
     @Override
@@ -97,27 +100,31 @@ public class BoltThread extends Thread {
         
     	connectToChildren();
     	int count=0;
-        while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
-            try {
-            	// Start listening
-            	serverSocket=new ServerSocket(port);
+    	try {
+    	// Start listening
+	    	serverSocket=new ServerSocket(port);
+	        while(!Thread.currentThread().isInterrupted() && !stopped_sign) {	
             	Socket socket = serverSocket.accept();
             	BoltDataHandlerThread dataHandler = new BoltDataHandlerThread(appType, children, childrenOutputStream, socket, count);
             	dataHandlerThreads.add(dataHandler);
             	dataHandler.start();   
                 
             	count++;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } 
-        }
+	            
+	        }
+	        serverSocket.close();
+    	} catch (IOException e) {
+            e.printStackTrace();
+        } 
     }
 	
 	
 	public void stopThread() {
-		stopped_sign = true;
+		
 		for(BoltDataHandlerThread thread:dataHandlerThreads) {
 			thread.stopThread();
 		}
+		stopped_sign = true;
+		
 	}
 }

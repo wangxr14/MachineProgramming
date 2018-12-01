@@ -1,7 +1,9 @@
 package team.cs425.g54;
 
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -10,6 +12,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,10 +28,12 @@ public class FileUploader extends Thread{
 	
 	// For streaming to write a file
     long lastWriteTime;
-    long timeToSend = 5000;
+    long timeToSend = 10000;
     
     String filepath;
     AtomicBoolean fileChanged;
+    
+    ConcurrentHashMap<String,Integer> wordCounter;
     
     public FileUploader(String appType, String filepath) {
     	this.appType=appType;
@@ -36,10 +42,14 @@ public class FileUploader extends Thread{
     	this.lastWriteTime=System.currentTimeMillis();
     }
     
+    public void setWordCounter(ConcurrentHashMap<String,Integer> wordCounter) {
+    	this.wordCounter=wordCounter;
+    }
     @Override
     public void run() {
     	while(true) {
-    		checkWriteDownTime();
+    		//checkWriteDownTime();
+    		wordcountToFile(filepath);
     		try {
     			sleep(1000);
     		} catch(InterruptedException e) {
@@ -62,6 +72,20 @@ public class FileUploader extends Thread{
 		}
 		
 	}
+    
+    public void wordcountToFile(String filepath) {
+    	BufferedWriter bufferedWriter;
+		try {
+			bufferedWriter = new BufferedWriter(new FileWriter(filepath));
+			for (Entry<String, Integer> entry : wordCounter.entrySet()) {
+				bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
+				bufferedWriter.flush();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
     
     public ArrayList<Node> getNodeList(String str){
 		

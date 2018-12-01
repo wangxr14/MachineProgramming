@@ -58,12 +58,15 @@ public class BoltDataHandlerThread extends Thread {
     	File tmpFile = new File(workingFilepath);
     	tmpFile.delete();
     	uploader=new FileUploader(appType,workingFilepath);
+    	uploader.setWordCounter(wordCounter);
+    	uploader.start();
     	try {
 	    	ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
 	    	int count=0;
 	    	// Begin read data
 	    	while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
 	    		HashMap<String,String> in = (HashMap<String,String>) is.readObject();
+	    		//
 	          // Deal
 	            dealWithData(in);
 	            uploader.setFileChanged();
@@ -72,6 +75,9 @@ public class BoltDataHandlerThread extends Thread {
 	            	System.out.println("Data received: "+count);
 	            	System.out.println("Data sent: "+sendCount);
 	            }
+	            //if(count%1000==0 && appType.equals("wordCount")) {
+	            //	wordcount_writeToLocalFile();
+	            //}
 	    	}
 	    	is.close();
     	}catch (IOException e) {
@@ -81,6 +87,19 @@ public class BoltDataHandlerThread extends Thread {
 		}
     }
     
+    public void wordcount_writeToLocalFile() {
+    	BufferedWriter bufferedWriter;
+		try {
+			bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath));
+			for (Entry<String, Integer> entry : wordCounter.entrySet()) {
+				bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
+				bufferedWriter.flush();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
     public void dealWithData(HashMap<String,String> inData){
 		//System.out.println("Data received: "+inData.values().toString());
 		HashMap<String,String> outData = new HashMap<String,String>();
@@ -128,17 +147,7 @@ public class BoltDataHandlerThread extends Thread {
 					}
 				}
 				//System.out.println("Write to file");
-				BufferedWriter bufferedWriter;
-				try {
-					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath));
-					for (Entry<String, Integer> entry : wordCounter.entrySet()) {
-						bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
-						bufferedWriter.flush();
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
 			}
 			else {
 				//System.out.println("Send to children");
