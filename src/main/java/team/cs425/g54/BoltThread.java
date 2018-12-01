@@ -46,6 +46,8 @@ public class BoltThread extends Thread {
     
     // For upload File to sdfs
     FileUploader uploader;
+    
+    int sendCount=0;
 
     public BoltThread(String appType,CopyOnWriteArrayList<Node> children, DatagramSocket workerSocket){
         this.appType = appType;
@@ -84,8 +86,10 @@ public class BoltThread extends Thread {
                 uploader.setFileChanged();
                 count++;
                 if(count%100==0) {
-                	System.out.println("Data received: "+in.values().toString());
+                	System.out.println("Data received: "+count);
+                	System.out.println("Data sent: "+sendCount);
                 }
+   
                 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -194,6 +198,9 @@ public class BoltThread extends Thread {
 				e.printStackTrace();
 			}
     		pointer = (pointer + 1) % children.size();
+    		
+    		// For debug
+    		sendCount++;
     	}
     }	
 	
