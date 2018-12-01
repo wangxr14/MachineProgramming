@@ -805,6 +805,8 @@ public class Detector {
 			logger.info("no such file");
 			return ;
 		}
+		String version = getLatestFileVersions(file);
+		logger.info("get file version "+SDFSPath+file+"_"+version);
 		Node spoutNode = new Node();
 		for(Node node:nodesList){
 			if(node.nodeID!=craneMaster.nodeID && node.nodeID!=standByMaster.nodeID) {
@@ -819,7 +821,7 @@ public class Detector {
 			JSONObject obj = new JSONObject();
 			obj.put("type", "toCraneMaster");
 			obj.put("appType", "wordCount");
-			obj.put("file",file);
+			obj.put("file",SDFSPath+file+"_"+version);
 			obj.put("spoutID",spoutNode.nodeID);
 			obj.put("spoutAddr",spoutNode.nodeAddr);
 
