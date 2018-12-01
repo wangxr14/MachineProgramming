@@ -101,7 +101,9 @@ public class WorkerMasterListener extends Thread {
         	
         }  catch (JSONException e) {
             e.printStackTrace();
-        } 
+        } catch (InterruptedException e) {
+        	e.printStackTrace();
+        }
     }
 
     
