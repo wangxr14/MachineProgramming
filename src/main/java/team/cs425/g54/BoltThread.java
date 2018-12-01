@@ -101,8 +101,7 @@ public class BoltThread extends Thread {
 				try {
 					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath, true));
 					for (Entry<String, String> entry : inData.entrySet()) {
-						System.out.println("entry "+entry.getValue()+"\n");
-						bufferedWriter.write(entry.getValue());
+						bufferedWriter.write(entry.getValue()+"\n");
 						bufferedWriter.flush();
 					}
 				} catch (IOException e) {
@@ -196,6 +195,5 @@ public class BoltThread extends Thread {
 	
 	public void stopThread() {
 		stopped_sign = true;
-		Thread.currentThread().interrupt();
 	}
 }

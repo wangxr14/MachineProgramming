@@ -93,7 +93,7 @@ public class SpoutThread extends Thread {
     }
     
     public void stopThread() {
-    	Thread.currentThread().interrupt();
+    	isFinished = true;
     }
 
 }

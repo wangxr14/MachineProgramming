@@ -40,6 +40,8 @@ public class WorkerMasterListener extends Thread {
                 continue;  // packet has not come yet
             }
         }
+        
+        System.out.println("Worker master thread stops");
     }
 
     private void handleMessage(String receivedData) {
