@@ -50,8 +50,7 @@ public class SpoutThread extends Thread {
 					System.out.println("Line is:"+line);
 					linenumber++;
 					HashMap<String,String> emit=new HashMap<String, String>();
-					emit.put("linenumber", Integer.toString(linenumber));
-					emit.put("line", line);
+					emit.put(Integer.toString(linenumber), line);
 					sendTuple(emit);
 					line = bufferedReader.readLine();
 				}
