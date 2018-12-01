@@ -699,7 +699,8 @@ public class MsgHandler extends Thread{
                     }
                     else if(Detector.craneMaster.nodeID == serverNode.nodeID){// worker down
                         // find available node for spout
-                        ArrayList<Node> newSpout = Detector.masterInfo.hasFileNodes(Detector.craneMasterCmd.fileSpout);
+                        String file = Detector.craneMasterCmd.fileSpout.split("_")[0].split("/")[1];
+                        ArrayList<Node> newSpout = Detector.masterInfo.hasFileNodes(file);
                         logger.info("fileSpout"+Detector.craneMasterCmd.fileSpout);
                         if(newSpout.size()!=0) {
                             logger.info("new spout node "+newSpout.get(0).nodeID);

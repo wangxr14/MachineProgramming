@@ -298,8 +298,8 @@ public class Pinger extends Thread{
 		}
 		else if(Detector.craneMaster.nodeID == myNode.nodeID){// worker down
 			// find available node for spout
-			ArrayList<Node> newSpout = Detector.masterInfo.hasFileNodes(Detector.craneMasterCmd.fileSpout);
-			logger.info("fileSpout"+Detector.craneMasterCmd.fileSpout);
+			String file = Detector.craneMasterCmd.fileSpout.split("_")[0].split("/")[1];
+			ArrayList<Node> newSpout = Detector.masterInfo.hasFileNodes(file);
 			if(newSpout.size()!=0) {
 				logger.info("new spout node "+newSpout.get(0).nodeID);
 				Detector.craneMasterCmd.spoutNode.nodeID = newSpout.get(0).nodeID;
