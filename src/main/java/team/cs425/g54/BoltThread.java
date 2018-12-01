@@ -112,7 +112,7 @@ public class BoltThread extends Thread {
             	count++;
 	            
 	        }
-	        
+	        serverSocket.close();
     	} catch (IOException e) {
             e.printStackTrace();
         } 
@@ -120,7 +120,7 @@ public class BoltThread extends Thread {
 	
 	
 	public void stopThread() {
-		serverSocket.close();
+		
 		for(BoltDataHandlerThread thread:dataHandlerThreads) {
 			thread.stopThread();
 		}
