@@ -46,6 +46,8 @@ public class BoltThread extends Thread {
     
     // For upload File to sdfs
     FileUploader uploader;
+    
+    int sendCount=0;
 
     public BoltThread(String appType,CopyOnWriteArrayList<Node> children, DatagramSocket workerSocket){
         this.appType = appType;
@@ -70,6 +72,7 @@ public class BoltThread extends Thread {
     	
     	// Start listening
         byte [] receiveData=new byte[BYTE_LEN];
+        int count=0;
         while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
             try {
                 DatagramPacket pack=new DatagramPacket(receiveData,receiveData.length);
@@ -81,6 +84,12 @@ public class BoltThread extends Thread {
               // Deal
                 dealWithData(in);
                 uploader.setFileChanged();
+                count++;
+                if(count%100==0) {
+                	System.out.println("Data received: "+count);
+                	System.out.println("Data sent: "+sendCount);
+                }
+   
                 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -91,12 +100,12 @@ public class BoltThread extends Thread {
     }
 	
 	public void dealWithData(HashMap<String,String> inData){
-		System.out.println("Data received: "+inData.values().toString());
+		//System.out.println("Data received: "+inData.values().toString());
 		HashMap<String,String> outData = new HashMap<String,String>();
-		System.out.println("Apptype is "+appType+" "+appType.equals("filter"));
+		//System.out.println("Apptype is "+appType+" "+appType.equals("filter"));
 		if(appType.equals("filter")) {
 			if(children.size()==0) {
-				System.out.println("Write to file");
+				//System.out.println("Write to file");
 				BufferedWriter bufferedWriter;
 				try {
 					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath, true));
@@ -109,7 +118,7 @@ public class BoltThread extends Thread {
 				}
 			}
 			else {
-				System.out.println("Send to children");
+				//System.out.println("Send to children");
 				for (Entry<String, String> entry : inData.entrySet()) {
 					for(String s: entry.getValue().split(" ")) {
 						if(s.equals(info)) {
@@ -136,7 +145,7 @@ public class BoltThread extends Thread {
 					    wordCounter.put(key, count + 1);
 					}
 				}
-				System.out.println("Write to file");
+				//System.out.println("Write to file");
 				BufferedWriter bufferedWriter;
 				try {
 					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath));
@@ -150,7 +159,7 @@ public class BoltThread extends Thread {
 				}
 			}
 			else {
-				System.out.println("Send to children");
+				//System.out.println("Send to children");
 				for (Entry<String, String> entry : inData.entrySet()) {
 					for(String s: entry.getValue().split(" ")) {
 						outData.put(s, "1");
@@ -189,6 +198,9 @@ public class BoltThread extends Thread {
 				e.printStackTrace();
 			}
     		pointer = (pointer + 1) % children.size();
+    		
+    		// For debug
+    		sendCount++;
     	}
     }	
 	
