@@ -76,7 +76,9 @@ public class BoltDataHandlerThread extends Thread {
 	    	is.close();
     	}catch (IOException e) {
 			e.printStackTrace();
-		} 
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
     }
     
     public void dealWithData(HashMap<String,String> inData){
