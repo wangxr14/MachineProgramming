@@ -69,10 +69,14 @@ public class BoltThread extends Thread {
     
     public void connectToChildren() {
     	for(Node node:children) {
-    		Socket socket = new Socket(node.nodeAddr, port);
-    		childrenSocket.add(socket);
-    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
-    		childrenOutputStream.add(os);
+    		try {
+	    		Socket socket = new Socket(node.nodeAddr, port);
+	    		childrenSocket.add(socket);
+	    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
+	    		childrenOutputStream.add(os);
+    		}catch (IOException e) {
+				e.printStackTrace();
+			} 
     	}
     }
     

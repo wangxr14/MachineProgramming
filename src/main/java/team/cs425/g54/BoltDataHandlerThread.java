@@ -58,22 +58,25 @@ public class BoltDataHandlerThread extends Thread {
     	File tmpFile = new File(workingFilepath);
     	tmpFile.delete();
     	uploader=new FileUploader(appType,workingFilepath);
-    	
-    	ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
-    	int count=0;
-    	// Begin read data
-    	while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
-    		HashMap<String,String> in = (HashMap<String,String>) is.readObject();
-          // Deal
-            dealWithData(in);
-            uploader.setFileChanged();
-            count++;
-            if(count%100==0) {
-            	System.out.println("Data received: "+count);
-            	System.out.println("Data sent: "+sendCount);
-            }
-    	}
-    	is.close();
+    	try {
+	    	ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
+	    	int count=0;
+	    	// Begin read data
+	    	while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
+	    		HashMap<String,String> in = (HashMap<String,String>) is.readObject();
+	          // Deal
+	            dealWithData(in);
+	            uploader.setFileChanged();
+	            count++;
+	            if(count%100==0) {
+	            	System.out.println("Data received: "+count);
+	            	System.out.println("Data sent: "+sendCount);
+	            }
+	    	}
+	    	is.close();
+    	}catch (IOException e) {
+			e.printStackTrace();
+		} 
     }
     
     public void dealWithData(HashMap<String,String> inData){

@@ -42,10 +42,14 @@ public class SpoutThread extends Thread {
     
     public void connectToChildren() {
     	for(Node node:children) {
-    		Socket socket = new Socket(node.nodeAddr, port);
-    		childrenSocket.add(socket);
-    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
-    		childrenOutputStream.add(os);
+    		try {
+	    		Socket socket = new Socket(node.nodeAddr, port);
+	    		childrenSocket.add(socket);
+	    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
+	    		childrenOutputStream.add(os);
+    		} catch (IOException e) {
+				e.printStackTrace();
+			} 
     	}
     }
     
@@ -102,12 +106,16 @@ public class SpoutThread extends Thread {
     
     public void stopThread() {
     	// Close sockets and os
-    	for(ObjectOutputStream os:childrenOutputStream) {
-    		os.close();
-    	}
-    	for(Socket socket:childrenSocket) {
-    		socket.close();
-    	}
+    	try {
+	    	for(ObjectOutputStream os:childrenOutputStream) {
+	    		os.close();
+	    	}
+	    	for(Socket socket:childrenSocket) {
+	    		socket.close();
+	    	}
+    	}catch (IOException e) {
+			e.printStackTrace();
+		} 
     	isFinished = true;
     }
 
