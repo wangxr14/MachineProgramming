@@ -26,8 +26,8 @@ public class SpoutThread extends Thread {
     int pointer;
     int port;
     boolean isFinished = false;
-    ArrayList<Socket> childrenSocket;
-    ArrayList<ObjectOutputStream> childrenOutputStream;
+    CopyOnWriteArrayList<Socket> childrenSocket;
+    CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream;
     
     private final int BYTE_LEN=10000;
     
@@ -38,6 +38,8 @@ public class SpoutThread extends Thread {
         pointer=0;
         port=Detector.workerPort;
         
+        childrenSocket = new CopyOnWriteArrayList<Socket>();
+        childrenOutputStream = new CopyOnWriteArrayList<ObjectOutputStream>();
     }
     
     public void connectToChildren() {
