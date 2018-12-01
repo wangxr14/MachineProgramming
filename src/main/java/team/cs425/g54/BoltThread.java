@@ -86,7 +86,9 @@ public class BoltThread extends Thread {
 		    		childrenOutputStream.add(os);
 	    		}catch (IOException e) {
 	    			tmp.add(node);
-					e.printStackTrace();
+					//e.printStackTrace();
+	    			System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
+	    			
 				} 
 	    	}
 	    	childrenToConnect = tmp;
