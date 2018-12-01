@@ -58,6 +58,8 @@ public class BoltDataHandlerThread extends Thread {
     	File tmpFile = new File(workingFilepath);
     	tmpFile.delete();
     	uploader=new FileUploader(appType,workingFilepath);
+    	uploader.setWordCounter(wordCounter);
+    	uploader.start();
     	try {
 	    	ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
 	    	int count=0;
@@ -72,9 +74,9 @@ public class BoltDataHandlerThread extends Thread {
 	            	System.out.println("Data received: "+count);
 	            	System.out.println("Data sent: "+sendCount);
 	            }
-	            if(count%1000==0 && appType.equals("wordCount")) {
-	            	wordcount_writeToLocalFile();
-	            }
+	            //if(count%1000==0 && appType.equals("wordCount")) {
+	            //	wordcount_writeToLocalFile();
+	            //}
 	    	}
 	    	is.close();
     	}catch (IOException e) {
