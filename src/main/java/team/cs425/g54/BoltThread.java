@@ -32,7 +32,7 @@ public class BoltThread extends Thread {
     public String appType;
     public CopyOnWriteArrayList<Node> children;
     int pointer;
-    int port;
+    
     private DatagramSocket socket;
     String info="";
     private final int BYTE_LEN=10000;
@@ -47,17 +47,11 @@ public class BoltThread extends Thread {
     // For upload File to sdfs
     FileUploader uploader;
 
-    public BoltThread(String appType,CopyOnWriteArrayList<Node> children){
+    public BoltThread(String appType,CopyOnWriteArrayList<Node> children, DatagramSocket workerSocket){
         this.appType = appType;
         this.children = children;
         pointer=0;
-        port=Detector.workerPort;
-        try {
-			socket=new DatagramSocket(port);
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        socket=workerSocket;
         
     }
     
@@ -107,7 +101,7 @@ public class BoltThread extends Thread {
 				try {
 					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath, true));
 					for (Entry<String, String> entry : inData.entrySet()) {
-						System.out.println("entry "+entry.getValue());
+						System.out.println("entry "+entry.getValue()+"\n");
 						bufferedWriter.write(entry.getValue());
 						bufferedWriter.flush();
 					}
@@ -148,7 +142,7 @@ public class BoltThread extends Thread {
 				try {
 					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath));
 					for (Entry<String, Integer> entry : wordCounter.entrySet()) {
-						bufferedWriter.write(entry.getKey()+" "+entry.getValue());
+						bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
 						bufferedWriter.flush();
 					}
 				} catch (IOException e) {
@@ -201,7 +195,6 @@ public class BoltThread extends Thread {
 	
 	
 	public void stopThread() {
-		socket.close();
 		stopped_sign = true;
 		Thread.currentThread().interrupt();
 	}
