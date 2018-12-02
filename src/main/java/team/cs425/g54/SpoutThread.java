@@ -58,7 +58,7 @@ public class SpoutThread extends Thread {
 		    		childrenOutputStream.add(os);
 	    		}catch (IOException e) {
 	    			tmp.add(node);
-	    			//System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
+	    			System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
 				} 
 	    	}
 	    	childrenToConnect = tmp;
@@ -114,7 +114,7 @@ public class SpoutThread extends Thread {
     			//System.out.println("begin to send tuple");
     			childrenOutputStream.get(pointer).writeObject(tuple);
     			childrenOutputStream.get(pointer).flush();
-	            //System.out.println("tuple sent "+tuple.values().toString());
+	            System.out.println("tuple sent "+tuple.values().toString());
     		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

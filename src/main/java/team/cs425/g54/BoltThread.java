@@ -111,6 +111,7 @@ public class BoltThread extends Thread {
     	int count=0;
     	try {
     	// Start listening
+    		System.out.println("Bolt start listening");
 	    	serverSocket=new ServerSocket(port);
 	        while(!Thread.currentThread().isInterrupted() && !stopped_sign) {	
             	Socket socket = serverSocket.accept();
