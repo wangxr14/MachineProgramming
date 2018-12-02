@@ -99,7 +99,7 @@ public class SpoutThread extends Thread {
     	    		//System.out.println("Read file "+spoutFile);
     				String line = bufferedReader.readLine();
     				//System.out.println("Line is:"+line);
-    				while(line!=null) {
+    				while(line!=null && !Thread.currentThread().isInterrupted() && !isFinished) {
     					//System.out.println("Line is:"+line);
     					
     					if(line.isEmpty()) {
