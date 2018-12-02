@@ -149,15 +149,15 @@ public class SpoutThread extends Thread {
 	    			os.close();
 	    		}catch (IOException e) {
 	    			e.printStackTrace();
-	    			continue;
+	    			//continue;
 	    		} 	
-	    		//childrenOutputStream.remove(os);
+	    		childrenOutputStream.remove(os);
 	    	}
 	    	for(Socket socket:childrenSocket) {
 	    		if(!socket.isClosed()) {
 	    			socket.close();
 	    		}
-	    		//childrenSocket.remove(socket);
+	    		childrenSocket.remove(socket);
 	    	}
     	}catch (IOException e) {
 			e.printStackTrace();

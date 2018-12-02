@@ -62,7 +62,9 @@ public class WorkerMasterListener extends Thread {
         	if (workingSpout != null) {
         		logger.info("current spout id is: "+workingSpout.getId());
         		while(workingSpout.isAlive()) {
+        			logger.info("working spout "+workingBolt.getId()+" is still alive");
         			workingSpout.stopThread();
+        			logger.info("working spout "+workingBolt.getId()+" alive? "+workingBolt.isAlive());
         			sleep(1000);
         		}
         		logger.info("Previous spout stopped");

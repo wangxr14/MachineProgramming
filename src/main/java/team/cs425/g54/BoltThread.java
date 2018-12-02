@@ -148,7 +148,7 @@ public class BoltThread extends Thread {
 					os.close();
 				}catch (IOException e) {
 		            e.printStackTrace();
-		            continue;
+		            //continue;
 		        } 
 	    		
 	    		childrenOutputStream.remove(os);
