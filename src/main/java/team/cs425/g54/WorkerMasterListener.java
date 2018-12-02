@@ -125,6 +125,9 @@ public class WorkerMasterListener extends Thread {
         		workingBolt = new BoltThread(appType, childrenList);
         		if(appType.equals("filter")) {
         			workingBolt.info=jsonData.get("info").toString();
+        		}else if(appType.equals("wordCount")) {
+        			BoltThread.wordCounter.clear();
+        			logger.info("current word count size:"+workingBolt.wordCounter.size());
         		}
         		//workingBolt = bolt;
         		workingBolt.start();
