@@ -36,13 +36,13 @@ public class BoltDataHandlerThread extends Thread {
     FileUploader uploader;
     
     // For word count
-    public static ConcurrentHashMap<String,Integer> wordCounter=new ConcurrentHashMap<String, Integer>();
+    ConcurrentHashMap<String,Integer> wordCounter;
     
     AtomicBoolean allThreadStop;
     
     int sendCount=0;
     
-    public BoltDataHandlerThread(String appType, CopyOnWriteArrayList<Node> children, CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream, Socket inputSocket, int threadID, AtomicBoolean allThreadStop) {
+    public BoltDataHandlerThread(String appType, CopyOnWriteArrayList<Node> children, CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream, Socket inputSocket, int threadID, AtomicBoolean allThreadStop, ConcurrentHashMap<String,Integer> wordCounter) {
     	this.appType = appType;
     	this.children = children;
     	this.childrenOutputStream = childrenOutputStream;
@@ -51,6 +51,7 @@ public class BoltDataHandlerThread extends Thread {
     	pointer=0;
     	workingFilepath = "files/tmpBolt";
     	this.allThreadStop=allThreadStop;
+    	this.wordCounter = wordCounter;
     }
     
    
@@ -79,6 +80,7 @@ public class BoltDataHandlerThread extends Thread {
 	            if(count%1000==0) {
 	            	System.out.println("Data received: "+count);
 	            	System.out.println("Data sent: "+sendCount);
+	            	
 	            }
 	            //if(count%1000==0 && appType.equals("wordCount")) {
 	            //	wordcount_writeToLocalFile();

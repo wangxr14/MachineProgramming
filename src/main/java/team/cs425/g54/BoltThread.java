@@ -55,7 +55,7 @@ public class BoltThread extends Thread {
     // File for working
     String workingFilepath = "files/tmpBolt";
     // For word count
-    public static ConcurrentHashMap<String,Integer> wordCounter=new ConcurrentHashMap<String, Integer>();
+    public static ConcurrentHashMap<String,Integer> wordCounter;
     
     // For upload File to sdfs
     FileUploader uploader;
