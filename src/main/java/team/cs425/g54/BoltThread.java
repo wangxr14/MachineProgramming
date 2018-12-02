@@ -79,7 +79,7 @@ public class BoltThread extends Thread {
     		ArrayList<Node> tmp = new ArrayList<Node>();
 	    	for(Node node:childrenToConnect) {
 	    		try {
-	    			System.out.println("connect "+node.nodeID);
+	    			//System.out.println("connect "+node.nodeID);
 		    		Socket socket = new Socket(node.nodeAddr, port);
 		    		childrenSocket.add(socket);
 		    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
