@@ -145,9 +145,13 @@ public class BoltThread extends Thread {
 			
 			for(ObjectOutputStream os:childrenOutputStream) {
 	    		os.close();
+	    		childrenOutputStream.remove(os);
 	    	}
 	    	for(Socket socket:childrenSocket) {
-	    		socket.close();
+	    		if(!socket.isClosed()) {
+	    			socket.close();
+	    		}
+	    		childrenSocket.remove(socket);
 	    	}
 	    	
 			for(BoltDataHandlerThread thread:dataHandlerThreads) {
