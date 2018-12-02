@@ -92,7 +92,7 @@ public class BoltThread extends Thread {
     	for(Node node:children) {
     		childrenToConnect.add(node);
     	}
-    	while(childrenToConnect.size()>0) {
+    	while(!Thread.currentThread().isInterrupted() && !stopped_sign && childrenToConnect.size()>0) {
     		ArrayList<Node> tmp = new ArrayList<Node>();
 	    	for(Node node:childrenToConnect) {
 	    		try {

@@ -63,7 +63,7 @@ public class SpoutThread extends Thread {
     	for(Node node:children) {
     		childrenToConnect.add(node);
     	}
-    	while(childrenToConnect.size()>0) {
+    	while(!Thread.currentThread().isInterrupted() && !isFinished && childrenToConnect.size()>0) {
     		ArrayList<Node> tmp = new ArrayList<Node>();
 	    	for(Node node:childrenToConnect) {
 	    		try {
