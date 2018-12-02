@@ -129,12 +129,19 @@ public class BoltThread extends Thread {
 	
 	
 	public void stopThread() {
-		
-		for(BoltDataHandlerThread thread:dataHandlerThreads) {
-			thread.stopThread();
-		}
-		allThreadStop.set(true);
-		stopped_sign = true;
+		try {
+			for(BoltDataHandlerThread thread:dataHandlerThreads) {
+				while(thread.isAlive()) {
+					thread.stopThread();
+					sleep(3000);
+				}
+				
+			}
+			allThreadStop.set(true);
+			stopped_sign = true;
+		} catch(InterruptedException e) {
+        	e.printStackTrace();
+        }
 		
 	}
 }
