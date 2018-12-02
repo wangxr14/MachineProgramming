@@ -841,6 +841,58 @@ public class Detector {
 		}
 
 	}
+
+	public void JoinApp(String cmdInput){
+        String[] command = cmdInput.split(" "); // crane application_type filename
+        logger.info("Execute crane command..");
+        if(command.length<2){
+            return;
+        }
+        String appType = command[1],file = command[2];
+        logger.info("Execute "+appType+", "+"getting file"+file);
+        // get the nodes that contains the file
+        ArrayList<Node> nodesList = lsCommand("ls "+file);
+        if(nodesList==null || nodesList.size()==0){
+            logger.info("no such file");
+            return ;
+        }
+        String version = getLatestFileVersions(file);
+        logger.info("get file version "+SDFSPath+file+"_"+version);
+        Node spoutNode = new Node();
+        for(Node node:nodesList){
+            if(node.nodeID!=craneMaster.nodeID && node.nodeID!=standByMaster.nodeID) {
+                spoutNode = node;
+                break;
+            }
+        }
+        try {
+            DatagramSocket ds = new DatagramSocket();
+            ds.setSoTimeout(TIMEOUT);
+            // send msg to master
+            JSONObject obj = new JSONObject();
+            obj.put("type", "toCraneMaster");
+            obj.put("appType", "JoinApp");
+            obj.put("file",SDFSPath+file+"_"+version);
+            obj.put("spoutID",spoutNode.nodeID);
+            obj.put("spoutAddr",spoutNode.nodeAddr);
+
+            String msgToCraneMaster = obj.toString();
+            InetAddress address = InetAddress.getByName(craneMaster.nodeAddr);
+            DatagramPacket dpSent= new DatagramPacket(msgToCraneMaster.getBytes(),msgToCraneMaster.length(),address,Detector.nodePort);
+            ds.send(dpSent);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 	public static void main(String[] args) {
 
 		Detector mp = new Detector();
@@ -928,6 +980,9 @@ public class Detector {
 				if(cmdInput.startsWith("crane wordcount")){
 					mp.wordCountApp(cmdInput);
 				}
+				if(cmdInput.startsWith("crane join ")){
+				    mp.JoinApp(cmdInput);
+                }
 				if(cmdInput.equals("showcmaster")){
 					mp.showCraneMaster();
 				}
