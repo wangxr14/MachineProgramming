@@ -111,10 +111,10 @@ public class SpoutThread extends Thread {
     public void sendTuple(HashMap<String,String> tuple) {
     	if(children.size()>0) {
     		try {
-    			System.out.println("begin to send tuple");
+    			//System.out.println("begin to send tuple");
     			childrenOutputStream.get(pointer).writeObject(tuple);
     			childrenOutputStream.get(pointer).flush();
-	            System.out.println("tuple sent "+tuple.values().toString());
+	            //System.out.println("tuple sent "+tuple.values().toString());
     		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

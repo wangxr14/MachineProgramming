@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -59,7 +60,9 @@ public class BoltThread extends Thread {
     FileUploader uploader;
     
     int sendCount=0;
-
+    
+    public static AtomicBoolean allThreadStop;
+    
     public BoltThread(String appType,CopyOnWriteArrayList<Node> children){
         this.appType = appType;
         this.children = children;
@@ -68,6 +71,8 @@ public class BoltThread extends Thread {
         childrenSocket = new CopyOnWriteArrayList<Socket>();
         childrenOutputStream = new CopyOnWriteArrayList<ObjectOutputStream>();
         dataHandlerThreads = new CopyOnWriteArrayList<BoltDataHandlerThread>();
+        
+        allThreadStop = new AtomicBoolean(false);
     }
     
     public void connectToChildren() {
@@ -107,7 +112,7 @@ public class BoltThread extends Thread {
 	    	serverSocket=new ServerSocket(port);
 	        while(!Thread.currentThread().isInterrupted() && !stopped_sign) {	
             	Socket socket = serverSocket.accept();
-            	BoltDataHandlerThread dataHandler = new BoltDataHandlerThread(appType, children, childrenOutputStream, socket, count);
+            	BoltDataHandlerThread dataHandler = new BoltDataHandlerThread(appType, children, childrenOutputStream, socket, count, allThreadStop);
             	dataHandlerThreads.add(dataHandler);
             	dataHandler.start();   
                 
@@ -128,6 +133,7 @@ public class BoltThread extends Thread {
 		for(BoltDataHandlerThread thread:dataHandlerThreads) {
 			thread.stopThread();
 		}
+		allThreadStop.set(true);
 		stopped_sign = true;
 		
 	}

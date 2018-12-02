@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BoltDataHandlerThread extends Thread {
 	String appType;
@@ -37,9 +38,11 @@ public class BoltDataHandlerThread extends Thread {
     // For word count
     public static ConcurrentHashMap<String,Integer> wordCounter=new ConcurrentHashMap<String, Integer>();
     
+    AtomicBoolean allThreadStop;
+    
     int sendCount=0;
     
-    public BoltDataHandlerThread(String appType, CopyOnWriteArrayList<Node> children, CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream, Socket inputSocket, int threadID) {
+    public BoltDataHandlerThread(String appType, CopyOnWriteArrayList<Node> children, CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream, Socket inputSocket, int threadID, AtomicBoolean allThreadStop) {
     	this.appType = appType;
     	this.children = children;
     	this.childrenOutputStream = childrenOutputStream;
@@ -47,7 +50,7 @@ public class BoltDataHandlerThread extends Thread {
     	this.threadID = threadID;
     	pointer=0;
     	workingFilepath = "files/tmpBolt"+this.threadID;
-    	
+    	this.allThreadStop=allThreadStop;
     }
     
    
@@ -64,7 +67,7 @@ public class BoltDataHandlerThread extends Thread {
 	    	ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
 	    	int count=0;
 	    	// Begin read data
-	    	while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
+	    	while(!Thread.currentThread().isInterrupted() && !stopped_sign && !allThreadStop.get()) {
 	    		HashMap<String,String> in = (HashMap<String,String>) is.readObject();
 	    		//
 	          // Deal
