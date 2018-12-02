@@ -82,7 +82,9 @@ public class WorkerMasterListener extends Thread {
         		logger.info("Previous bolt stopped");
         		workingBolt = null;
         	}
-        	
+        	logger.info("Now we rest a little");
+        	sleep(5000);
+        	logger.info("start new work now");
         	if(workerType.equals("spout")) {
         		String appType = jsonData.get("appType").toString();
         		String filename = jsonData.get("filename").toString();

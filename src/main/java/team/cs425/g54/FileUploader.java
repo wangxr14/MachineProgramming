@@ -54,7 +54,7 @@ public class FileUploader extends Thread{
     		//checkWriteDownTime();
     		wordcountToFile(filepath);
     		try {
-    			sleep(1000);
+    			sleep(5000);
     		} catch(InterruptedException e) {
     			e.printStackTrace();
     		}
