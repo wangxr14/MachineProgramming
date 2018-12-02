@@ -8,8 +8,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.xml.soap.Node;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,7 +62,7 @@ public class WorkerMasterListener extends Thread {
         			workingSpout.stopThread();
         			sleep(3000);
         		}
-        		System.out.println("Previous spout stoped");
+        		System.out.println("Previous spout stopped");
         		workingSpout = null;
         	}
         	if (workingBolt != null ) {
@@ -72,7 +70,7 @@ public class WorkerMasterListener extends Thread {
         			workingBolt.stopThread();
         			sleep(3000);
         		}
-        		System.out.println("Previous bolt stoped");
+        		System.out.println("Previous bolt stopped");
         		workingBolt = null;
         	}
         	
@@ -89,7 +87,7 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
-        		System.out.println("children I received :");
+        		System.out.println("children received");
         		for(Node node:childrenList) {
         			System.out.println("children "+node.nodeID);
         		}
