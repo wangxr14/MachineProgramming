@@ -3,7 +3,7 @@ package team.cs425.g54.topology;
 import java.util.ArrayList;
 
 public class Topology {
-    ArrayList<Record> recordList;
+    public ArrayList<Record> recordList;
     public ArrayList<Spout> spoutList;
     public ArrayList<Bolt>  boltList;
     public Topology(){
