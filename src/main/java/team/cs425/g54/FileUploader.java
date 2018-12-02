@@ -52,7 +52,8 @@ public class FileUploader extends Thread{
     	this.stop=false;
     	while(!stop) {
     		//checkWriteDownTime();
-    		wordcountToFile(filepath);
+    		//wordcountToFile(filepath);
+    		checkWriteToLocal();
     		try {
     			sleep(5000);
     		} catch(InterruptedException e) {
@@ -75,6 +76,15 @@ public class FileUploader extends Thread{
 		}
 		
 	}
+    
+    public void checkWriteToLocal() {
+    	if ((System.currentTimeMillis() - lastWriteTime) > timeToSend && fileChanged.get()) {
+			System.out.println("write file to local");
+			wordcountToFile(filepath);
+			lastWriteTime=System.currentTimeMillis();
+			fileChanged.set(false);
+		}
+    }
     
     public void wordcountToFile(String filepath) {
     	BufferedWriter bufferedWriter;
