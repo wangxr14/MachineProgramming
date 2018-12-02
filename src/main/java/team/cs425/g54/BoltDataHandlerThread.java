@@ -49,7 +49,7 @@ public class BoltDataHandlerThread extends Thread {
     	this.socket = inputSocket;
     	this.threadID = threadID;
     	pointer=0;
-    	workingFilepath = "files/tmpBolt"+this.threadID;
+    	workingFilepath = "files/tmpBolt";
     	this.allThreadStop=allThreadStop;
     }
     
