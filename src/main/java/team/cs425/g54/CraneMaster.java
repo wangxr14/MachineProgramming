@@ -44,7 +44,8 @@ public class CraneMaster {
             if(node.nodeID==spoutNode.nodeID || node.nodeID==myID || node.nodeID == Detector.standByMaster.nodeID)
                 continue;
             firstLevelWorkers.add(node);
-            System.out.println("has worker "+node.nodeID);
+            logger.info("has worker "+node.nodeID);
+//            System.out.println("has worker "+node.nodeID);
         }
         secondLevelWorker.add(firstLevelWorkers.get(0));
         firstLevelWorkers.remove(0);
