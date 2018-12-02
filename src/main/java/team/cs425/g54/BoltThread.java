@@ -142,6 +142,14 @@ public class BoltThread extends Thread {
 	public void stopThread() {
 		try {
 			//serverSocket.close();
+			
+			for(ObjectOutputStream os:childrenOutputStream) {
+	    		os.close();
+	    	}
+	    	for(Socket socket:childrenSocket) {
+	    		socket.close();
+	    	}
+	    	
 			for(BoltDataHandlerThread thread:dataHandlerThreads) {
 				while(thread.isAlive()) {
 					thread.stopThread();
