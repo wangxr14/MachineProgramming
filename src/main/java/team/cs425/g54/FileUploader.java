@@ -79,7 +79,7 @@ public class FileUploader extends Thread{
     public void wordcountToFile(String filepath) {
     	BufferedWriter bufferedWriter;
 		try {
-			bufferedWriter = new BufferedWriter(new FileWriter(filepath));
+			bufferedWriter = new BufferedWriter(new FileWriter(filepath+System.currentTimeMillis()));
 			for (Entry<String, Integer> entry : wordCounter.entrySet()) {
 				bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
 				bufferedWriter.flush();
