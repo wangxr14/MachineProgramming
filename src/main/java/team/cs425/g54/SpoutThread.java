@@ -101,7 +101,7 @@ public class SpoutThread extends Thread {
     				//System.out.println("Line is:"+line);
     				while(!Thread.currentThread().isInterrupted() && !isFinished && line!=null) {
     					//System.out.println("Line is:"+line);
-    					logger.info("read a new line and is finished"+isFinished);
+    					//logger.info("read a new line and is finished"+isFinished);
     					
     					if(line.isEmpty()) {
     						line = bufferedReader.readLine();
