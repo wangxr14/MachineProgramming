@@ -10,10 +10,10 @@ if __name__ == "__main__":
         sys.exit(-1)
     sc = SparkContext(appName="filterApp")
     ssc = StreamingContext(sc, 10)
-    s = sys.argv[2]
-    lines = ssc.textFileStream(sys.argv[1]) #filename
-    result = lines.filter(lambda l: len(l)>0 and ( s  in l) )
+    joinsc = sc.textFile(sc,sys.argv[2])  # local file
+    lines = ssc.textFileStream(sys.argv[1]) #streaming file dir
+    result = lines.join(joinsc)
     result.pprint()
-    result.saveAsTextFiles("filter_result")
+    result.saveAsTextFiles("join_result")
     ssc.start()
     ssc.awaitTermination()

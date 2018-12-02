@@ -845,10 +845,10 @@ public class Detector {
 	public void JoinApp(String cmdInput){
         String[] command = cmdInput.split(" "); // crane application_type filename
         logger.info("Execute crane command..");
-        if(command.length<2){
+        if(command.length<4){
             return;
         }
-        String appType = command[1],file = command[2];
+        String appType = command[1],file = command[2],local = command[3];
         logger.info("Execute "+appType+", "+"getting file"+file);
         // get the nodes that contains the file
         ArrayList<Node> nodesList = lsCommand("ls "+file);
@@ -873,6 +873,7 @@ public class Detector {
             obj.put("type", "toCraneMaster");
             obj.put("appType", "JoinApp");
             obj.put("file",SDFSPath+file+"_"+version);
+            obj.put("local",local);
             obj.put("spoutID",spoutNode.nodeID);
             obj.put("spoutAddr",spoutNode.nodeAddr);
 
