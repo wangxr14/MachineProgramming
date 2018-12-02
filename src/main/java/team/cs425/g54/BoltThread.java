@@ -133,7 +133,9 @@ public class BoltThread extends Thread {
             	count++;
 	            
 	        }
-	        serverSocket.close();
+	        if(!serverSocket.isClosed()) {
+	        	serverSocket.close();
+	        }
     	} catch (IOException e) {
             e.printStackTrace();
         } 
@@ -153,9 +155,7 @@ public class BoltThread extends Thread {
 				}
 				
 			}
-			logger.info("set stop sign");
-			allThreadStop.set(true);
-			stopped_sign = true;
+			
 			
 			logger.info("start to close sockets");
 			for(Socket socket:childrenSocket) {
@@ -176,7 +176,13 @@ public class BoltThread extends Thread {
 	    		childrenOutputStream.remove(os);
 	    	}
 	    	
-	    	
+			logger.info("set stop sign");
+			allThreadStop.set(true);
+			stopped_sign = true;
+			if(!serverSocket.isClosed()) {
+				serverSocket.close();
+			}
+			logger.info("close done");
 			
 		} catch(InterruptedException e) {
         	e.printStackTrace();

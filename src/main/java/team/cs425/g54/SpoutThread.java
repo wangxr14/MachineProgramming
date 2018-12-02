@@ -144,8 +144,7 @@ public class SpoutThread extends Thread {
     public void stopThread() {
     	// Close sockets and os
     	try {
-    		spoutOpen = false;
-        	isFinished = true;
+    		
     		for(Socket socket:childrenSocket) {
 	    		if(!socket.isClosed()) {
 	    			socket.close();
@@ -162,7 +161,8 @@ public class SpoutThread extends Thread {
 	    		} 	
 	    		childrenOutputStream.remove(os);
 	    	}
-	    	
+	    	spoutOpen = false;
+        	isFinished = true;
     	}catch (IOException e) {
 			e.printStackTrace();
 		} 
