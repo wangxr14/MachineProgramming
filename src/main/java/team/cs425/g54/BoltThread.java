@@ -127,7 +127,7 @@ public class BoltThread extends Thread {
 	    	serverSocket=new ServerSocket(port);
 	        while(!Thread.currentThread().isInterrupted() && !stopped_sign) {	
             	Socket socket = serverSocket.accept();
-            	BoltDataHandlerThread dataHandler = new BoltDataHandlerThread(appType, children, childrenOutputStream, socket, count, allThreadStop);
+            	BoltDataHandlerThread dataHandler = new BoltDataHandlerThread(appType, children, childrenOutputStream, socket, count, allThreadStop, wordCounter);
             	dataHandlerThreads.add(dataHandler);
             	dataHandler.start();   
                 
