@@ -21,6 +21,8 @@ public class WorkerMasterListener extends Thread {
         socket=new DatagramSocket(port);
         // For spout or bolt
         //workerSocket=new DatagramSocket(Detector.workerPort);
+        workingSpout = null;
+    	workingBolt = null;
     }
 
     @Override
@@ -83,7 +85,8 @@ public class WorkerMasterListener extends Thread {
                 }
         		SpoutThread spout = new SpoutThread(filename, appType, childrenList);
         		workingSpout = spout;
-        		workingSpout.start();
+        		//workingSpout.start();
+        		spout.start();
         	}
         	if(workerType.equals("bolt")) {
         		String appType = jsonData.get("appType").toString();
