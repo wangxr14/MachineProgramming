@@ -119,6 +119,7 @@ public class BoltThread extends Thread {
     	System.out.println("begin to connect to children");
     	connectToChildren();
     	System.out.println("children connected");
+    	wordCounter.clear();
     	int count=0;
     	try {
     	// Start listening
@@ -147,6 +148,7 @@ public class BoltThread extends Thread {
 	public void stopThread() {
 		try {
 			//serverSocket.close();
+			wordCounter.clear();
 			logger.info("started to stop handlers");
 			logger.info("threads we have are:");
 			for(BoltDataHandlerThread thread:dataHandlerThreads) {

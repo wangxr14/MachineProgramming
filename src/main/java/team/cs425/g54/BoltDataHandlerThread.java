@@ -62,7 +62,9 @@ public class BoltDataHandlerThread extends Thread {
     	tmpFile.delete();
     	uploader=new FileUploader(appType,workingFilepath);
     	uploader.setWordCounter(wordCounter);
-    	uploader.start();
+    	if(children.size()==0) {
+    		uploader.start();
+    	}
     	try {
 	    	ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
 	    	int count=0;
