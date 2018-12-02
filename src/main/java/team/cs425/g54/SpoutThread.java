@@ -26,6 +26,7 @@ public class SpoutThread extends Thread {
     int pointer;
     int port;
     boolean isFinished = false;
+    boolean spoutOpen = false;
     CopyOnWriteArrayList<Socket> childrenSocket;
     CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream;
     
@@ -57,7 +58,7 @@ public class SpoutThread extends Thread {
 		    		childrenOutputStream.add(os);
 	    		}catch (IOException e) {
 	    			tmp.add(node);
-					e.printStackTrace();
+	    			//System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
 				} 
 	    	}
 	    	childrenToConnect = tmp;
@@ -69,7 +70,7 @@ public class SpoutThread extends Thread {
     	System.out.println("Spout started");
     	//Connect to children
     	connectToChildren();
-    	boolean spoutOpen = true;
+    	spoutOpen = true;
     	while(!Thread.currentThread().isInterrupted() && !isFinished) {
 	    	//
     		if(spoutOpen) {
@@ -81,7 +82,7 @@ public class SpoutThread extends Thread {
     				String line = bufferedReader.readLine();
     				//System.out.println("Line is:"+line);
     				while(line!=null) {
-    					System.out.println("Line is:"+line);
+    					//System.out.println("Line is:"+line);
     					
     					if(line.isEmpty()) {
     						line = bufferedReader.readLine();
@@ -104,15 +105,16 @@ public class SpoutThread extends Thread {
     		}
 	    	 
     	}
+    	System.out.println("Spout ended");
     }
     
     public void sendTuple(HashMap<String,String> tuple) {
     	if(children.size()>0) {
     		try {
-    			System.out.println("begin to send tuple");
+    			//System.out.println("begin to send tuple");
     			childrenOutputStream.get(pointer).writeObject(tuple);
     			childrenOutputStream.get(pointer).flush();
-	            System.out.println("tuple sent "+tuple.values().toString());
+	            //System.out.println("tuple sent "+tuple.values().toString());
     		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -133,6 +135,7 @@ public class SpoutThread extends Thread {
     	}catch (IOException e) {
 			e.printStackTrace();
 		} 
+    	spoutOpen = false;
     	isFinished = true;
     }
 

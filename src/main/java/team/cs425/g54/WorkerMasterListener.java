@@ -52,11 +52,19 @@ public class WorkerMasterListener extends Thread {
         	System.out.println("WorkerType received is "+workerType);
         	// Stop the current worker if there is any
         	if (workingSpout != null) {
-        		workingSpout.stopThread();
+        		while(workingSpout.isAlive()) {
+        			workingSpout.stopThread();
+        			sleep(3000);
+        		}
+        		System.out.println("Previous spout stoped");
         		workingSpout = null;
         	}
         	if (workingBolt != null ) {
-        		workingBolt.stopThread();
+        		while(workingBolt.isAlive()) {
+        			workingBolt.stopThread();
+        			sleep(3000);
+        		}
+        		System.out.println("Previous bolt stoped");
         		workingBolt = null;
         	}
         	
@@ -75,7 +83,7 @@ public class WorkerMasterListener extends Thread {
                 }
         		SpoutThread spout = new SpoutThread(filename, appType, childrenList);
         		workingSpout = spout;
-        		spout.start();
+        		workingSpout.start();
         	}
         	if(workerType.equals("bolt")) {
         		String appType = jsonData.get("appType").toString();
@@ -94,12 +102,14 @@ public class WorkerMasterListener extends Thread {
         			bolt.info=jsonData.get("info").toString();
         		}
         		workingBolt = bolt;
-        		bolt.start();
+        		workingBolt.start();
         	}
         	
         }  catch (JSONException e) {
             e.printStackTrace();
-        } 
+        } catch(InterruptedException e) {
+        	e.printStackTrace();
+        }
     }
 
     

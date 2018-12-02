@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -59,7 +60,9 @@ public class BoltThread extends Thread {
     FileUploader uploader;
     
     int sendCount=0;
-
+    
+    public static AtomicBoolean allThreadStop;
+    
     public BoltThread(String appType,CopyOnWriteArrayList<Node> children){
         this.appType = appType;
         this.children = children;
@@ -68,6 +71,8 @@ public class BoltThread extends Thread {
         childrenSocket = new CopyOnWriteArrayList<Socket>();
         childrenOutputStream = new CopyOnWriteArrayList<ObjectOutputStream>();
         dataHandlerThreads = new CopyOnWriteArrayList<BoltDataHandlerThread>();
+        
+        allThreadStop = new AtomicBoolean(false);
     }
     
     public void connectToChildren() {
@@ -79,14 +84,16 @@ public class BoltThread extends Thread {
     		ArrayList<Node> tmp = new ArrayList<Node>();
 	    	for(Node node:childrenToConnect) {
 	    		try {
-	    			System.out.println("connect "+node.nodeID);
+	    			//System.out.println("connect "+node.nodeID);
 		    		Socket socket = new Socket(node.nodeAddr, port);
 		    		childrenSocket.add(socket);
 		    		ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
 		    		childrenOutputStream.add(os);
 	    		}catch (IOException e) {
 	    			tmp.add(node);
-					e.printStackTrace();
+					//e.printStackTrace();
+	    			//System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
+	    			
 				} 
 	    	}
 	    	childrenToConnect = tmp;
@@ -105,7 +112,7 @@ public class BoltThread extends Thread {
 	    	serverSocket=new ServerSocket(port);
 	        while(!Thread.currentThread().isInterrupted() && !stopped_sign) {	
             	Socket socket = serverSocket.accept();
-            	BoltDataHandlerThread dataHandler = new BoltDataHandlerThread(appType, children, childrenOutputStream, socket, count);
+            	BoltDataHandlerThread dataHandler = new BoltDataHandlerThread(appType, children, childrenOutputStream, socket, count, allThreadStop);
             	dataHandlerThreads.add(dataHandler);
             	dataHandler.start();   
                 
@@ -116,15 +123,25 @@ public class BoltThread extends Thread {
     	} catch (IOException e) {
             e.printStackTrace();
         } 
+    	
+    	System.out.println("Bolt ended");
     }
 	
 	
 	public void stopThread() {
-		
-		for(BoltDataHandlerThread thread:dataHandlerThreads) {
-			thread.stopThread();
-		}
-		stopped_sign = true;
+		try {
+			for(BoltDataHandlerThread thread:dataHandlerThreads) {
+				while(thread.isAlive()) {
+					thread.stopThread();
+					sleep(3000);
+				}
+				
+			}
+			allThreadStop.set(true);
+			stopped_sign = true;
+		} catch(InterruptedException e) {
+        	e.printStackTrace();
+        }
 		
 	}
 }

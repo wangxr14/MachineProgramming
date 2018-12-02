@@ -28,12 +28,14 @@ public class FileUploader extends Thread{
 	
 	// For streaming to write a file
     long lastWriteTime;
-    long timeToSend = 10000;
+    long timeToSend = 20000;
     
     String filepath;
     AtomicBoolean fileChanged;
     
     ConcurrentHashMap<String,Integer> wordCounter;
+    
+    boolean stop;
     
     public FileUploader(String appType, String filepath) {
     	this.appType=appType;
@@ -47,7 +49,8 @@ public class FileUploader extends Thread{
     }
     @Override
     public void run() {
-    	while(true) {
+    	this.stop=false;
+    	while(!stop) {
     		//checkWriteDownTime();
     		wordcountToFile(filepath);
     		try {
@@ -76,7 +79,7 @@ public class FileUploader extends Thread{
     public void wordcountToFile(String filepath) {
     	BufferedWriter bufferedWriter;
 		try {
-			bufferedWriter = new BufferedWriter(new FileWriter(filepath));
+			bufferedWriter = new BufferedWriter(new FileWriter(filepath+System.currentTimeMillis()));
 			for (Entry<String, Integer> entry : wordCounter.entrySet()) {
 				bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
 				bufferedWriter.flush();
@@ -160,5 +163,9 @@ public class FileUploader extends Thread{
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+    }
+    
+    public void stopUploader() {
+    	this.stop=true;
     }
 }
