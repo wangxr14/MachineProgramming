@@ -111,6 +111,7 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
+        		logger.info("children received");
         		//BoltThread bolt = new BoltThread(appType, childrenList);
         		workingBolt = new BoltThread(appType, childrenList);
         		if(appType.equals("filter")) {
