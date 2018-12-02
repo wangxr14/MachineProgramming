@@ -7,6 +7,9 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.xml.soap.Node;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +56,9 @@ public class WorkerMasterListener extends Thread {
         	String workerType = jsonData.get("workerType").toString();
         	System.out.println("WorkerType received is "+workerType);
         	// Stop the current worker if there is any
+        	System.out.println("current spout is: "+workingSpout);
+        	System.out.println("current bolt is: "+workingBolt);
+        	
         	if (workingSpout != null) {
         		while(workingSpout.isAlive()) {
         			workingSpout.stopThread();
@@ -83,6 +89,10 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
+        		System.out.println("children I received :");
+        		for(Node node:childrenList) {
+        			System.out.println("children "+node.nodeID);
+        		}
         		//SpoutThread spout = new SpoutThread(filename, appType, childrenList);
         		//workingSpout = spout;
         		workingSpout = new SpoutThread(filename, appType, childrenList);
