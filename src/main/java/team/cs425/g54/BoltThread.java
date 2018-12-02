@@ -148,12 +148,17 @@ public class BoltThread extends Thread {
 		try {
 			//serverSocket.close();
 			logger.info("started to stop handlers");
+			logger.info("threads we have are:");
+			for(BoltDataHandlerThread thread:dataHandlerThreads) {
+				logger.info("handler "+thread.threadID);
+				
+			}
 			for(BoltDataHandlerThread thread:dataHandlerThreads) {
 				while(thread.isAlive()) {
 					thread.stopThread();
 					sleep(500);
 				}
-				
+				logger.info("handler "+thread.threadID+" not alive now");
 			}
 			
 			
