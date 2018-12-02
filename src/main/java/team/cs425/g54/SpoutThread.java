@@ -99,8 +99,9 @@ public class SpoutThread extends Thread {
     	    		//System.out.println("Read file "+spoutFile);
     				String line = bufferedReader.readLine();
     				//System.out.println("Line is:"+line);
-    				while(line!=null && !Thread.currentThread().isInterrupted() && !isFinished) {
+    				while(!Thread.currentThread().isInterrupted() && !isFinished && line!=null) {
     					//System.out.println("Line is:"+line);
+    					logger.info("read a new line and is finished"+isFinished);
     					
     					if(line.isEmpty()) {
     						line = bufferedReader.readLine();
@@ -135,7 +136,7 @@ public class SpoutThread extends Thread {
 	            //System.out.println("tuple sent "+tuple.values().toString());
     		} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// e.printStackTrace();
 			}
     		pointer = (pointer + 1) % children.size();
     	}
