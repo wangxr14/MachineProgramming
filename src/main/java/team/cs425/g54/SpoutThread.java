@@ -53,7 +53,7 @@ public class SpoutThread extends Thread {
     
     public void printChildren() {
     	for(Node node:children) {
-    		logger.info(node.nodeID);
+    		logger.info("children :"+node.nodeID);
     	}
     }
     
