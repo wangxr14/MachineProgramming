@@ -7,6 +7,7 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +22,8 @@ public class WorkerMasterListener extends Thread {
         socket=new DatagramSocket(port);
         // For spout or bolt
         //workerSocket=new DatagramSocket(Detector.workerPort);
+        workingSpout = null;
+    	workingBolt = null;
     }
 
     @Override
@@ -51,12 +54,15 @@ public class WorkerMasterListener extends Thread {
         	String workerType = jsonData.get("workerType").toString();
         	System.out.println("WorkerType received is "+workerType);
         	// Stop the current worker if there is any
+        	System.out.println("current spout is: "+workingSpout);
+        	System.out.println("current bolt is: "+workingBolt);
+        	
         	if (workingSpout != null) {
         		while(workingSpout.isAlive()) {
         			workingSpout.stopThread();
         			sleep(3000);
         		}
-        		System.out.println("Previous spout stoped");
+        		System.out.println("Previous spout stopped");
         		workingSpout = null;
         	}
         	if (workingBolt != null ) {
@@ -64,7 +70,7 @@ public class WorkerMasterListener extends Thread {
         			workingBolt.stopThread();
         			sleep(3000);
         		}
-        		System.out.println("Previous bolt stoped");
+        		System.out.println("Previous bolt stopped");
         		workingBolt = null;
         	}
         	
@@ -81,9 +87,15 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
-        		SpoutThread spout = new SpoutThread(filename, appType, childrenList);
-        		workingSpout = spout;
+        		System.out.println("children received");
+        		for(Node node:childrenList) {
+        			System.out.println("children "+node.nodeID);
+        		}
+        		//SpoutThread spout = new SpoutThread(filename, appType, childrenList);
+        		//workingSpout = spout;
+        		workingSpout = new SpoutThread(filename, appType, childrenList);
         		workingSpout.start();
+        		//spout.start();
         	}
         	if(workerType.equals("bolt")) {
         		String appType = jsonData.get("appType").toString();
@@ -97,11 +109,12 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
-        		BoltThread bolt = new BoltThread(appType, childrenList);
+        		//BoltThread bolt = new BoltThread(appType, childrenList);
+        		workingBolt = new BoltThread(appType, childrenList);
         		if(appType.equals("filter")) {
-        			bolt.info=jsonData.get("info").toString();
+        			workingBolt.info=jsonData.get("info").toString();
         		}
-        		workingBolt = bolt;
+        		//workingBolt = bolt;
         		workingBolt.start();
         	}
         	
