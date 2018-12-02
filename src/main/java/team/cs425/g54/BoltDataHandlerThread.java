@@ -1,7 +1,9 @@
 package team.cs425.g54;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -42,7 +44,7 @@ public class BoltDataHandlerThread extends Thread {
     
     int sendCount=0;
     
-    public BoltDataHandlerThread(String appType, CopyOnWriteArrayList<Node> children, CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream, Socket inputSocket, int threadID, AtomicBoolean allThreadStop, ConcurrentHashMap<String,Integer> wordCounter) {
+    public BoltDataHandlerThread(String appType, CopyOnWriteArrayList<Node> children, CopyOnWriteArrayList<ObjectOutputStream> childrenOutputStream, Socket inputSocket, int threadID, AtomicBoolean allThreadStop, ConcurrentHashMap<String,Integer> wordCounter, String info) {
     	this.appType = appType;
     	this.children = children;
     	this.childrenOutputStream = childrenOutputStream;
@@ -52,6 +54,7 @@ public class BoltDataHandlerThread extends Thread {
     	workingFilepath = "files/tmpBolt";
     	this.allThreadStop=allThreadStop;
     	this.wordCounter = wordCounter;
+    	this.info = info;
     }
     
    
@@ -95,19 +98,7 @@ public class BoltDataHandlerThread extends Thread {
     	System.out.println("Bolt handler "+threadID+" ended");
     }
     
-    public void wordcount_writeToLocalFile() {
-    	BufferedWriter bufferedWriter;
-		try {
-			bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath));
-			for (Entry<String, Integer> entry : wordCounter.entrySet()) {
-				bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
-				bufferedWriter.flush();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
+    
     public void dealWithData(HashMap<String,String> inData){
 		//System.out.println("Data received: "+inData.values().toString());
 		HashMap<String,String> outData = new HashMap<String,String>();
@@ -167,6 +158,44 @@ public class BoltDataHandlerThread extends Thread {
 					}
 				}
 				
+			}
+		}
+		
+		if(appType.equals("join")) {
+			if(children.size()==0) {
+				BufferedWriter bufferedWriter;
+				try {
+					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath, true));
+					for (Entry<String, String> entry : inData.entrySet()) {
+						bufferedWriter.write(entry.getValue()+"\n");
+						bufferedWriter.flush();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}else {
+				// Read local file
+				BufferedReader bufferedReader;
+    	    	int linenumber=0;
+    	    	try {
+    	    		bufferedReader = new BufferedReader(new FileReader(info));
+    	    		//System.out.println("Read file "+spoutFile);
+    				String line = bufferedReader.readLine();
+    				//System.out.println("Line is:"+line);
+    				while(!Thread.currentThread().isInterrupted() && !stopped_sign && line!=null) {
+    					//System.out.println("Line is:"+line);
+    					
+    					for (Entry<String, String> entry : inData.entrySet()) {
+							outData.put(entry.getKey(), entry.getValue()+line);
+				            sendTuple(outData);
+				            outData=new HashMap<String, String>();    						
+    					}
+    					
+    					line = bufferedReader.readLine();
+    				}
+    			}catch (IOException e) {
+    				e.printStackTrace();
+    			}
 			}
 		}
 		

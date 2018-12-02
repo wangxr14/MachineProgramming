@@ -66,10 +66,11 @@ public class BoltThread extends Thread {
     
     static Logger logger = Logger.getLogger("main.java.team.cs425.g54.BoltThread");
     
-    public BoltThread(String appType,CopyOnWriteArrayList<Node> children){
+    public BoltThread(String appType,CopyOnWriteArrayList<Node> children, String info){
         this.appType = appType;
         this.children = children;
         port=Detector.workerPort;
+        this.info = info;
         
         childrenSocket = new CopyOnWriteArrayList<Socket>();
         childrenOutputStream = new CopyOnWriteArrayList<ObjectOutputStream>();
@@ -127,7 +128,7 @@ public class BoltThread extends Thread {
 	    	serverSocket=new ServerSocket(port);
 	        while(!Thread.currentThread().isInterrupted() && !stopped_sign) {	
             	Socket socket = serverSocket.accept();
-            	BoltDataHandlerThread dataHandler = new BoltDataHandlerThread(appType, children, childrenOutputStream, socket, count, allThreadStop, wordCounter);
+            	BoltDataHandlerThread dataHandler = new BoltDataHandlerThread(appType, children, childrenOutputStream, socket, count, allThreadStop, wordCounter, info);
             	dataHandlerThreads.add(dataHandler);
             	dataHandler.start();   
                 

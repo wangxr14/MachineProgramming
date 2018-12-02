@@ -121,11 +121,12 @@ public class WorkerMasterListener extends Thread {
                     childrenList.add(tmp_node);
                 }
         		logger.info("children received");
+        		String info=jsonData.get("info").toString();
         		//BoltThread bolt = new BoltThread(appType, childrenList);
-        		workingBolt = new BoltThread(appType, childrenList);
-        		if(appType.equals("filter")) {
-        			workingBolt.info=jsonData.get("info").toString();
-        		}else if(appType.equals("wordCount")) {
+        		workingBolt = new BoltThread(appType, childrenList, info);
+        		//if(appType.equals("filter")) {
+        		//}
+        		if(appType.equals("wordCount")) {
         			BoltThread.wordCounter.clear();
         			logger.info("current word count size:"+workingBolt.wordCounter.size());
         		}
