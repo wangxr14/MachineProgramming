@@ -77,7 +77,14 @@ public class BoltThread extends Thread {
         wordCounter=new ConcurrentHashMap<String, Integer>();
     }
     
+    public void printChildren() {
+    	for(Node node:children) {
+    		System.out.println(node.nodeID);
+    	}
+    }
+    
     public void connectToChildren() {
+    	printChildren();
     	ArrayList<Node> childrenToConnect = new ArrayList<Node>();
     	for(Node node:children) {
     		childrenToConnect.add(node);
@@ -105,9 +112,10 @@ public class BoltThread extends Thread {
     
     @Override
     public void run() {
-    	System.out.println("Bolt started");
-        
+    	System.out.println("Bolt started "+Thread.currentThread().getId());
+    	System.out.println("begin to connect to children");
     	connectToChildren();
+    	System.out.println("children connected");
     	int count=0;
     	try {
     	// Start listening
@@ -127,7 +135,7 @@ public class BoltThread extends Thread {
             e.printStackTrace();
         } 
     	
-    	System.out.println("Bolt ended");
+    	System.out.println("Bolt ended "+Thread.currentThread().getId());
     }
 	
 	

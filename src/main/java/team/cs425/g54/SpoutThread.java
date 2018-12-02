@@ -43,7 +43,14 @@ public class SpoutThread extends Thread {
         childrenOutputStream = new CopyOnWriteArrayList<ObjectOutputStream>();
     }
     
+    public void printChildren() {
+    	for(Node node:children) {
+    		System.out.println(node.nodeID);
+    	}
+    }
+    
     public void connectToChildren() {
+    	printChildren();
     	ArrayList<Node> childrenToConnect = new ArrayList<Node>();
     	for(Node node:children) {
     		childrenToConnect.add(node);
@@ -58,7 +65,7 @@ public class SpoutThread extends Thread {
 		    		childrenOutputStream.add(os);
 	    		}catch (IOException e) {
 	    			tmp.add(node);
-	    			System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
+	    			//System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
 				} 
 	    	}
 	    	childrenToConnect = tmp;
@@ -67,13 +74,16 @@ public class SpoutThread extends Thread {
     
     @Override
     public void run() {
-    	System.out.println("Spout started");
+    	System.out.println("Spout started "+Thread.currentThread().getId());
     	//Connect to children
+    	System.out.println("begin to connect to children");
     	connectToChildren();
+    	System.out.println("children connected");
     	spoutOpen = true;
     	while(!Thread.currentThread().isInterrupted() && !isFinished) {
 	    	//
     		if(spoutOpen) {
+    			System.out.println("start to read file");
     			BufferedReader bufferedReader;
     	    	int linenumber=0;
     	    	try {
@@ -94,10 +104,10 @@ public class SpoutThread extends Thread {
     					sendTuple(emit);
     					
     					line = bufferedReader.readLine();
-    				}
-    				System.out.println("################linenumber "+linenumber+"#########");
-    				System.out.println("####################### FILE END ############################");
-    				spoutOpen = false;
+    			}
+				System.out.println("################linenumber "+linenumber+"#########");
+				System.out.println("####################### FILE END ############################");
+				spoutOpen = false;
     				
     			} catch (IOException e) {
     				e.printStackTrace();
@@ -105,7 +115,7 @@ public class SpoutThread extends Thread {
     		}
 	    	 
     	}
-    	System.out.println("Spout ended");
+    	System.out.println("Spout ended "+Thread.currentThread().getId());
     }
     
     public void sendTuple(HashMap<String,String> tuple) {
