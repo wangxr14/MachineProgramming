@@ -51,16 +51,16 @@ public class WorkerMasterListener extends Thread {
         	String workerType = jsonData.get("workerType").toString();
         	System.out.println("WorkerType received is "+workerType);
         	// Stop the current worker if there is any
-        	if (workingSpout != null) {
+        	while (workingSpout != null) {
         		workingSpout.stopThread();
         		System.out.println("Previous spout stoped");
-        		sleep(3000);
+        		sleep(5000);
         		workingSpout = null;
         	}
-        	if (workingBolt != null ) {
+        	while (workingBolt != null ) {
         		workingBolt.stopThread();
         		System.out.println("Previous bolt stoped");
-        		sleep(3000);
+        		sleep(5000);
         		workingBolt = null;
         	}
         	

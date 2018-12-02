@@ -28,7 +28,7 @@ public class FileUploader extends Thread{
 	
 	// For streaming to write a file
     long lastWriteTime;
-    long timeToSend = 10000;
+    long timeToSend = 20000;
     
     String filepath;
     AtomicBoolean fileChanged;
