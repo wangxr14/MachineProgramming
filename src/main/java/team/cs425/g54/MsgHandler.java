@@ -871,7 +871,7 @@ public class MsgHandler extends Thread{
                     String file = jsonData.getString("file");
                     int spoutID = jsonData.getInt("spoutID");
                     String spoutAddr = jsonData.getString("spoutAddr");
-                    String local = jsonData.getString("local")
+                    String local = jsonData.getString("local");
                     Node spout = new Node(spoutID,spoutAddr,Detector.sendTaskPort);
                     Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr, serverNode.nodeID, file, spout);
                     Detector.craneMasterCmd.curTopology.addSpout("JoinApp",file,"");
