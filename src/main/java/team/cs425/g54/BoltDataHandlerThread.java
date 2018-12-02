@@ -67,7 +67,7 @@ public class BoltDataHandlerThread extends Thread {
 	    	ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
 	    	int count=0;
 	    	// Begin read data
-	    	while(!Thread.currentThread().isInterrupted() && !stopped_sign && !allThreadStop.get()) {
+	    	while(!Thread.currentThread().isInterrupted() && !stopped_sign) {
 	    		HashMap<String,String> in = (HashMap<String,String>) is.readObject();
 	    		//
 	          // Deal
