@@ -41,6 +41,10 @@ public class SpoutThread extends Thread {
         
         childrenSocket = new CopyOnWriteArrayList<Socket>();
         childrenOutputStream = new CopyOnWriteArrayList<ObjectOutputStream>();
+        
+        System.out.println("new spout "+Thread.currentThread().getId());
+        printChildren();
+        
     }
     
     public void printChildren() {
