@@ -135,7 +135,7 @@ public class SpoutThread extends Thread {
 	            //System.out.println("tuple sent "+tuple.values().toString());
     		} catch (IOException e) {
 				// TODO Auto-generated catch block
-				//e.printStackTrace();
+				e.printStackTrace();
 			}
     		pointer = (pointer + 1) % children.size();
     	}

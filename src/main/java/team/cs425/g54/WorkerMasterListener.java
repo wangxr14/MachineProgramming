@@ -62,7 +62,7 @@ public class WorkerMasterListener extends Thread {
         	if (workingSpout != null) {
         		while(workingSpout.isAlive()) {
         			workingSpout.stopThread();
-        			sleep(3000);
+        			sleep(1000);
         		}
         		logger.info("Previous spout stopped");
         		workingSpout = null;
@@ -70,7 +70,7 @@ public class WorkerMasterListener extends Thread {
         	if (workingBolt != null ) {
         		while(workingBolt.isAlive()) {
         			workingBolt.stopThread();
-        			sleep(3000);
+        			sleep(1000);
         		}
         		logger.info("Previous bolt stopped");
         		workingBolt = null;

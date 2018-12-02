@@ -141,10 +141,11 @@ public class BoltThread extends Thread {
 	
 	public void stopThread() {
 		try {
+			serverSocket.close();
 			for(BoltDataHandlerThread thread:dataHandlerThreads) {
 				while(thread.isAlive()) {
 					thread.stopThread();
-					sleep(3000);
+					sleep(500);
 				}
 				
 			}
