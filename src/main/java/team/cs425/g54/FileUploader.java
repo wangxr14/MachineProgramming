@@ -79,11 +79,31 @@ public class FileUploader extends Thread{
     
     public void checkWriteToLocal() {
     	if ((System.currentTimeMillis() - lastWriteTime) > timeToSend && fileChanged.get()) {
-			System.out.println("write file to local");
-			wordcountToFile(filepath);
+			System.out.println("write file to local and sdfs");
+			//wordcountToFile(filepath);
+			String filename = filepath + System.currentTimeMillis();
+			String sdfsname = appType;
+			writeFileToLocal(filename);
+			putFileToSDFS(filename, sdfsname);
 			lastWriteTime=System.currentTimeMillis();
 			fileChanged.set(false);
 		}
+    }
+    
+    public String getFilename() {
+    	if(appType.equals("wordCount")) {
+    		return filepath + System.currentTimeMillis();
+    	}else {
+    		return filepath;
+    	}
+    }
+    
+    public void writeFileToLocal(String filename) {
+    	if(appType.equals("wordCount")) {
+    		wordcountToFile(filename);
+    	}else {
+    		
+    	}
     }
     
     public void wordcountToFile(String filepath) {

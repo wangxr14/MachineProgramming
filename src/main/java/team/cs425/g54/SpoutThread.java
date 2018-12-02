@@ -63,7 +63,7 @@ public class SpoutThread extends Thread {
     	for(Node node:children) {
     		childrenToConnect.add(node);
     	}
-    	while(childrenToConnect.size()>0) {
+    	while(!Thread.currentThread().isInterrupted() && !isFinished && childrenToConnect.size()>0) {
     		ArrayList<Node> tmp = new ArrayList<Node>();
 	    	for(Node node:childrenToConnect) {
 	    		try {
@@ -88,6 +88,7 @@ public class SpoutThread extends Thread {
     	connectToChildren();
     	logger.info("children connected");
     	spoutOpen = true;
+    	long time = System.currentTimeMillis();
     	while(!Thread.currentThread().isInterrupted() && !isFinished) {
 	    	//
     		if(spoutOpen) {
@@ -101,7 +102,10 @@ public class SpoutThread extends Thread {
     				//System.out.println("Line is:"+line);
     				while(!Thread.currentThread().isInterrupted() && !isFinished && line!=null) {
     					//System.out.println("Line is:"+line);
-    					//logger.info("read a new line and is finished"+isFinished);
+    					if(System.currentTimeMillis()-time>2000) {
+    						logger.info("read a new line and is finished"+isFinished);
+    						time = System.currentTimeMillis();
+    					}
     					
     					if(line.isEmpty()) {
     						line = bufferedReader.readLine();
