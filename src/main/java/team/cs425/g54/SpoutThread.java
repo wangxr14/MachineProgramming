@@ -58,7 +58,7 @@ public class SpoutThread extends Thread {
 		    		childrenOutputStream.add(os);
 	    		}catch (IOException e) {
 	    			tmp.add(node);
-	    			System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
+	    			//System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
 				} 
 	    	}
 	    	childrenToConnect = tmp;
@@ -82,7 +82,7 @@ public class SpoutThread extends Thread {
     				String line = bufferedReader.readLine();
     				//System.out.println("Line is:"+line);
     				while(line!=null) {
-    					System.out.println("Line is:"+line);
+    					//System.out.println("Line is:"+line);
     					
     					if(line.isEmpty()) {
     						line = bufferedReader.readLine();
@@ -105,6 +105,7 @@ public class SpoutThread extends Thread {
     		}
 	    	 
     	}
+    	System.out.println("Spout ended");
     }
     
     public void sendTuple(HashMap<String,String> tuple) {

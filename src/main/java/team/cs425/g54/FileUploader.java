@@ -35,6 +35,8 @@ public class FileUploader extends Thread{
     
     ConcurrentHashMap<String,Integer> wordCounter;
     
+    boolean stop;
+    
     public FileUploader(String appType, String filepath) {
     	this.appType=appType;
     	this.filepath=filepath;
@@ -47,7 +49,8 @@ public class FileUploader extends Thread{
     }
     @Override
     public void run() {
-    	while(true) {
+    	this.stop=false;
+    	while(!stop) {
     		//checkWriteDownTime();
     		wordcountToFile(filepath);
     		try {
@@ -160,5 +163,9 @@ public class FileUploader extends Thread{
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+    }
+    
+    public void stopUploader() {
+    	this.stop=true;
     }
 }

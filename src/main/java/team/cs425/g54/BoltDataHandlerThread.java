@@ -53,7 +53,7 @@ public class BoltDataHandlerThread extends Thread {
    
     @Override
     public void run() {
-    	
+    	System.out.println("Bolt handler "+threadID+" started");
     	// Delete the previous working file
     	File tmpFile = new File(workingFilepath);
     	tmpFile.delete();
@@ -71,7 +71,7 @@ public class BoltDataHandlerThread extends Thread {
 	            dealWithData(in);
 	            uploader.setFileChanged();
 	            count++;
-	            if(count%100==0) {
+	            if(count%1000==0) {
 	            	System.out.println("Data received: "+count);
 	            	System.out.println("Data sent: "+sendCount);
 	            }
@@ -85,6 +85,7 @@ public class BoltDataHandlerThread extends Thread {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+    	System.out.println("Bolt handler "+threadID+" ended");
     }
     
     public void wordcount_writeToLocalFile() {
@@ -181,6 +182,7 @@ public class BoltDataHandlerThread extends Thread {
     }
     
     public void stopThread() {
+    	uploader.stopUploader();
 		stopped_sign = true;
 	}
 }

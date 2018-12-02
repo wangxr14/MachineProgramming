@@ -87,7 +87,7 @@ public class BoltThread extends Thread {
 	    		}catch (IOException e) {
 	    			tmp.add(node);
 					//e.printStackTrace();
-	    			System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
+	    			//System.out.println("Cannot connect to "+node.nodeID+" now, will try again");
 	    			
 				} 
 	    	}
@@ -118,6 +118,8 @@ public class BoltThread extends Thread {
     	} catch (IOException e) {
             e.printStackTrace();
         } 
+    	
+    	System.out.println("Bolt ended");
     }
 	
 	
