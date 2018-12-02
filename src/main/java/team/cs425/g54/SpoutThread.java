@@ -145,14 +145,14 @@ public class SpoutThread extends Thread {
     public void stopThread() {
     	// Close sockets and os
     	try {
-    		
+    		logger.info("started to stop sockets");
     		for(Socket socket:childrenSocket) {
 	    		if(!socket.isClosed()) {
 	    			socket.close();
 	    		}
 	    		childrenSocket.remove(socket);
 	    	}
-    		
+    		logger.info("started to stop output streams");
 	    	for(ObjectOutputStream os:childrenOutputStream) {
 	    		try {
 	    			os.close();
@@ -162,6 +162,7 @@ public class SpoutThread extends Thread {
 	    		} 	
 	    		childrenOutputStream.remove(os);
 	    	}
+	    	logger.info("started to set stop sign");
 	    	spoutOpen = false;
         	isFinished = true;
     	}catch (IOException e) {
