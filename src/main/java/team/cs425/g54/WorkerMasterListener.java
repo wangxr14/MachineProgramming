@@ -83,10 +83,11 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
-        		SpoutThread spout = new SpoutThread(filename, appType, childrenList);
-        		workingSpout = spout;
-        		//workingSpout.start();
-        		spout.start();
+        		//SpoutThread spout = new SpoutThread(filename, appType, childrenList);
+        		//workingSpout = spout;
+        		workingSpout = new SpoutThread(filename, appType, childrenList);
+        		workingSpout.start();
+        		//spout.start();
         	}
         	if(workerType.equals("bolt")) {
         		String appType = jsonData.get("appType").toString();
@@ -100,11 +101,12 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
-        		BoltThread bolt = new BoltThread(appType, childrenList);
+        		//BoltThread bolt = new BoltThread(appType, childrenList);
+        		workingBolt = new BoltThread(appType, childrenList);
         		if(appType.equals("filter")) {
-        			bolt.info=jsonData.get("info").toString();
+        			workingBolt.info=jsonData.get("info").toString();
         		}
-        		workingBolt = bolt;
+        		//workingBolt = bolt;
         		workingBolt.start();
         	}
         	
