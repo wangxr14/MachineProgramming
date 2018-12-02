@@ -7,6 +7,7 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +18,7 @@ public class WorkerMasterListener extends Thread {
 	public SpoutThread workingSpout = null;
 	public BoltThread workingBolt = null;
     private DatagramSocket workerSocket= null;
+    static Logger logger = Logger.getLogger("main.java.team.cs425.g54.WorkerMasterListener");
 
     public WorkerMasterListener(int port) throws IOException {
         socket=new DatagramSocket(port);
@@ -50,19 +52,19 @@ public class WorkerMasterListener extends Thread {
     private void handleMessage(String receivedData) {
         try {
         	JSONObject jsonData = new JSONObject(receivedData);
-            System.out.println("json received: " + jsonData.toString());
+            logger.info("json received: " + jsonData.toString());
         	String workerType = jsonData.get("workerType").toString();
-        	System.out.println("WorkerType received is "+workerType);
+        	logger.info("WorkerType received is "+workerType);
         	// Stop the current worker if there is any
-        	System.out.println("current spout is: "+workingSpout);
-        	System.out.println("current bolt is: "+workingBolt);
+        	logger.info("current spout is: "+workingSpout);
+        	logger.info("current bolt is: "+workingBolt);
         	
         	if (workingSpout != null) {
         		while(workingSpout.isAlive()) {
         			workingSpout.stopThread();
         			sleep(3000);
         		}
-        		System.out.println("Previous spout stopped");
+        		logger.info("Previous spout stopped");
         		workingSpout = null;
         	}
         	if (workingBolt != null ) {
@@ -70,7 +72,7 @@ public class WorkerMasterListener extends Thread {
         			workingBolt.stopThread();
         			sleep(3000);
         		}
-        		System.out.println("Previous bolt stopped");
+        		logger.info("Previous bolt stopped");
         		workingBolt = null;
         	}
         	
@@ -87,9 +89,9 @@ public class WorkerMasterListener extends Thread {
  
                     childrenList.add(tmp_node);
                 }
-        		System.out.println("children received");
+        		logger.info("children received");
         		for(Node node:childrenList) {
-        			System.out.println("children "+node.nodeID);
+        			logger.info("children "+node.nodeID);
         		}
         		//SpoutThread spout = new SpoutThread(filename, appType, childrenList);
         		//workingSpout = spout;
