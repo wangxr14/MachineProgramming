@@ -73,7 +73,9 @@ public class WorkerMasterListener extends Thread {
         		while(workingBolt.isAlive()) {
         			logger.info("working bolt "+workingBolt.getId()+" is still alive");
         			workingBolt.stopThread();
+        			logger.info("working bolt "+workingBolt.getId()+" alive? "+workingBolt.isAlive());
         			sleep(1000);
+        			logger.info("after sleep, working bolt "+workingBolt.getId()+" alive? "+workingBolt.isAlive());
         		}
         		logger.info("Previous bolt stopped");
         		workingBolt = null;
