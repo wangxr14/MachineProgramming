@@ -73,6 +73,8 @@ public class BoltThread extends Thread {
         dataHandlerThreads = new CopyOnWriteArrayList<BoltDataHandlerThread>();
         
         allThreadStop = new AtomicBoolean(false);
+        
+        wordCounter=new ConcurrentHashMap<String, Integer>();
     }
     
     public void connectToChildren() {
