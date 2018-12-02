@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -62,6 +63,8 @@ public class BoltThread extends Thread {
     int sendCount=0;
     
     public static AtomicBoolean allThreadStop;
+    
+    static Logger logger = Logger.getLogger("main.java.team.cs425.g54.BoltThread");
     
     public BoltThread(String appType,CopyOnWriteArrayList<Node> children){
         this.appType = appType;
@@ -142,7 +145,26 @@ public class BoltThread extends Thread {
 	public void stopThread() {
 		try {
 			//serverSocket.close();
+			logger.info("started to stop handlers");
+			for(BoltDataHandlerThread thread:dataHandlerThreads) {
+				while(thread.isAlive()) {
+					thread.stopThread();
+					sleep(500);
+				}
+				
+			}
+			logger.info("set stop sign");
+			allThreadStop.set(true);
+			stopped_sign = true;
 			
+			logger.info("start to close sockets");
+			for(Socket socket:childrenSocket) {
+	    		if(!socket.isClosed()) {
+	    			socket.close();
+	    		}
+	    		childrenSocket.remove(socket);
+	    	}
+			logger.info("start to close outputstream");
 			for(ObjectOutputStream os:childrenOutputStream) {
 				try {
 					os.close();
@@ -153,22 +175,9 @@ public class BoltThread extends Thread {
 	    		
 	    		childrenOutputStream.remove(os);
 	    	}
-	    	for(Socket socket:childrenSocket) {
-	    		if(!socket.isClosed()) {
-	    			socket.close();
-	    		}
-	    		childrenSocket.remove(socket);
-	    	}
 	    	
-			for(BoltDataHandlerThread thread:dataHandlerThreads) {
-				while(thread.isAlive()) {
-					thread.stopThread();
-					sleep(500);
-				}
-				
-			}
-			allThreadStop.set(true);
-			stopped_sign = true;
+	    	
+			
 		} catch(InterruptedException e) {
         	e.printStackTrace();
         } catch (IOException e) {
