@@ -153,7 +153,9 @@ public class BoltThread extends Thread {
 			stopped_sign = true;
 		} catch(InterruptedException e) {
         	e.printStackTrace();
-        }
+        }catch (IOException e) {
+            e.printStackTrace();
+        } 
 		
 	}
 }
