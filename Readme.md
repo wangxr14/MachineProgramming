@@ -29,7 +29,7 @@ sudo vi mp.config
 
 We use gradle in this MP to help us build and run the programs.
 
-1.  Run MP3 (& MP2)
+1.  Run MP4 (& MP2 & MP3)
 We use the same task name to run the main program of MP3
 
 ```bash
@@ -82,6 +82,14 @@ List where a file is stored
 Show the file list on master				
 13. msversion				
 Show the file versions on master
+14. cranemaster
+Set the current machine as crane's master
+15. crane filter sdfsFile filterword
+Run filter of crane 
+16. crane wordcount sdfsFile
+Run wordcount to count sdfsFile
+17. crane join sdfsFile localFilepath
+Run join to join sdfsFile and localFilepath
 
 
 				
