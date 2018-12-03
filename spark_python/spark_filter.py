@@ -11,7 +11,6 @@ if __name__ == "__main__":
     sc = SparkContext(appName="FilterApp")
     ssc = StreamingContext(sc, 10)
     s = sys.argv[2]
-    #lines = ssc.socketTextStream(sys.argv[1], int(sys.argv[2]))
     lines = ssc.textFileStream(sys.argv[1]) #filename
     result = lines.filter(lambda l: len(l)>0 and ( s  in l) )
     result.pprint()
