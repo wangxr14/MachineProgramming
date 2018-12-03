@@ -81,7 +81,7 @@ public class FileUploader extends Thread{
     	if ((System.currentTimeMillis() - lastWriteTime) > timeToSend && fileChanged.get()) {
 			System.out.println("write file to local and sdfs");
 			//wordcountToFile(filepath);
-			String filename = filepath + System.currentTimeMillis();
+			String filename = getFilename();
 			String sdfsname = appType;
 			writeFileToLocal(filename);
 			putFileToSDFS(filename, sdfsname);
@@ -109,7 +109,7 @@ public class FileUploader extends Thread{
     public void wordcountToFile(String filepath) {
     	BufferedWriter bufferedWriter;
 		try {
-			bufferedWriter = new BufferedWriter(new FileWriter(filepath+System.currentTimeMillis()));
+			bufferedWriter = new BufferedWriter(new FileWriter(filepath));
 			for (Entry<String, Integer> entry : wordCounter.entrySet()) {
 				bufferedWriter.write(entry.getKey()+" "+entry.getValue()+"\n");
 				bufferedWriter.flush();

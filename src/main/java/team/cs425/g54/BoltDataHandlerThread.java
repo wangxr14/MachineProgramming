@@ -183,7 +183,7 @@ public class BoltDataHandlerThread extends Thread {
     				String line = bufferedReader.readLine();
     				//System.out.println("Line is:"+line);
     				while(!Thread.currentThread().isInterrupted() && !stopped_sign && line!=null) {
-    					//System.out.println("Line is:"+line);
+    					System.out.println("tojoin line is:"+line);
     					
     					for (Entry<String, String> entry : inData.entrySet()) {
 							outData.put(entry.getKey(), entry.getValue()+line);
