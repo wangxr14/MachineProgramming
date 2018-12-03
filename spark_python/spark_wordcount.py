@@ -6,6 +6,8 @@ from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 
 if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        sys.exit(-1)
     sc = SparkContext(appName="WordCount")
     ssc = StreamingContext(sc, 10)
     file = sys.argv[1]
