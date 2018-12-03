@@ -64,7 +64,7 @@ public class BoltDataHandlerThread extends Thread {
     	// Delete the previous working file
     	File tmpFile = new File(workingFilepath);
     	tmpFile.delete();
-    	uploader=new FileUploader(appType,workingFilepath);
+    	uploader=new FileUploader(appType,workingFilepath,this.threadID);
     	uploader.setWordCounter(wordCounter);
     	if(children.size()==0) {
     		uploader.start();
@@ -108,7 +108,7 @@ public class BoltDataHandlerThread extends Thread {
 				//System.out.println("Write to file");
 				BufferedWriter bufferedWriter;
 				try {
-					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath, true));
+					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath+threadID, true));
 					for (Entry<String, String> entry : inData.entrySet()) {
 						bufferedWriter.write(entry.getValue()+"\n");
 						bufferedWriter.flush();
@@ -165,7 +165,7 @@ public class BoltDataHandlerThread extends Thread {
 			if(children.size()==0) {
 				BufferedWriter bufferedWriter;
 				try {
-					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath, true));
+					bufferedWriter = new BufferedWriter(new FileWriter(workingFilepath+threadID, true));
 					for (Entry<String, String> entry : inData.entrySet()) {
 						bufferedWriter.write(entry.getValue()+"\n");
 						bufferedWriter.flush();
@@ -183,7 +183,7 @@ public class BoltDataHandlerThread extends Thread {
     				String line = bufferedReader.readLine();
     				//System.out.println("Line is:"+line);
     				while(!Thread.currentThread().isInterrupted() && !stopped_sign && line!=null) {
-    					System.out.println("tojoin line is:"+line);
+    					//System.out.println("tojoin line is:"+line);
     					
     					for (Entry<String, String> entry : inData.entrySet()) {
 							outData.put(entry.getKey(), entry.getValue()+line);

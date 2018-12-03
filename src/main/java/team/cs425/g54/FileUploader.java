@@ -37,11 +37,14 @@ public class FileUploader extends Thread{
     
     boolean stop;
     
-    public FileUploader(String appType, String filepath) {
+    int handlerID;
+    
+    public FileUploader(String appType, String filepath, int handlerID) {
     	this.appType=appType;
     	this.filepath=filepath;
     	this.fileChanged=new AtomicBoolean(false);
     	this.lastWriteTime=System.currentTimeMillis();
+    	this.handlerID = handlerID;
     }
     
     public void setWordCounter(ConcurrentHashMap<String,Integer> wordCounter) {
@@ -93,8 +96,9 @@ public class FileUploader extends Thread{
     public String getFilename() {
     	if(appType.equals("wordCount")) {
     		return filepath + System.currentTimeMillis();
-    	}else {
-    		return filepath;
+    	}
+    	else {
+    		return filepath + this.handlerID;
     	}
     }
     
