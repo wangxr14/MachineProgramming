@@ -874,9 +874,9 @@ public class MsgHandler extends Thread{
                     String local = jsonData.getString("local");
                     Node spout = new Node(spoutID,spoutAddr,Detector.sendTaskPort);
                     Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr, serverNode.nodeID, file, spout);
-                    Detector.craneMasterCmd.curTopology.addSpout("JoinApp",file,"");
-                    Detector.craneMasterCmd.curTopology.addBolt("join1",local,appType);
-                    Detector.craneMasterCmd.curTopology.addBolt("join2",local,appType);
+                    Detector.craneMasterCmd.curTopology.addSpout("join",file,"");
+                    Detector.craneMasterCmd.curTopology.addBolt("join1",local,"join");
+                    Detector.craneMasterCmd.curTopology.addBolt("join2",local,"join");
                     Detector.craneMasterCmd.constructTopology();
                     Detector.craneMasterCmd.sendTask();
                 }
