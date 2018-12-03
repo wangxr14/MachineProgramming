@@ -9,7 +9,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 3:
         sys.exit(-1)
 
-    sc = SparkContext(appName="filterApp")
+    sc = SparkContext(appName="JoinApp")
     ssc = StreamingContext(sc, 10)
     #text = sc,sys.argv[2]  # local file
     file = sys.argv[2]
