@@ -6,6 +6,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
+import team.cs425.g54.topology.Record;
+import team.cs425.g54.topology.Spout;
+import team.cs425.g54.topology.Topology;
+import team.cs425.g54.topology.Bolt;
+
 
 
 import java.io.*;
@@ -137,7 +142,17 @@ public class MsgHandler extends Thread{
         }
         return jsonNodeInfo;
     }
-    
+
+    String packVersionToJson(String version){
+        JSONObject obj = new JSONObject();
+        try{
+            obj.put("latestVersion",version);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj.toString();
+    }
+
     public boolean deleteMsgNeedToSend(Node failNode, Node detector) {
     	int nodeId = containsInstance(totalMemberList,failNode);
     	if(nodeId!=-1 || detector.nodeID != Detector.master.nodeID) {
@@ -183,6 +198,17 @@ public class MsgHandler extends Thread{
             e.printStackTrace();
         }
         return jsonArray.toString();
+    }
+    public String packMasterInfo(String type,Node master){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("type",type);
+            obj.put("nodeID",master.nodeID);
+            obj.put("nodeAddr",master.nodeAddr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj.toString();
     }
     public void updateNodeInfo(JSONObject jsonData ){
         try {
@@ -295,7 +321,7 @@ public class MsgHandler extends Thread{
         if(deleteFile.delete()){
         	// Remove it from the list
         	for(int i=0; i<Detector.storeInfo.fileVersions.get(sdfsName).size();i++) {
-        		if(Detector.storeInfo.fileVersions.get(sdfsName).get(i)==timestamp) {
+        		if(Detector.storeInfo.fileVersions.get(sdfsName).get(i).equals(timestamp)) {
         			Detector.storeInfo.fileVersions.get(sdfsName).remove(i);
         		}
         	}
@@ -348,6 +374,35 @@ public class MsgHandler extends Thread{
                 }
             
             }
+            else if (messageType.equals("renewCraneMaster")) {
+
+                logger.info("broadcasting renew crane master from new crane master...");
+                JSONArray totalListJson = packTotalList();
+                for (Node member : totalMemberList) {
+                    if(compareNode(member,serverNode))
+                        continue;
+                    String message = packMasterInfo("renewCraneMaster",Detector.craneMaster);
+                    InetAddress address = InetAddress.getByName(member.nodeAddr);
+                    logger.info("Introducer send join to all bytes: "+message.getBytes().length);
+                    send_message = new DatagramPacket(message.getBytes(), message.getBytes().length, address, member.nodePort);
+                    server.send(send_message);
+                }
+            }
+            else if (messageType.equals("renewStandByMaster")) {
+
+                logger.info("broadcasting renew standBy master from new crane master...");
+                JSONArray totalListJson = packTotalList();
+                for (Node member : totalMemberList) {
+                    if(compareNode(member,serverNode))
+                        continue;
+                    String message = packMasterInfo("renewStandByMaster",Detector.standByMaster);
+                    InetAddress address = InetAddress.getByName(member.nodeAddr);
+                    logger.info("Introducer send join to all bytes: "+message.getBytes().length);
+                    send_message = new DatagramPacket(message.getBytes(), message.getBytes().length, address, member.nodePort);
+                    server.send(send_message);
+                }
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         } 
@@ -426,7 +481,57 @@ public class MsgHandler extends Thread{
             logger.info("Node ID:"+node.nodeID+", Node Address:"+node.nodeAddr+", Node Port:"+node.nodePort);
         }
     }
+    // Set up standbyMaster
+    public void cloneCraneMaster(JSONObject msg){
+        try {
+            String fileSpout = msg.getString("fileSpout");
+            Node spoutNode = new Node(msg.getInt("spoutID"),msg.getString("spoutAddr"),Detector.sendTaskPort);
+            Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr,serverNode.nodeID,fileSpout,spoutNode);
+            Detector.craneMasterCmd.curTopology = new Topology();
+            JSONArray arr = msg.getJSONArray("clone");
+            for(int i=0;i<arr.length();i++){
+                JSONObject recordObj = arr.getJSONObject(i);
+                ArrayList<Node> children = new ArrayList<>();
+                JSONArray childrenArr = recordObj.getJSONArray("children");
+                for(int j=0;j<childrenArr.length();j++){
+                    JSONObject obj = childrenArr.getJSONObject(j);
+                    Node node = new Node(obj.getInt("nodeID"),obj.getString("nodeAddr"),Detector.sendTaskPort);
+                    children.add(node);
+                }
+                String workerType = recordObj.getString("workerType");
+                String appType = recordObj.getString("appType");
+                String functionType = recordObj.getString("functionType");
+                int id = recordObj.getInt("nodeID");
+                String addr = recordObj.getString("nodeAddr");
+                String info = recordObj.getString("info");
+                Record record = new Record(id,addr,appType,functionType,info,workerType,children);
+                Detector.craneMasterCmd.curTopology.addRecord(record);
+            }
 
+            Detector.craneMasterCmd.fileSpout = fileSpout;
+            // spoutlist
+            JSONArray spoutArr = msg.getJSONArray("spoutArr");
+            for(int i=0;i<spoutArr.length();i++){
+                String functionType = spoutArr.getJSONObject(i).getString("appType");
+                String spoutFile = spoutArr.getJSONObject(i).getString("spoutFile");
+                String appType = spoutArr.getJSONObject(i).getString("appType");
+                Spout s = new Spout(spoutFile,appType,functionType);
+                Detector.craneMasterCmd.curTopology.spoutList.add(s);
+            }
+            // boltList
+            JSONArray boltArr = msg.getJSONArray("boltArr");
+            for(int i=0;i<boltArr.length();i++){
+                String appType = boltArr.getJSONObject(i).getString("appType");
+                String functionType = boltArr.getJSONObject(i).getString("functionType");
+                String info = boltArr.getJSONObject(i).getString("info");
+                Bolt b = new Bolt(functionType,info,appType);
+                Detector.craneMasterCmd.curTopology.boltList.add(b);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     public void run(){
         //logger.info("messageHandle start...");
         String receivedData = new String(receivedPacket.getData());
@@ -436,14 +541,6 @@ public class MsgHandler extends Thread{
             JSONObject jsonData = new JSONObject(receivedData);
         
             String messageType = jsonData.get("type").toString();
-
-                    // get new node information
-            //Node node = new Node(0,"",0);  // join need not use node but the whole list membership 
-            //if(!messageType.equals("ping")){
-            //    node.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
-            //    node.nodeAddr = jsonData.get("nodeAddr").toString();
-            //    node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
-           // }
             
             if(messageType.equals("ping")){
                 //measure bytes
@@ -547,7 +644,7 @@ public class MsgHandler extends Thread{
                     broadcast(messageType,failNode);
                 
                 }
-                
+
 
             }
             else if(messageType.equals("delete")){
@@ -562,6 +659,9 @@ public class MsgHandler extends Thread{
                 if(nodeIndex>=0){
                     totalMemberList.remove(nodeIndex);
                     renewMemberList();
+
+
+                    // tell master to update
                     if(Detector.master!= null) {
 	                    if(node.nodeID == Detector.master.nodeID) {
 	                        Detector.master=totalMemberList.get(0);
@@ -579,6 +679,41 @@ public class MsgHandler extends Thread{
 	                    }
                     }
                     broadcast(messageType,node);
+
+                    // check if the node is a craneMaster
+                    if(node.nodeID==Detector.craneMaster.nodeID){
+                        Detector.craneMaster.nodeID = Detector.standByMaster.nodeID;
+                        Detector.craneMaster.nodeAddr = Detector.standByMaster.nodeAddr;
+                        broadcast("renewCraneMaster",Detector.craneMaster);
+                        logger.info("sending renew cranemaster msg to everyone..");
+                        //find a new standbymaster, and clone the CraneMasterinfo to it
+                        if(Detector.membershipList.size()>0){
+                            Node newStandBy = Detector.membershipList.get(0);
+                            Detector.standByMaster.nodeID = newStandBy.nodeID;
+                            Detector.standByMaster.nodeAddr = newStandBy.nodeAddr;
+                            Detector.craneMasterCmd.backUpStandByMaster();
+                            broadcast("renewStandByMaster",Detector.standByMaster);
+                            logger.info("sending renew Standbymaster msg to everyone..");
+                            //broadcast to all nodes;
+                        }
+                    }
+                    else if(Detector.craneMaster.nodeID == serverNode.nodeID){// worker down
+                        // find available node for spout
+                        String file = Detector.craneMasterCmd.fileSpout.split("_")[0].split("/")[1];
+                        ArrayList<Node> newSpout = Detector.masterInfo.hasFileNodes(file);
+                        logger.info("fileSpout"+Detector.craneMasterCmd.fileSpout);
+                        if(newSpout.size()!=0) {
+                            logger.info("new spout node "+newSpout.get(0).nodeID);
+                            Detector.craneMasterCmd.spoutNode.nodeID = newSpout.get(0).nodeID;
+                            Detector.craneMasterCmd.spoutNode.nodeAddr = newSpout.get(0).nodeAddr;
+                            Detector.craneMasterCmd.constructTopology();
+                            Detector.craneMasterCmd.sendTask();
+                        }
+                        else{
+                            logger.info("no spout existed");
+                        }
+                    }
+
                     
                 }
 
@@ -656,6 +791,13 @@ public class MsgHandler extends Thread{
                     node.nodePort = Integer.parseInt(jsonData.get("nodePort").toString());
                     Detector.masterInfo.deleteNodeFile(node, sdfsName);
                 }
+                else if(command.equals("getLatestVersion")){
+                    String sdfsName = jsonData.get("sdfsName").toString();
+                    String version = Detector.masterInfo.getLatestVersion(sdfsName);
+                    String jsonString = packVersionToJson(version);
+                    DatagramPacket send_msg = new DatagramPacket(jsonString.getBytes(),jsonString.getBytes().length,receivedPacket.getAddress(),receivedPacket.getPort());
+                    server.send(send_msg);
+                }
             }
             else if(messageType.equals("requset")){ // send node info to new master
                 String msg = packNodeInfo().toString();
@@ -669,6 +811,76 @@ public class MsgHandler extends Thread{
             	String timestamp = jsonData.get("timestamp").toString();
             	String sdfsName = jsonData.get("sdfsName").toString();
             	deleteVersion(sdfsName, timestamp);
+            }
+            else if(messageType.equals("renewCraneMaster")){
+                Detector.craneMaster.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                Detector.craneMaster.nodeAddr = jsonData.get("nodeAddr").toString();
+                Detector.craneMasterCmd.backUpStandByMaster();
+            }
+            else if(messageType.equals("renewStandByMaster")){
+                Detector.standByMaster.nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                Detector.standByMaster.nodeAddr = jsonData.get("nodeAddr").toString();
+                if(serverNode.nodeID==Detector.standByMaster.nodeID){
+                    cloneCraneMaster(jsonData);
+                }
+            }
+            else if(messageType.equals("craneMaster")){
+                int nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                String nodeAddr = jsonData.get("nodeAddr").toString();
+                Detector.craneMaster = new Node(nodeID,nodeAddr,Detector.sendTaskPort);
+            }
+            else if(messageType.equals("standByMaster")){
+                int nodeID = Integer.parseInt(jsonData.get("nodeID").toString());
+                String nodeAddr = jsonData.get("nodeAddr").toString();
+                Detector.standByMaster = new Node(nodeID,nodeAddr,Detector.sendTaskPort);
+                logger.info("set standby master as node "+Detector.standByMaster.nodeID);
+            }
+            else if (messageType.equals("setStandByMaster")){
+                //TODO backup crane master
+                cloneCraneMaster(jsonData);
+            }
+            else if(messageType.equals("toCraneMaster")){
+
+                String appType = jsonData.getString("appType");
+                if(appType.equals("filter")){
+                    String file = jsonData.getString("file");
+                    String filterWord = jsonData.getString("filterWord");
+                    int spoutID = jsonData.getInt("spoutID");
+                    String spoutAddr = jsonData.getString("spoutAddr");
+                    Node spout = new Node(spoutID,spoutAddr,Detector.sendTaskPort);
+                    Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr, serverNode.nodeID, file, spout);
+                    Detector.craneMasterCmd.curTopology.addSpout("filter",file,"");
+                    Detector.craneMasterCmd.curTopology.addBolt("filter",filterWord,appType);
+                    Detector.craneMasterCmd.curTopology.addBolt("combine","",appType);
+                    Detector.craneMasterCmd.constructTopology();
+                    Detector.craneMasterCmd.sendTask();
+                }
+                else if(appType.equals("wordCount")){
+                    String file = jsonData.getString("file");
+                    int spoutID = jsonData.getInt("spoutID");
+                    String spoutAddr = jsonData.getString("spoutAddr");
+                    Node spout = new Node(spoutID,spoutAddr,Detector.sendTaskPort);
+                    Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr, serverNode.nodeID, file, spout);
+                    Detector.craneMasterCmd.curTopology.addSpout("wordCount",file,"");
+                    Detector.craneMasterCmd.curTopology.addBolt("mapKey","",appType);
+                    Detector.craneMasterCmd.curTopology.addBolt("sum","",appType);
+                    Detector.craneMasterCmd.constructTopology();
+                    Detector.craneMasterCmd.sendTask();
+                }
+                else if(appType.equals("JoinApp")){
+                    String file = jsonData.getString("file");
+                    int spoutID = jsonData.getInt("spoutID");
+                    String spoutAddr = jsonData.getString("spoutAddr");
+                    String local = jsonData.getString("local");
+                    Node spout = new Node(spoutID,spoutAddr,Detector.sendTaskPort);
+                    Detector.craneMasterCmd = new CraneMaster(serverNode.nodeAddr, serverNode.nodeID, file, spout);
+                    Detector.craneMasterCmd.curTopology.addSpout("join",file,"");
+                    Detector.craneMasterCmd.curTopology.addBolt("join1",local,"join");
+                    Detector.craneMasterCmd.curTopology.addBolt("join2",local,"join");
+                    Detector.craneMasterCmd.constructTopology();
+                    Detector.craneMasterCmd.sendTask();
+                }
+
             }
 
 
