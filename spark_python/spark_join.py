@@ -15,9 +15,10 @@ if __name__ == "__main__":
     file = sys.argv[2]
     local = open(file,'r')
     local_lines = []
+    file2 = sys.argv[1]
     for line in local.readlines():
-        local.append(line)
-    lines1 = ssc.textFileStream(sys.argv[1]) #streaming file dir1
+        local_lines.append(line)
+    lines1 = ssc.textFileStream(file2) #streaming file dir1
     #lines2 = ssc.textFileStream(sys.argv[2]) #streaming file dir2
     result = lines1.flatMap(lambda line: [(line + l) for l in local_lines])
     result.pprint()
